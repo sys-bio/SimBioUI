@@ -26,6 +26,7 @@
       "react-app/jest"
     ]
   },
+  "eslintIgnore": ["src/copasijs.js"],
   "browserslist": {
     "production": [
       ">0.2%",
