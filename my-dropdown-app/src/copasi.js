@@ -1,6 +1,6 @@
 /**
  * @class COPASI
- * 
+ *
  * This class wraps all the functions exported from
  * emscripten and provides a more convenient interface.
  */
@@ -8,9 +8,9 @@ class COPASI {
 
     /**
      * @enum {string} TC
-     * 
+     *
      * enum for method names
-     * 
+     *
      * @property {string} LSODA Deterministic (LSODA)
      * @property {string} RADAU5 Deterministic (RADAU5)
      * @property {string} DIRECT_METHOD Stochastic (Direct method)
@@ -28,7 +28,7 @@ class COPASI {
     /**
      * Constructs a new COPASI instance from the WASM module
      * @param Module the WASM module
-     * 
+     *
      */
     constructor(Module) {
         this.Module = Module;
@@ -47,19 +47,19 @@ class COPASI {
 
     /**
      * loads an example (if the WASM module was compiled with FS support)
-     * 
-     * @param {string} path 
+     *
+     * @param {string} path
      * @returns model information as an object
      */
-    loadExample(path) 
+    loadExample(path)
     {
         return JSON.parse(this.Module.loadFromFile(path));
     }
 
     /**
-     * Loads a model from a string containing the model in 
-     * SBML or COPASI format. 
-     * 
+     * Loads a model from a string containing the model in
+     * SBML or COPASI format.
+     *
      * @param {string} modelCode in SBML or COPASI format
      * @returns model information as an object
      */
@@ -69,9 +69,9 @@ class COPASI {
     }
 
     /**
-     * simulates the currently loaded model with its current 
+     * simulates the currently loaded model with its current
      * time course settings.
-     * 
+     *
      * @returns {object} simulation results as object
      */
     simulate() {
@@ -79,9 +79,9 @@ class COPASI {
     }
 
     /**
-     * simulates the currently loaded model with its current 
+     * simulates the currently loaded model with its current
      * time course settings.
-     * 
+     *
      * @returns {number[][]} simulation results as 2D array
      */
     simulate2D() {
@@ -90,13 +90,13 @@ class COPASI {
     }
 
     /**
-     * simulates the currently loaded model from startTime to 
+     * simulates the currently loaded model from startTime to
      * endTime with numPoints points.
-     * 
+     *
      * @param {number} startTime
      * @param {number} endTime
      * @param {number} numPoints
-     * 
+     *
      * @returns {object} simulation results as object
      */
     simulateEx(startTime, endTime, numPoints) {
@@ -104,13 +104,13 @@ class COPASI {
     }
 
     /**
-     * simulates the currently loaded model from startTime to 
+     * simulates the currently loaded model from startTime to
      * endTime with numPoints points.
-     * 
+     *
      * @param {number} startTime
      * @param {number} endTime
      * @param {number} numPoints
-     * 
+     *
      * @returns {number[][]} simulation results as 2D array
      */
     simulateEx2D(startTime, endTime, numPoints) {
@@ -120,8 +120,8 @@ class COPASI {
 
     /**
      * simulates the currently loaded model after applying
-     * the processing instructions: 
-     * 
+     * the processing instructions:
+     *
      * @param {object|string} yamlProcessingOptions
      * @returns {object} simulation results as object
      */
@@ -134,8 +134,8 @@ class COPASI {
 
     /**
      * simulates the currently loaded model after applying
-     * the processing instructions: 
-     * 
+     * the processing instructions:
+     *
      * @param {object|string} yamlProcessingOptions
      * @returns {number[][]} simulation results as 2D array
      */
@@ -149,8 +149,8 @@ class COPASI {
 
     /**
      * resets the model
-     * 
-     * after loading the model, its state was saved as parameterset, 
+     *
+     * after loading the model, its state was saved as parameterset,
      * calling reset will apply that parameter set.
      */
     reset() {
@@ -161,7 +161,7 @@ class COPASI {
 
     /**
      * @property {string} version returns the COPASI version
-     * 
+     *
      * @example
      * var copasi = new COPASI(Module);
      * console.log(copasi.version);
@@ -230,7 +230,7 @@ class COPASI {
     get reactionNames() {
         return this._vectorToArray(this.Module.getReactionNames());
     }
-    
+
     /**
      * @property {number[]} reactionRates returns reaction rates
      */
@@ -268,9 +268,9 @@ class COPASI {
 
     /**
      * @property {string[]} localParameterNames returns local parameter names
-     * 
-     * Local parameter names, consist of the reaction name in brackets, followed by a dot 
-     * and the parameter name. So for example: `(reaction1).k1` for the 
+     *
+     * Local parameter names, consist of the reaction name in brackets, followed by a dot
+     * and the parameter name. So for example: `(reaction1).k1` for the
      * local parameter `k1` of the reaction `reaction1`.
      */
     get localParameterNames() {
@@ -286,7 +286,7 @@ class COPASI {
 
     /**
      * @property {object} timeCourseSettings returns the time course settings as json object
-     * 
+     *
      * @param {object|string} arg the time course settings to set
      */
     get timeCourseSettings() {
@@ -310,15 +310,15 @@ class COPASI {
 
     /**
      * @property {string[]} selectionList returns the selection list
-     * 
-     * The selection list controls what will be in the output of the 
-     * simulation calls. 
+     *
+     * The selection list controls what will be in the output of the
+     * simulation calls.
      */
     get selectionList() {
         return this._vectorToArray(this.Module.getSelectionList());
     }
 
-    set selectionList(arg) 
+    set selectionList(arg)
     {
         var vector = new this.Module.StringVector();
         arg.forEach((item) => vector.push_back(item));
@@ -334,5 +334,9 @@ class COPASI {
 }
 
 // if module is defined, export the COPASI class
-export default COPASI;
-export {COPASI};
+if (typeof module !== 'undefined') {
+    module.exports = COPASI;
+}
+
+//export default COPASI;
+//export {COPASI};
