@@ -5,6 +5,8 @@ import './CSS/Left Sub Panel/custom-scroll-bar.css'
 import './CSS/Left Sub Panel/popup-components.css'
 import './CSS/Left Sub Panel/dropdown-components.css'
 import './CSS/Left Sub Panel/border-with-text.css'
+import './CSS/Center Panel/center-subpanel.css'
+import './CSS/Center Panel/centered-input.css'
 const DropdownWithPopup = ({ initialOptions = [], additionalElements = [] }) => {
 
     const [showDropdown, setShowDropdown] = useState(false);
@@ -230,9 +232,11 @@ const DropdownWithPopup = ({ initialOptions = [], additionalElements = [] }) => 
                     </div>
                 )}
             </div>
-            {/*<div className="centered-input-box" contentEditable="true">*/}
-            {/*    <input type="text" />*/}
-            {/*</div>*/}
+            <div className="center-subpanel">
+                <div className="centered-input-box" contentEditable="true">
+                    <input type="text" />
+                </div>
+            </div>
         </div>
     );
 };

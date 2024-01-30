@@ -1,20 +1,17 @@
 .centered-input-box {
-    width: 75%;
     background-color: black;
     color: white;
-    border: 10px solid black; /* You can add a border for styling */
+    border: 1px solid gray; /* You can add a border for styling */
     padding: 10px; /* Add padding for spacing */
     font-size: 16px;
     outline: none;
-    width: 600px;
-    height: 1000px; /* Adjust the height as needed */
+    width: 500px;
+    height: 650px; /* Adjust the height as needed */
     position: absolute;
-    top: 0;
-    left: 20%;
+    margin-top: 20px;
+    margin-left: 20px;
 }
 .centered-input-box input[type="text"] {
-    width: 100%; /* Full width of the parent div */
-    height: 50px; /* Example height, adjust as needed */
     background-color: black; /* Change the background color to black */
     color: white; /* Change the text color to white */
     border: none; /* Remove the border */
