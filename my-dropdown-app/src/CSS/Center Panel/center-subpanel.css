@@ -1,6 +1,6 @@
 .center-subpanel {
     background-color: #2e2d2d;
-    flex: 1;
+    width: 40%;
     padding: 10px;
     box-sizing: border-box;
     min-height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
