@@ -50,16 +50,6 @@ button:hover {
   background-color: #333333; /* Darker shade of black for hover effect */
 }
 
-.xy-button {
-  position: absolute;
-  margin-top: 20px;
-  margin-left: 110px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .button-style {
   background-color: #242323; /* Background color */
   color: #fff; /* Text color */

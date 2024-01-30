@@ -151,87 +151,85 @@ const DropdownWithPopup = ({ initialOptions = [], additionalElements = [] }) => 
                         Always reset initial conditions
                     </label>
                 </div>
-                <div className="xy-button">
-                    <div className="border-with-text">
-                        <span className="text-on-border">X Axis</span>
-                        <button
-                            className="button-style"
-                        > Time </button>
-                    </div>
-
-                    <div className="border-with-text">
-                        <span className="text-on-border">Y Axis</span>
-                        <button
-                            className="button-style"
-                            onClick={() => {
-                                setShowDropdown(!showDropdown);
-                                setShowDropdownButtons(!showDropdownButtons)}} // Reuse showDropdown for Y-axis
-                        > [A] </button>
-                        {showDropdown && ( // This dropdown will show for both X and Y axis buttons
-                            <div className="dropdown-container" style={dropdownListStyle}>
-                                <div
-                                    style={{
-                                        ...dropdownStyle,
-                                        ...dropdownListStyle,
-                                        display: 'block'
-                                    }}
-                                    className="dropdown-list"
-                                >
-                                    <CustomScrollbar>
-                                        <div className="dropdown-list">
-                                            {Object.keys(options).map((option) => (
-                                                <div key={option}>
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`checkbox-${option}`}
-                                                        checked={options[option]}
-                                                        onChange={() => toggleOptionSpecific(option)}
-                                                    />
-                                                    <label htmlFor={`checkbox-${option}`}>{option}</label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </CustomScrollbar>
-                                </div>
-                            </div>
-                        )}
-                        {showDropdownButtons && (
-                            <div className="dropdown-buttons">
-                                <button onClick={selectAllOptions}>Select all</button>
-                                <button onClick={unselectAllOptions}>Unselect all</button>
-                                <button onClick={deleteOptions}>Delete</button>
-                                <button onClick={() => setShowMoreOptions(true)}>More options</button>
-                            </div>
-                        )}
-                    </div>
+                <div className="border-with-text">
+                    <span className="text-on-border">X Axis</span>
+                    <button
+                        className="button-style"
+                    > Time </button>
                 </div>
-                {showMoreOptions && (
-                    <div className="popup">
-                        <div className="popup-left">
-                            {additionalElements.map((element) => (
-                                <button key={element} onClick={() => addElementToSelected(element)}>
-                                    {element}
-                                </button>
+
+                <div className="border-with-text">
+                    <span className="text-on-border">Y Axis</span>
+                    <button
+                        className="button-style"
+                        onClick={() => {
+                            setShowDropdown(!showDropdown);
+                            setShowDropdownButtons(!showDropdownButtons)}} // Reuse showDropdown for Y-axis
+                    > [A] </button>
+                    {showDropdown && ( // This dropdown will show for both X and Y axis buttons
+                        <div className="dropdown-container" style={dropdownListStyle}>
+                            <div
+                                style={{
+                                    ...dropdownStyle,
+                                    ...dropdownListStyle,
+                                    display: 'block'
+                                }}
+                                className="dropdown-list"
+                            >
+                                <CustomScrollbar>
+                                    <div className="dropdown-list">
+                                        {Object.keys(options).map((option) => (
+                                            <div key={option}>
+                                                <input
+                                                    type="checkbox"
+                                                    id={`checkbox-${option}`}
+                                                    checked={options[option]}
+                                                    onChange={() => toggleOptionSpecific(option)}
+                                                />
+                                                <label htmlFor={`checkbox-${option}`}>{option}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CustomScrollbar>
+                            </div>
+                        </div>
+                    )}
+                    {showDropdownButtons && (
+                        <div className="dropdown-buttons">
+                            <button onClick={selectAllOptions}>Select all</button>
+                            <button onClick={unselectAllOptions}>Unselect all</button>
+                            <button onClick={deleteOptions}>Delete</button>
+                            <button onClick={() => setShowMoreOptions(true)}>More options</button>
+                        </div>
+                    )}
+                </div>
+            </div>
+            {showMoreOptions && (
+                <div className="popup">
+                    <div className="popup-left">
+                        {additionalElements.map((element) => (
+                            <button key={element} onClick={() => addElementToSelected(element)}>
+                                {element}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="popup-right">
+                        <div className={"small-text"}>
+                            {selectedElements.map((element) => (
+                                <div key={element}>{element}</div>
                             ))}
                         </div>
-                        <div className="popup-right">
-                            <div className={"small-text"}>
-                                {selectedElements.map((element) => (
-                                    <div key={element}>{element}</div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="popup-top">
-                            <button onClick={addAllElements}>Add All</button>
-                            <button onClick={clearAllElements}>Clear All</button>
-                        </div>
-                        <div className="popup-bottom">
-                            <button onClick={applySelectedElements}>Apply</button>
-                            <button onClick={closePopup}>Close</button>
-                        </div>
                     </div>
-                )}
-            </div>
+                    <div className="popup-top">
+                        <button onClick={addAllElements}>Add All</button>
+                        <button onClick={clearAllElements}>Clear All</button>
+                    </div>
+                    <div className="popup-bottom">
+                        <button onClick={applySelectedElements}>Apply</button>
+                        <button onClick={closePopup}>Close</button>
+                    </div>
+                </div>
+            )}
             <div className="center-subpanel">
                 <div className="centered-input-box" contentEditable="true">
                     <input type="text" />
