@@ -35,7 +35,8 @@ export class App extends React.Component  {
 
     render() {
         const initialOptions = { '[A]': true, '[B]': true, '[C]': true };
-        const additionalElements = ['J_0', 'J_1', 'J_2'];
+        const additionalElements = ['[A]', '[B]', '[C]', 'S[2]', 'S[4]', 'S[6]', 'S[8]', 'S[10]', 'S[12]', 'S[14]',
+            'J_0', 'J_1', 'J_2', 'J_3', 'J_4', 'J_5'];
         const xData = [1, 2, 3, 4, 5];
         const yData1 = [10, 12, 8, 15, 7];
         const yData2 = [5, 8, 10, 6, 9];

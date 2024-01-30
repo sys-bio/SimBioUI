@@ -1,0 +1,44 @@
+.border-with-text {
+    position: relative;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 250px;
+    margin-left: 50px;
+    margin-bottom: 20px;
+}
+
+.text-on-border {
+    position: absolute;
+    top: -10px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+    background-color: #2e2d2d;
+    color: #ffffff;
+    padding: 0 10px;
+    font-size: 12px; /* Adjust as needed */
+}
+
+.border-with-text-simulation {
+    position: relative;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 250px;
+    height: 150px;
+    margin-top: 30px;
+    margin-left: 10px;
+}
+
+.text-on-border-simulation {
+    position: absolute;
+    top: -10px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+    background-color: #2e2d2d;
+    color: #ffffff;
+    padding: 0 10px;
+    font-size: 12px; /* Adjust as needed */
+}

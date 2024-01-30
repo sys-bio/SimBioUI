@@ -1,0 +1,6 @@
+.main-container {
+    background-color: #2e2d2d;
+    display: flex;
+    width: 100vw; /* 100% of the viewport width */
+    height: 100vh; /* 100% of the viewport height */
+}

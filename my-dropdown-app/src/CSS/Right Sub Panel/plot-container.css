@@ -1,0 +1,8 @@
+
+.plot-container {
+    position: absolute;
+    top: 15%;
+    margin-left: 65%;
+    width: 50%; /* Adjust the width as needed */
+    height: 100%; /* Make it take the full height of the screen */
+}

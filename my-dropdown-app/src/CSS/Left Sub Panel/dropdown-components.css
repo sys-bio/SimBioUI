@@ -1,0 +1,31 @@
+/* Adjust the width as necessary to accommodate the scrollbar */
+.dropdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow-y: auto; /* Show the scrollbar only when needed */
+    width: 500px; /* Increase width to accommodate the scrollbar */
+    margin-left: 1px;
+}
+/*.dropdown-buttons {*/
+/*    position: absolute;*/
+/*    left: 8px; !* Adjust the left position to align with the dropdown container *!*/
+/*}*/
+
+.dropdown-list {
+    /* Remove padding-right from here, it's now in .dropdown-container */
+    width: 40%; /* Ensure the list takes the full width of the container */
+    box-sizing: border-box; /* Include padding and border in the element's dimensions */
+}
+
+/* Make checkboxes smaller */
+.dropdown-list input[type="checkbox"] {
+    transform: scale(0.8); /* Adjust the scale factor as needed */
+    margin-right: 5px; /* Add spacing between checkbox and label */
+}
+
+/* Make labels smaller */
+.dropdown-list label {
+    color: white;
+    font-size: 12px; /* Adjust the font size as needed */
+}
