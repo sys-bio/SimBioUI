@@ -1,6 +1,7 @@
-.center-subpanel {
-    background-color: #2e2d2d;
-    flex: 1;
+.right-subpanel {
+    position: relative;
+    background-color: black;
+    width: 40%;
     padding: 10px;
     box-sizing: border-box;
     min-height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
@@ -10,4 +11,9 @@
     border-bottom: 1px solid gray; /* Add a bottom border */
     margin-top: 60px; /* Adjust the margin-top to move the sub-panel up */
     margin-bottom: 80px; /* Remove margin-bottom */
+}
+.plot-box{
+    width: 100%;
+    margin-top: 20px;
+    margin-left: 20px;
 }

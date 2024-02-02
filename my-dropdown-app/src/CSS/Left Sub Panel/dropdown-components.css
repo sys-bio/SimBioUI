@@ -4,18 +4,25 @@
     flex-direction: column;
     align-items: flex-start;
     overflow-y: auto; /* Show the scrollbar only when needed */
-    width: 500px; /* Increase width to accommodate the scrollbar */
+    width: 200px; /* Increase width to accommodate the scrollbar */
     margin-left: 1px;
+    border-radius: 4px;
+    border: 1px solid gray;
 }
-/*.dropdown-buttons {*/
-/*    position: absolute;*/
-/*    left: 8px; !* Adjust the left position to align with the dropdown container *!*/
-/*}*/
+.dropdown-container-for-yaxis-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow-y: auto; /* Show the scrollbar only when needed */
+    border-radius: 4px;
+    border: 1px solid gray;
+}
 
 .dropdown-list {
     /* Remove padding-right from here, it's now in .dropdown-container */
-    width: 40%; /* Ensure the list takes the full width of the container */
+    width: 100%; /* Ensure the list takes the full width of the container */
     box-sizing: border-box; /* Include padding and border in the element's dimensions */
+    background-color: #2e2d2d;
 }
 
 /* Make checkboxes smaller */
@@ -28,4 +35,8 @@
 .dropdown-list label {
     color: white;
     font-size: 12px; /* Adjust the font size as needed */
+}
+.dropdown-buttons {
+    margin-top: 8px;
+    background-color: #2e2d2d;
 }

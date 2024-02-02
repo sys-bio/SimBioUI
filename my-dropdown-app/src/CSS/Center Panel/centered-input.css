@@ -1,20 +1,17 @@
 .centered-input-box {
     background-color: black; /* Match the background color of the center sub-panel */
+    border: 1px solid white;
     color: white;
-    border: 1px solid gray; /* You can add a border for styling */
     padding: 10px; /* Add padding for spacing */
     font-size: 16px;
     outline: none;
-    width: 500px;
+    width: 100%;
     height: 650px; /* Adjust the height as needed */
     position: relative; /* Change to relative positioning */
     margin-top: 20px;
-    margin-left: 20px;
-    border-top: 1px solid gray; /* Add a top border */
-    border-bottom: 1px solid gray; /* Adjust the bottom border */
 }
 
-.centered-input-box input[type="text"] {
+.centered-input-box textarea {
     background-color: black; /* Match the background color of the input box */
     color: white; /* Change the text color to white */
     border: none; /* Remove the border */
@@ -22,5 +19,8 @@
     box-sizing: border-box; /* Include padding and border in the input's dimensions */
     font-size: 12px; /* Adjust font size as needed */
     outline: none; /* Remove the default focus outline */
-    width: 100%; /* Make the input box fill the container width */
+    width: 100%; /* Make the textarea fill the container width */
+    height: 100%; /* Adjust based on your needs */
+    resize: none; /* Prevent resizing if you want a fixed size */
+    overflow: auto; /* Handle scrolling for overflow text */
 }

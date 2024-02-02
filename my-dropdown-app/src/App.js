@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import DropdownWithPopup from './DropdownWithPopup';
 import {createCpsModule} from './copasijs'
 import {COPASI} from './copasi'
-import Plot from 'react-plotly.js';
 
 export class App extends React.Component  {
 
@@ -42,45 +41,14 @@ export class App extends React.Component  {
         const yData2 = [5, 8, 10, 6, 9];
         return (
             <div className="App">
-                <DropdownWithPopup initialOptions={initialOptions} additionalElements={additionalElements} />
+                <DropdownWithPopup
+                    initialOptions={initialOptions}
+                    additionalElements={additionalElements}
+                    xData={xData}
+                    yData1={yData1}
+                    yData2={yData2}
+                />
                 <header className="App-header">
-                    <div className={"plot-container"}>
-                        <Plot
-                            data={[
-                                {
-                                    x: xData,
-                                    y: yData1,
-                                    type: 'scatter',
-                                    mode: 'lines+markers',
-                                    name: 'Line 1',
-                                },
-                                {
-                                    x: xData,
-                                    y: yData2,
-                                    type: 'scatter',
-                                    mode: 'lines+markers',
-                                    name: 'Line 2',
-                                },
-                            ]}
-                            layout={{
-                                width: 500,
-                                height: 600,
-                                title: 'Transition of substances in chemical reaction',
-                                xaxis: {
-                                    title: {
-                                        text: 'X-axis Label', // Replace with your X-axis label
-                                        standoff: 10 // Optional: adjust the space between the tick labels and the axis title
-                                    },
-                                },
-                                yaxis: {
-                                    title: {
-                                        text: 'Entities', // Replace with your Y-axis label
-                                        standoff: 10 // Optional: adjust the space between the tick labels and the axis title
-                                    },
-                                }
-                            }}>
-                        </Plot>
-                    </div>
                     <span>COPASI version: {this.state.copasi?.version}</span>
                 </header>
             </div>
