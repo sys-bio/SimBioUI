@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import PlotGraph from './PlotGraph';
 import ResizingHandle from "./ResizingHandle";
 import './CSS/Left Sub Panel/main-container.css'
-import './CSS/Left Sub Panel/custom-scroll-bar.css'
 import './CSS/Left Sub Panel/popup-components.css'
 import './CSS/Left Sub Panel/dropdown-components.css'
 import './CSS/Left Sub Panel/border-with-text.css'
@@ -15,6 +14,9 @@ import SimulationParameters from "./SimulationParameters";
 import YAxis from "./YAxis"
 import { FaArrowUp, FaArrowRight } from 'react-icons/fa'; // Replace 'fa' with the desired icon set
 const MIN_PANEL_WIDTH = 50;
+const MAX_LEFT_PANEL_WIDTH = window.innerWidth * 0.15;
+const MIN_RIGHT_PANEL_WIDTH = window.innerWidth * 0.2;
+const MIN_CENTER_PANEL_WIDTH = window.innerWidth * 0.2;
 const DropdownWithPopup = (
     { initialOptions = [], 
         additionalElements = [], 
@@ -27,17 +29,22 @@ const DropdownWithPopup = (
     const [selectedElements, setSelectedElements] = useState([]);
     const [showDropdownButtons, setShowDropdownButtons] = useState(false);
 
-    const [panelWidth, setPanelWidth] = useState(300); // Initial width of the left sub-panel
+    const [panelWidth, setPanelWidth] = useState(window.innerWidth * 0.15); // Initial width of the left sub-panel
     const leftPanelRef = useRef(null);
     const leftResizingRef = useRef(false);
 
-    const [rightPanelWidth, setRightPanelWidth] = useState(600); // Initial width of the right sub-panel
+    const [centerPanelWidth, setCenterPanelWidth] = useState(window.innerWidth * 0.47);
+
+    const [rightPanelWidth, setRightPanelWidth] = useState(window.innerWidth * 0.4); // Initial width of the right sub-panel
     const rightPanelRef = useRef(null);
     const rightResizingRef = useRef(false);
 
     const [showParams, setShowParams] = useState(false);
     const [showXAxis, setShowXAxis] = useState(false);
     const [showYAxis, setShowYAxis] = useState(false);
+
+    const [sizeOfInput, setSizeOfInput] = useState(12);
+    const [deleteMessage, setDeleteMessage] = useState('');
 
     const toggleOption = (optionValue) => {
         setOptions((prevOptions) => ({
@@ -89,48 +96,82 @@ const DropdownWithPopup = (
     const clearAllElements = () => {
         setSelectedElements([]);
     };
+
+    const DEFAULT_OPTIONS = ['[A]', '[B]', '[C]'];
     const deleteOptions = () => {
         const updatedOptions = {};
+        let nonDefaultOptionFound = false;
+
         Object.keys(options).forEach((option) => {
-            if (!options[option]) {
-                // Only keep options that are not selected
+            if (DEFAULT_OPTIONS.includes(option) || !options[option]) {
                 updatedOptions[option] = options[option];
+            } else {
+                nonDefaultOptionFound = true;
             }
         });
+
         setOptions(updatedOptions);
+
+        if (!nonDefaultOptionFound && Object.keys(updatedOptions).every(option => DEFAULT_OPTIONS.includes(option))) {
+            setDeleteMessage('Y-axis list is in default mode. No additional options to delete.');
+            // Clear the message after 3 seconds
+            setTimeout(() => {
+                setDeleteMessage('');
+            }, 2000);
+        } else {
+            setDeleteMessage(''); // Immediately clear the message in other cases
+        }
     };
 
     const handleResize = (e) => {
         if (leftResizingRef.current && leftPanelRef.current) {
             const newWidth = e.clientX - leftPanelRef.current.getBoundingClientRect().left;
-            setPanelWidth(Math.max(newWidth, MIN_PANEL_WIDTH));
+            const adjustedWidth = Math.min(Math.max(newWidth, MIN_PANEL_WIDTH), MAX_LEFT_PANEL_WIDTH);
+            setCenterPanelWidth(window.innerWidth - rightPanelWidth - adjustedWidth);
+            setPanelWidth(adjustedWidth);
             setShowYAxis(false);
             setShowXAxis(false);
             setShowParams(false);
         }
     };
+
     const handleRightResize = (e) => {
         if (rightResizingRef.current && rightPanelRef.current) {
-            const newWidth =
-                rightPanelRef.current.getBoundingClientRect().right - e.clientX;
-            setRightPanelWidth(Math.max(newWidth, MIN_PANEL_WIDTH));
+            const newWidth = rightPanelRef.current.getBoundingClientRect().right - e.clientX;
+            const adjustedWidth = Math.max(newWidth, MIN_RIGHT_PANEL_WIDTH);
+
+            // Calculate the potential new center panel width
+            const potentialCenterWidth = window.innerWidth - panelWidth - adjustedWidth;
+
+            // Check if the potential new center panel width is less than the minimum
+            if (potentialCenterWidth < MIN_CENTER_PANEL_WIDTH) {
+                // Set the center panel width to its minimum
+                setCenterPanelWidth(MIN_CENTER_PANEL_WIDTH);
+                // Adjust the right panel width accordingly to maintain the layout
+                setRightPanelWidth(window.innerWidth - panelWidth - MIN_CENTER_PANEL_WIDTH);
+            } else {
+                // Proceed as normal if the minimum size is not breached
+                setCenterPanelWidth(potentialCenterWidth);
+                setRightPanelWidth(adjustedWidth);
+            }
         }
     };
 
+
     const leftSubpanelStyle = {
+
         width: panelWidth,
         backgroundColor: panelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000', // Replace with desired colors
     };
     const rightSubpanelStyle = {
         width: rightPanelWidth,
-        backgroundColor:
-            rightPanelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000', // Replace with desired colors
+        backgroundColor: '#2e2d2d',
     };
 
-    const dropdownListStyle = {
-        maxHeight: '200px', // Set a max height if more than 3 visible options
-        overflowY: 'scroll', // Show scrollbar if more than 3 visible options
-    };
+    const centerSubPanelStyle = {
+        width: centerPanelWidth,
+        backgroundColor: '#2e2d2d',
+    }
 
     const handleIconClick = (icon) => {
         if (icon === 'param') {
@@ -141,13 +182,26 @@ const DropdownWithPopup = (
         else if (icon === 'x-axis') {
             setShowParams(false);
             setShowYAxis(false);
-            setShowXAxis(!showXAxis)
+            setShowXAxis(!showXAxis);
+
+            // Dynamically calculate 13% of the current window width
+            const newWidth = window.innerWidth * 0.15;
+
+            // Apply the new width to the left panel
+            setPanelWidth(newWidth);
+
+            // Adjust the center panel width accordingly
+            setCenterPanelWidth(window.innerWidth - rightPanelWidth - newWidth);
         }
         else if (icon === 'y-axis') {
             setShowParams(false);
             setShowYAxis(false);
             setShowYAxis(!showYAxis)
         }
+    };
+
+    const handleInputChange = (e) => {
+        setSizeOfInput(e.target.value);
     };
 
     return (
@@ -200,7 +254,6 @@ const DropdownWithPopup = (
                                     options={options}
                                     setOptions={setOptions}
                                     dropdownStyle={dropdownStyle}
-                                    dropdownListStyle={dropdownListStyle}
                                 />
                             )}
                             {showDropdownButtons && (
@@ -208,6 +261,9 @@ const DropdownWithPopup = (
                                     <button onClick={selectAllOptions}>Select all</button>
                                     <button onClick={unselectAllOptions}>Unselect all</button>
                                     <button onClick={deleteOptions}>Delete</button>
+                                    <div>
+                                        {deleteMessage && <div className="delete-message">{deleteMessage}</div>}
+                                    </div>
                                     <button onClick={() => setShowMoreOptions(true)}>More options</button>
                                 </div>
                             )}
@@ -248,55 +304,72 @@ const DropdownWithPopup = (
                         </div>
                     </div>
                 )}
-            </div>
-            <div className="center-subpanel">
-                <div className="centered-input-box">
-                    <textarea></textarea>
-                </div>
-                {showParams && (
-                    <div className="components-container-in-param-popup">
-                        <SimulationParameters className={"border-with-text-simulation-popup"} />
-                        <div className={"simulate-reset-buttons"}>
-                            <button className={"simulate-style"}>Simulate</button>
-                            <button className={"reset-style"}>Reset</button>
-                        </div>
+                <div className="center-subpanel" style={centerSubPanelStyle}>
+                    <div className={"centered-input-box"}>
+                        <textarea style={{fontSize: `${sizeOfInput}px`}} ></textarea>
                     </div>
-                )}
-                {showYAxis && (
-                    <div className="components-container-in-yaxis-popup">
-                        <div className="border-with-text-yaxis-popup">
-                            <span className="text-on-border">Y Axis</span>
-                            <YAxis
-                                className={"dropdown-container-for-yaxis-icon"}
-                                options={options}
-                                setOptions={setOptions}
-                                dropdownStyle={dropdownStyle}
-                                dropdownListStyle={dropdownListStyle}
-                            />
-                            <div>
-                                <button className="dropdown-buttons" onClick={selectAllOptions}>Select all</button>
-                                <button className="dropdown-buttons" onClick={unselectAllOptions}>Unselect all</button>
-                                <button className="dropdown-buttons" onClick={deleteOptions}>Delete</button>
-                                <button className="dropdown-buttons" onClick={() => setShowMoreOptions(true)}>More options</button>
+                    <div>
+                        <label style={{ color: "white", fontSize: 12 }}> Font Size: </label>
+                        <input
+                            style={{
+                                backgroundColor: "black",
+                                color: "white",
+                                border: '1px solid gray',
+                                marginTop: '10px',
+                                width: '40px',
+                                fontSize: 12 }}
+                            type="number"
+                            value={sizeOfInput}
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                    {showParams && (
+                        <div className="components-container-in-param-popup">
+                            <SimulationParameters className={"border-with-text-simulation-popup"} />
+                            <div className={"simulate-reset-buttons"}>
+                                <button className={"simulate-style"}>Simulate</button>
+                                <button className={"reset-style"}>Reset</button>
                             </div>
                         </div>
+                    )}
+                    {showYAxis && (
+                        <div className="components-container-in-yaxis-popup">
+                            <div className="border-with-text-yaxis-popup">
+                                <span className="text-on-border">Y Axis</span>
+                                <YAxis
+                                    className={"dropdown-container-for-yaxis-icon"}
+                                    options={options}
+                                    setOptions={setOptions}
+                                    dropdownStyle={dropdownStyle}
+                                />
+                                <div>
+                                    <button className="dropdown-buttons" onClick={selectAllOptions}>Select all</button>
+                                    <button className="dropdown-buttons" onClick={unselectAllOptions}>Unselect all</button>
+                                    <button className={"dropdown-buttons"} onClick={deleteOptions}>Delete</button>
+                                    <div>
+                                        {deleteMessage && <div className="delete-message">{deleteMessage}</div>}
+                                    </div>
+                                    <button className="dropdown-buttons" onClick={() => setShowMoreOptions(true)}>More options</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div ref={rightPanelRef} className="right-subpanel" style={rightSubpanelStyle}>
+                    <ResizingHandle
+                        panelRef={rightPanelRef}
+                        resizingRef={rightResizingRef}
+                        handleResize={handleRightResize}
+                        resizeStyle={"resize-right-handle"}
+                        isRightPanel={true}
+                    />
+                    <div className="plot-box">
+                        <PlotGraph
+                            xData={xData}
+                            yData1={yData1}
+                            yData2={yData2}
+                        ></PlotGraph>
                     </div>
-                )}
-            </div>
-            <div ref={rightPanelRef} className="right-subpanel" style={rightSubpanelStyle}>
-                <ResizingHandle
-                    panelRef={rightPanelRef}
-                    resizingRef={rightResizingRef}
-                    handleResize={handleRightResize}
-                    resizeStyle={"resize-right-handle"}
-                    isRightPanel={true}
-                />
-                <div className="plot-box">
-                    <PlotGraph
-                        xData={xData}
-                        yData1={yData1}
-                        yData2={yData2}
-                    ></PlotGraph>
                 </div>
             </div>
         </div>

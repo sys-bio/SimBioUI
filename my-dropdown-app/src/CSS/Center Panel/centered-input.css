@@ -3,12 +3,11 @@
     border: 1px solid white;
     color: white;
     padding: 10px; /* Add padding for spacing */
-    font-size: 16px;
     outline: none;
-    width: 100%;
-    height: 650px; /* Adjust the height as needed */
+    width: 98%;
+    height: 90%; /* Adjust the height as needed */
     position: relative; /* Change to relative positioning */
-    margin-top: 20px;
+    margin-top: 50px;
 }
 
 .centered-input-box textarea {
@@ -17,7 +16,6 @@
     border: none; /* Remove the border */
     padding: 10px; /* Add padding inside the input */
     box-sizing: border-box; /* Include padding and border in the input's dimensions */
-    font-size: 12px; /* Adjust font size as needed */
     outline: none; /* Remove the default focus outline */
     width: 100%; /* Make the textarea fill the container width */
     height: 100%; /* Adjust based on your needs */

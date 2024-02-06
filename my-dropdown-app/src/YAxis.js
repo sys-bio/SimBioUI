@@ -1,5 +1,4 @@
 import React from 'react';
-import CustomScrollbar from './CustomScrollBar';
 import './CSS/Left Sub Panel/dropdown-components.css'
 
 const YAxis = ({className, options, setOptions, dropdownStyle, dropdownListStyle }) => {
@@ -11,17 +10,17 @@ const YAxis = ({className, options, setOptions, dropdownStyle, dropdownListStyle
     };
 
     return (
-        <div className={className} style={dropdownListStyle}>
+        <div className={className}>
             <div
                 style={{
                     ...dropdownStyle,
-                    ...dropdownListStyle,
                     display: 'block',
+                    maxHeight: '200px', // Ensure the dropdown has a maximum height
+                    overflowY: 'scroll', // Hide the default scrollbar
                 }}
                 className="dropdown-list"
             >
-                <CustomScrollbar>
-                    <div className="dropdown-list">
+                    <div>
                         {Object.keys(options).map((option) => (
                             <div key={option}>
                                 <input
@@ -34,7 +33,6 @@ const YAxis = ({className, options, setOptions, dropdownStyle, dropdownListStyle
                             </div>
                         ))}
                     </div>
-                </CustomScrollbar>
             </div>
         </div>
     );
