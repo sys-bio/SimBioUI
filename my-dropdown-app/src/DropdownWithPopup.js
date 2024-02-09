@@ -8,6 +8,7 @@ import './CSS/Left Sub Panel/border-with-text.css'
 import './CSS/Center Panel/center-subpanel.css'
 import './CSS/Center Panel/centered-input.css'
 import './CSS/Right Sub Panel/right-subpanel.css'
+import './CSS/Left Top Corner/left-top-corner.css'
 import {UilSetting} from "@iconscout/react-unicons";
 import './SimulationParameters';
 import SimulationParameters from "./SimulationParameters";
@@ -15,7 +16,7 @@ import YAxis from "./YAxis"
 import { FaArrowUp, FaArrowRight } from 'react-icons/fa'; // Replace 'fa' with the desired icon set
 const MIN_PANEL_WIDTH = 50;
 const MAX_LEFT_PANEL_WIDTH = window.innerWidth * 0.15;
-const MIN_RIGHT_PANEL_WIDTH = window.innerWidth * 0.2;
+const MIN_RIGHT_PANEL_WIDTH = window.innerWidth * 0.3;
 const MIN_CENTER_PANEL_WIDTH = window.innerWidth * 0.2;
 const DropdownWithPopup = (
     { initialOptions = [], 
@@ -45,6 +46,24 @@ const DropdownWithPopup = (
 
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [deleteMessage, setDeleteMessage] = useState('');
+
+    const [xMin, setXMin] = useState("0.00");
+    const [yMin, setYMin] = useState("10.00");
+    const [xMax, setXMax] = useState("0.00");
+    const [yMax, setYMax] = useState("10.00");
+
+    const [graphs, setGraphs] = useState([{ xData: [], yData1: [], yData2: [] }]);
+    const [activeGraphIndex, setActiveGraphIndex] = useState(0); // Index of the currently active graph
+    const addNewGraph = () => {
+        const newGraph = { xData: [], yData1: [], yData2: [] }; // Replace with actual default or new graph data
+        setGraphs([...graphs, newGraph]);
+        setActiveGraphIndex(graphs.length); // Set the new graph as active
+    };
+
+    // Function to select an active graph
+    const selectGraph = (index) => {
+        setActiveGraphIndex(index);
+    };
 
     const toggleOption = (optionValue) => {
         setOptions((prevOptions) => ({
@@ -204,7 +223,37 @@ const DropdownWithPopup = (
         setSizeOfInput(e.target.value);
     };
 
+    const NumberInput = ({ label, value, onChange }) => (
+        <div style={{ marginBottom: '10px' }}>
+            <label style={{ color: "white", fontSize: 12, display: 'block' }}>
+                {label}
+                <input
+                    style={{
+                        backgroundColor: "black",
+                        color: "white",
+                        border: '1px solid gray',
+                        borderRadius: '4px',
+                        marginLeft: '5px',
+                        width: '60px',
+                        fontSize: 12
+                    }}
+                    type="number"
+                    value={value}
+                    onChange={e => onChange(e.target.value)}
+                />
+            </label>
+        </div>
+    );
+
     return (
+        <>
+        <div className="top-menu">
+            <button className="top-menu-button">File</button>
+            <button className="top-menu-button">Analysis</button>
+            <button className="top-menu-button">Options</button>
+            <button className="top-menu-button">Examples</button>
+            <button className="top-menu-button">Help</button>
+        </div>
         <div className="main-container">
             <div className="panels-container">
                 <div ref={leftPanelRef} className="left-subpanel" style={leftSubpanelStyle}>
@@ -315,7 +364,6 @@ const DropdownWithPopup = (
                                 backgroundColor: "black",
                                 color: "white",
                                 border: '1px solid gray',
-                                marginTop: '10px',
                                 width: '40px',
                                 fontSize: 12 }}
                             type="number"
@@ -363,16 +411,67 @@ const DropdownWithPopup = (
                         resizeStyle={"resize-right-handle"}
                         isRightPanel={true}
                     />
-                    <div className="plot-box">
-                        <PlotGraph
-                            xData={xData}
-                            yData1={yData1}
-                            yData2={yData2}
-                        ></PlotGraph>
+                    <button onClick={addNewGraph}>New Graph</button>
+                    <div className="graphs-container">
+                        {graphs.map((graph, index) => (
+                            <div key={index} className={`graph-container ${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
+                                {/* Render the PlotGraph component for each graph */}
+                                <PlotGraph
+                                    xData={graph.xData}
+                                    yData1={graph.yData1}
+                                    yData2={graph.yData2}
+                                    rightPanelWidth={rightPanelWidth}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    <div className="text-checkbox-input-autoscale" style={{ display: 'flex', justifyContent: 'space-between',
+                        alignItems: 'flex-start', marginBottom: '10px' }}>
+                        <div className="autoscale-container">
+                            <label className="label-space">
+                                <input
+                                    className={"checkbox-input"}
+                                    type="checkbox"
+                                    onChange={(e) => {
+                                        // Handle checkbox change here
+                                        const isChecked = e.target.checked;
+                                        // You can use the checkbox state as needed
+                                    }}
+                                />
+                                Autoscale X
+                            </label>
+                            <label>
+                                <input
+                                    className={"checkbox-input"}
+                                    type="checkbox"
+                                    onChange={(e) => {
+                                        // Handle checkbox change here
+                                        const isChecked = e.target.checked;
+                                        // You can use the checkbox state as needed
+                                    }}
+                                />
+                                Autoscale Y
+                            </label>
+                            <div style={{ display: 'flex', marginTop: '10px' }}>
+                                <div style={{ marginRight: '20px' }}>
+                                    <NumberInput label="X Minimum:" value={xMin} onChange={setXMin} />
+                                    <NumberInput label="X Maximum:" value={xMax} onChange={setXMax} />
+                                </div>
+                                <div>
+                                    <NumberInput label="Y Minimum:" value={yMin} onChange={setYMin} />
+                                    <NumberInput label="Y Maximum:" value={yMax} onChange={setYMax} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="edit-export-buttons" style={{ display: 'flex', flexDirection: 'column' }}>
+                            <button className={'edit-export-style'} style={{ marginBottom: '10px'}}>Edit Graph</button>
+                            <button className={'edit-export-style'}> Export To PDF</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        </>
     );
 };
 export default DropdownWithPopup;

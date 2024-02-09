@@ -1,0 +1,17 @@
+.left-top-corner {
+    background-color: black;
+    margin-left: 100px;
+    height: 10px
+}
+.top-menu {
+    backgroundColor: #2e2d2d;
+    display: flex;
+    justifyContent: space-around;
+    width: 20%;
+    position: fixed;
+}
+.top-menu-button {
+    background-color: #2e2d2d;
+    color: white;
+    font-size: 15px
+}
