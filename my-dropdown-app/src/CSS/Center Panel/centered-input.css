@@ -4,10 +4,10 @@
     color: white;
     padding: 10px; /* Add padding for spacing */
     outline: none;
-    width: 98%;
+    width: 95%;
     height: 90%; /* Adjust the height as needed */
     position: relative; /* Change to relative positioning */
-    margin-top: 50px;
+    margin-top: 30px;
 }
 
 .centered-input-box textarea {

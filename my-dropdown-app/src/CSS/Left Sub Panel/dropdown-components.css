@@ -20,11 +20,13 @@
 }
 
 .dropdown-list {
-    /* Remove padding-right from here, it's now in .dropdown-container */
+    max-height: 200px;
+}
+.dropdown-list-toolbar
+.dropdown-list{
     width: 100%; /* Ensure the list takes the full width of the container */
     box-sizing: border-box; /* Include padding and border in the element's dimensions */
     background-color: #2e2d2d;
-    max-height: 200px;
     overflow: hidden;
 }
 
@@ -71,6 +73,75 @@ html {
     margin-left: 4px;
     font-size: 10px;
 }
+.dropdown-file-container,
+.dropdown-analysis-container,
+.dropdown-options-container,
+.dropdown-examples-container,
+.dropdown-help-container{
+    position: absolute;
+    top: 90%; /* Adjust as necessary */
+    width: 200px;
+    border-radius: 6px;
+    z-index: 1000; /* Ensure it's above other content */
+}
+.dropdown-file-container {
+    left: 3px; /* Adjust as necessary */
+}
+.dropdown-analysis-container {
+    left: 32px; /* Adjust as necessary */
+}
+.dropdown-options-container {
+    left: 77px; /* Adjust as necessary */
+}
+.dropdown-examples-container {
+    left: 118px;
+}
+.dropdown-help-container {
+    left: 167px;
+}
+
+.dropdown-toolbar-button-file,
+.dropdown-toolbar-button-analysis,
+.dropdown-toolbar-button-options,
+.dropdown-toolbar-button-examples,
+.dropdown-toolbar-button-help {
+    width: 98%;
+    text-align: left;
+    font-size: 13px;
+    background-color: #1f1f1e;
+}
+.dropdown-toolbar-button-file:nth-child(6)::after,
+.dropdown-toolbar-button-file:nth-child(8)::after,
+.dropdown-toolbar-button-file:nth-child(9)::after{
+    content: '';
+    display: block;
+    background-color: gray;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+}
+.dropdown-toolbar-button-analysis:nth-child(4)::after{
+    content: '';
+    display: block;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+    background-color: gray;
+}
+.dropdown-toolbar-button-options:nth-child(2)::after{
+    content: '';
+    display: block;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+    background-color: gray;
+}
+.dropdown-toolbar-button-help:nth-child(2)::after{
+    content: '';
+    display: block;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+    background-color: gray;
+}
+
+
 
 
 

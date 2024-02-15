@@ -98,9 +98,10 @@ button:hover {
 }
 
 .text-simulation {
-  font-size: 18px; /* Adjust the font size as needed */
+  font-size: 16px; /* Adjust the font size as needed */
   color: white; /* Change the text color to white */
-  margin-left: 15px;
+  margin-left: 25px;
+  margin-top: -30px;
 }
 
 .parameter-input-box {
@@ -148,7 +149,6 @@ button:hover {
   padding: 10px 20px; /* Adjust padding as needed */
   line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */
 }
-
 .text-checkbox-input {
   color: white;
   font-size: 12px;
@@ -157,7 +157,7 @@ button:hover {
 }
 
 .config-button {
-  margin-left: 10%;
+  margin-left: 1%;
   font-size: 12px;
   border: 1px solid gray;
 
@@ -181,7 +181,7 @@ button:hover {
   height: 300px;
 }
 .axis-icon {
-  margin-top: 20px;
+  margin-top: 10px;
   margin-left: 0px;
 }
 
