@@ -1,7 +1,7 @@
 import React from 'react';
 import Plot from 'react-plotly.js';
 
-const PlotGraph = ({xData, yData1, yData2, rightPanelWidth}) => {
+const PlotGraph = ({xData, yData1, yData2, rightPanelWidth, rightPanelHeight}) => {
     return (
         <div>
             <Plot
@@ -23,7 +23,7 @@ const PlotGraph = ({xData, yData1, yData2, rightPanelWidth}) => {
                 ]}
                 layout={{
                     width: rightPanelWidth * 0.95,
-                    height: 350,
+                    height: rightPanelHeight * 0.4,
                     title: 'Transition of substances in chemical reaction',
                     xaxis: {
                         title: {

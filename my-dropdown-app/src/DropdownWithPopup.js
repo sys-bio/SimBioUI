@@ -526,7 +526,7 @@ const DropdownWithPopup = (
                         <div className="graphs-container">
                             {graphs.map((graph, index) => (
                                 <div key={index} className={`graph-container ${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
-                                    <PlotGraph xData={graph.xData} yData1={graph.yData1} yData2={graph.yData2} rightPanelWidth={rightPanelWidth} />
+                                    <PlotGraph xData={graph.xData} yData1={graph.yData1} yData2={graph.yData2} rightPanelWidth={rightPanelWidth} rightPanelHeight={window.innerHeight}/>
                                     {graph.showSettings && (
                                         <div>
                                             <div style={{ display: 'flex', marginTop: '10px' }}>
