@@ -22,7 +22,7 @@
 .dropdown-list {
     max-height: 200px;
 }
-.dropdown-list-toolbar
+.dropdown-list-toolbar,
 .dropdown-list{
     width: 100%; /* Ensure the list takes the full width of the container */
     box-sizing: border-box; /* Include padding and border in the element's dimensions */
