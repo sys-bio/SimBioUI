@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/SimBioUI/static/css/main.a9039555.css",
-    "main.js": "/SimBioUI/static/js/main.9b18473a.js",
+    "main.css": "/SimBioUI/static/css/main.411dc7c8.css",
+    "main.js": "/SimBioUI/static/js/main.ccfc4806.js",
     "static/js/787.f556b7f6.chunk.js": "/SimBioUI/static/js/787.f556b7f6.chunk.js",
     "index.html": "/SimBioUI/index.html",
-    "main.a9039555.css.map": "/SimBioUI/static/css/main.a9039555.css.map",
-    "main.9b18473a.js.map": "/SimBioUI/static/js/main.9b18473a.js.map",
+    "main.411dc7c8.css.map": "/SimBioUI/static/css/main.411dc7c8.css.map",
+    "main.ccfc4806.js.map": "/SimBioUI/static/js/main.ccfc4806.js.map",
     "787.f556b7f6.chunk.js.map": "/SimBioUI/static/js/787.f556b7f6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.a9039555.css",
-    "static/js/main.9b18473a.js"
+    "static/css/main.411dc7c8.css",
+    "static/js/main.ccfc4806.js"
   ]
 }
