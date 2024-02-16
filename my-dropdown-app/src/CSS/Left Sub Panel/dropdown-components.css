@@ -7,16 +7,7 @@
     overflow-y: hidden; /* Show the scrollbar only when needed */
     width: 95%; /* Increase width to accommodate the scrollbar */
     margin-left: 1px;
-    border-radius: 4px;
-    border: 1px solid gray;
-}
-.dropdown-container-for-yaxis-icon {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    overflow-y: auto; /* Show the scrollbar only when needed */
-    border-radius: 4px;
-    border: 1px solid gray;
+    border-radius: 4px
 }
 
 .dropdown-list {
@@ -26,7 +17,6 @@
 .dropdown-list{
     width: 100%; /* Ensure the list takes the full width of the container */
     box-sizing: border-box; /* Include padding and border in the element's dimensions */
-    background-color: #2e2d2d;
     overflow: hidden;
 }
 
@@ -40,10 +30,6 @@
 .dropdown-list label {
     color: white;
     font-size: 12px; /* Adjust the font size as needed */
-}
-.dropdown-buttons {
-    margin-top: 8px;
-    background-color: #2e2d2d;
 }
 
 /* For WebKit (Chrome, Safari, Edge) */
@@ -67,7 +53,6 @@ html {
 }
 
 .delete-message {
-    color: white; /* or any color that suits your design */
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 4px;
@@ -108,7 +93,6 @@ html {
     width: 98%;
     text-align: left;
     font-size: 13px;
-    background-color: #1f1f1e;
 }
 .dropdown-toolbar-button-file:nth-child(6)::after,
 .dropdown-toolbar-button-file:nth-child(8)::after,

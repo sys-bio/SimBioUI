@@ -12,9 +12,6 @@
   box-sizing: border-box;
   height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
   overflow: auto;
-  border-right: 1px solid gray; /* Add a right border with a color of your choice */
-  border-top: 1px solid white;
-  border-bottom: 1px solid gray; /* Add a bottom border */
   margin-top: 60px; /* Adjust the margin-top to move the sub-panel up */
   margin-bottom: 80px; /* Remove margin-bottom */
 }
@@ -57,8 +54,6 @@ code {
 }
 
 button {
-  background-color: black; /* Change button background to black */
-  color: white;           /* Change text color to white for contrast */
   border: none;
   padding: 4px 12px;
   text-align: center;
@@ -76,9 +71,6 @@ button:hover {
 }
 
 .button-style {
-  background-color: #242323; /* Background color */
-  color: #fff; /* Text color */
-  border: 1px solid gray; /* Add a white border */
   padding: 2px 11px; /* Padding inside the button */
   text-align: left; /* Center the text */
   text-decoration: none; /* No underline on text */
@@ -93,24 +85,18 @@ button:hover {
 
 .small-text {
   font-size: 12px;
-  color: white;
   margin-top: 20px;
 }
 
 .text-simulation {
   font-size: 16px; /* Adjust the font size as needed */
-  color: white; /* Change the text color to white */
   margin-left: 25px;
   margin-top: -30px;
 }
 
 .parameter-input-box {
-  background-color: black;
-  color: white;
-  border: 1px solid gray; /* You can add a border for styling */
   padding: 10px; /* Add padding for spacing */
   font-size: 12px;
-  outline: none;
   width: 25px;
   height: 2px; /* Adjust the height as needed */
   position: absolute;
@@ -120,9 +106,7 @@ button:hover {
 
 .simulate-style {
   background-color: royalblue;
-  color: white;
   margin-left: 10px;
-  margin-top: 15px;
   font-size: 12px;
   white-space: normal; /* Allows text to wrap */
   overflow: hidden; /* Prevents text from overflowing the button */
@@ -130,13 +114,11 @@ button:hover {
   word-wrap: break-word; /* Ensures words can be broken if needed to fit */
   width: auto; /* Adjusts width to content up to max width */
   max-width: 100%; /* Ensures button doesn't exceed its container */
-  padding: 10px 25px; /* Adjust padding as needed */
+  padding: 8px 25px; /* Adjust padding as needed */
   line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */
 }
 
 .reset-style {
-  background-color: black;
-  color: white;
   margin-left: 10px;
   margin-top: 15px;
   font-size: 12px;
@@ -146,7 +128,7 @@ button:hover {
   word-wrap: break-word; /* Ensures words can be broken if needed to fit */
   width: auto; /* Adjusts width to content up to max width */
   max-width: 100%; /* Ensures button doesn't exceed its container */
-  padding: 10px 20px; /* Adjust padding as needed */
+  padding: 8px 20px; /* Adjust padding as needed */
   line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */
 }
 .text-checkbox-input {
@@ -159,8 +141,6 @@ button:hover {
 .config-button {
   margin-left: 1%;
   font-size: 12px;
-  border: 1px solid gray;
-
 }
 
 .icon-container img {
@@ -184,6 +164,8 @@ button:hover {
   margin-top: 10px;
   margin-left: 0px;
 }
+
+
 
 
 

@@ -1,9 +1,5 @@
 .centered-input-box {
-    background-color: black; /* Match the background color of the center sub-panel */
-    border: 1px solid white;
-    color: white;
     padding: 10px; /* Add padding for spacing */
-    outline: none;
     width: 95%;
     height: 90%; /* Adjust the height as needed */
     position: relative; /* Change to relative positioning */
@@ -11,8 +7,6 @@
 }
 
 .centered-input-box textarea {
-    background-color: black; /* Match the background color of the input box */
-    color: white; /* Change the text color to white */
     border: none; /* Remove the border */
     padding: 10px; /* Add padding inside the input */
     box-sizing: border-box; /* Include padding and border in the input's dimensions */

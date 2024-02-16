@@ -1,7 +1,7 @@
 import React from 'react';
 import './CSS/Left Sub Panel/dropdown-components.css'
 
-const YAxis = ({className, options, setOptions, dropdownStyle, withCheckboxes, func, dropdown_toolbar_buttons_style}) => {
+const YAxis = ({className, isDarkMode, options, setOptions, dropdownStyle, withCheckboxes, func, dropdown_toolbar_buttons_style}) => {
     const toggleOptionSpecific = (optionValue) => {
         setOptions((prevOptions) => ({
             ...prevOptions,
@@ -15,13 +15,14 @@ const YAxis = ({className, options, setOptions, dropdownStyle, withCheckboxes, f
         }
     };
     return (
-        <div className={className}>
+        <div className={className} >
             <div
                 style={{
                     ...dropdownStyle,
                     display: 'block',
                     maxHeight: '200px', // Ensure the dropdown has a maximum height
                     overflowY: 'scroll', // Add scroll if content overflows
+                    backgroundColor: isDarkMode ? "#242323" : "#c4c2c2"
                 }}
                 className="dropdown-list"
             >
@@ -34,11 +35,16 @@ const YAxis = ({className, options, setOptions, dropdownStyle, withCheckboxes, f
                                 checked={options[option]}
                                 onChange={() => toggleOptionSpecific(option)}
                             />
-                            <label htmlFor={`checkbox-${option}`}>{option}</label>
+                            <label
+                                htmlFor={`checkbox-${option}`}
+                                style={{ color: isDarkMode ? "white" : "black" }} // Adjust label color based on isDarkMode
+                            >
+                                {option}
+                            </label>
                         </div>
                     ))
                 ) : (
-                    <div className={className} style={dropdownStyle}>
+                    <div className={className}>
                         <div
                             style={{
                                 backgroundColor: '#1f1f1e',
@@ -50,6 +56,10 @@ const YAxis = ({className, options, setOptions, dropdownStyle, withCheckboxes, f
                             {options.map((item, index) => (
                                 <button
                                     key={index}
+                                    style={{
+                                        backgroundColor: '#1f1f1e',
+                                        color: 'white'
+                                    }}
                                     className={dropdown_toolbar_buttons_style}
                                     onClick={() => handleButtonClick(item)}
                                 >

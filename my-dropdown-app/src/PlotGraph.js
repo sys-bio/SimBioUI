@@ -1,7 +1,7 @@
 import React from 'react';
 import Plot from 'react-plotly.js';
 
-const PlotGraph = ({xData, yData1, yData2, rightPanelWidth, rightPanelHeight}) => {
+const PlotGraph = ({xData, yData1, yData2, rightPanelWidth, rightPanelHeight, isDarkMode}) => {
     return (
         <div>
             <Plot
@@ -12,6 +12,7 @@ const PlotGraph = ({xData, yData1, yData2, rightPanelWidth, rightPanelHeight}) =
                         type: 'scatter',
                         mode: 'lines+markers',
                         name: 'Line 1',
+                        marker: {color: isDarkMode ? 'black' : 'white'}, // Ensure visibility on dark background
                     },
                     {
                         x: xData,
@@ -19,26 +20,51 @@ const PlotGraph = ({xData, yData1, yData2, rightPanelWidth, rightPanelHeight}) =
                         type: 'scatter',
                         mode: 'lines+markers',
                         name: 'Line 2',
+                        marker: {color: 'red'}, // Ensure visibility on dark background
                     },
                 ]}
                 layout={{
                     width: rightPanelWidth * 0.95,
                     height: rightPanelHeight * 0.4,
-                    title: 'Transition of substances in chemical reaction',
+                    title: {
+                        text: 'Transition of substances in chemical reaction',
+                        font: {
+                            color: isDarkMode ? 'black' : 'white', // For visibility on dark background
+                        },
+                    },
+                    paper_bgcolor: isDarkMode ? 'white' : '#5e5d5d', // Dark background color
+                    plot_bgcolor: isDarkMode ? 'white' : '#5e5d5d', // Dark background color
                     xaxis: {
                         title: {
-                            text: 'X-axis Label', // Replace with your X-axis label
-                            standoff: 10 // Optional: adjust the space between the tick labels and the axis title
+                            text: 'X-axis Label',
+                            standoff: 10,
+                            font: {
+                                color: isDarkMode ? 'black' : 'white', // For visibility on dark background
+                            },
                         },
+                        tickfont: {
+                            color: isDarkMode ? 'black' : 'white', // For visibility on dark background
+                        },
+                        gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
+                        zerolinecolor: isDarkMode ? 'black' : 'white', // Color for x=0 line, match gridcolor for consistency
                     },
                     yaxis: {
                         title: {
-                            text: 'Entities', // Replace with your Y-axis label
-                            standoff: 10 // Optional: adjust the space between the tick labels and the axis title
+                            text: 'Entities',
+                            standoff: 10,
+                            font: {
+                                color: isDarkMode ? 'black' : 'white', // For visibility on dark background
+                            },
                         },
+                        tickfont: {
+                            color: isDarkMode ? 'black' : 'white', // For visibility on dark background
+                        },
+                        gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
+                        zerolinecolor: isDarkMode ? 'black' : 'white', // Color for y=0 line, match gridcolor for consistency
                     }
-                }}>
-            </Plot>
+                }}
+            />
+
         </div>
     );
 };

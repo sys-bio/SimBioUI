@@ -5,7 +5,7 @@
     height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
     overflow-y: auto;
     border-right: 1px solid gray; /* Add a right border with a color of your choice */
-    border-top: 1px solid white;
+    border-top: 1px solid gray;
     border-bottom: 1px solid gray; /* Add a bottom border */
     margin-top: 60px; /* Adjust the margin-top to move the sub-panel up */
     margin-bottom: 80px; /* Remove margin-bottom */
