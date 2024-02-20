@@ -14,9 +14,6 @@ import SimulationParameters from "./SimulationParameters";
 import YAxis from "./YAxis"
 import {FaBars, FaMoon, FaSun} from 'react-icons/fa'; // Replace 'fa' with the desired icon set
 const MIN_PANEL_WIDTH = 50;
-const MAX_LEFT_PANEL_WIDTH = 300;
-const MIN_RIGHT_PANEL_WIDTH = window.innerWidth * 0.3;
-const MIN_CENTER_PANEL_WIDTH = window.innerWidth * 0.2;
 const DropdownWithPopup = (
     { initialOptions = [],
         additionalElements = [],
@@ -29,15 +26,13 @@ const DropdownWithPopup = (
     const [selectedElements, setSelectedElements] = useState([]);
     const [showDropdownButtons, setShowDropdownButtons] = useState(false);
 
-    const [panelWidth, setPanelWidth] = useState(350); // Initial width of the left sub-panel
-    const leftPanelRef = useRef(null);
-
-    const [centerPanelWidth, setCenterPanelWidth] = useState(window.innerWidth * 0.47);
-
-    const [rightPanelWidth, setRightPanelWidth] = useState(window.innerWidth * 0.4); // Initial width of the right sub-panel
+    const leftPanelFixedWidth = 300; // Fixed width for the left panel
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [panelWidth, setPanelWidth] = useState(leftPanelFixedWidth);
+    const [centerPanelWidth, setCenterPanelWidth] = useState(0);
+    const [rightPanelWidth, setRightPanelWidth] = useState(0); // Initial width of the right sub-panel
     const rightPanelRef = useRef(null);
     const rightResizingRef = useRef(false);
-    const [showYAxis, setShowYAxis] = useState(false);
 
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [deleteMessage, setDeleteMessage] = useState('');
@@ -221,25 +216,58 @@ const DropdownWithPopup = (
 
     const handleRightResize = (e) => {
         if (rightResizingRef.current && rightPanelRef.current) {
-            const newWidth = rightPanelRef.current.getBoundingClientRect().right - e.clientX;
-            const adjustedWidth = Math.max(newWidth, MIN_RIGHT_PANEL_WIDTH);
+            // Calculate the new width of the right panel based on the mouse's X position,
+            // ensuring the left panel's fixed width is considered in the calculation.
+            let newRightPanelWidth = window.innerWidth - e.clientX - leftPanelFixedWidth;
 
-            // Calculate the potential new center panel width
-            const potentialCenterWidth = window.innerWidth - panelWidth - adjustedWidth;
 
-            // Check if the potential new center panel width is less than the minimum
-            if (potentialCenterWidth < MIN_CENTER_PANEL_WIDTH) {
-                // Set the center panel width to its minimum
-                setCenterPanelWidth(MIN_CENTER_PANEL_WIDTH);
-                // Adjust the right panel width accordingly to maintain the layout
-                setRightPanelWidth(window.innerWidth - panelWidth - MIN_CENTER_PANEL_WIDTH);
-            } else {
-                // Proceed as normal if the minimum size is not breached
-                setCenterPanelWidth(potentialCenterWidth);
-                setRightPanelWidth(adjustedWidth);
-            }
+            // Calculate the maximum allowable width for the right panel to ensure
+            // the center panel does not go below its minimum width.
+            // This is done by subtracting the left panel's fixed width and the minimum width
+            // for the center panel from the window's inner width.
+            const maxRightPanelWidth = window.innerWidth - leftPanelFixedWidth;
+
+            // Ensure the new width of the right panel does not exceed its maximum allowable width
+            // and does not fall below its minimum width constraint.
+            newRightPanelWidth = Math.max(Math.min(newRightPanelWidth, maxRightPanelWidth), 0);
+
+            // Set the new width for the right panel.
+            setRightPanelWidth(newRightPanelWidth);
+
+            // Calculate and update the center panel width, ensuring it also respects its minimum width.
+            // The calculation here ensures that the center panel's width is the remaining space
+            // between the fixed-width left panel and the resized right panel, but not less than its minimum width.
+            const newCenterPanelWidth = window.innerWidth - leftPanelFixedWidth - newRightPanelWidth;
+            // Ensure center panel width does not go below the minimum width.
+            const adjustedCenterPanelWidth = Math.max(newCenterPanelWidth, 0);
+            setCenterPanelWidth(adjustedCenterPanelWidth);
         }
     };
+
+
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+
+        // Recalculate panel widths
+        const calculatePanelWidths = () => {
+            const remainingWidth = windowWidth - panelWidth;
+            setCenterPanelWidth(remainingWidth * 0.5); // 50% of remaining width
+            setRightPanelWidth(remainingWidth * 0.5); // 50% of remaining width
+        };
+
+        // Listen for window resize events
+        window.addEventListener('resize', handleResize);
+
+        // Initial calculation and recalculation on window resize
+        calculatePanelWidths();
+
+        // Cleanup listener on component unmount
+        return () => window.removeEventListener('resize', handleResize);
+    }, [windowWidth, panelWidth]);
+
 
     const leftSubpanelStyle = {
         width: panelWidth,
@@ -262,13 +290,11 @@ const DropdownWithPopup = (
 
     const handleIconClick = (icon) => {
         if (icon === 'x-axis') {
-            setShowYAxis(false);
-
             // Apply the new width to the left panel
-            setPanelWidth(MAX_LEFT_PANEL_WIDTH);
+            setPanelWidth(leftPanelFixedWidth);
 
             // Adjust the center panel width accordingly
-            setCenterPanelWidth(window.innerWidth - rightPanelWidth - MAX_LEFT_PANEL_WIDTH);
+            setCenterPanelWidth(window.innerWidth - rightPanelWidth - leftPanelFixedWidth);
         }
         else if (icon === 'narrow') {
             setPanelWidth(MIN_PANEL_WIDTH);
@@ -322,7 +348,7 @@ const DropdownWithPopup = (
         <>
             <div className={`main-container ${isDarkMode ? 'dark-mode' : 'bright-mode'}`}>
                 <div className={"panels-container"}>
-                    <div ref={leftPanelRef} className="left-subpanel" style={leftSubpanelStyle}>
+                    <div className="left-subpanel" style={leftSubpanelStyle}>
                         {panelWidth > MIN_PANEL_WIDTH ? (
                             <><FaBars className={"axis-icon"} size="20" color={isDarkMode ? "white" : "black"}
                                       onClick={() => handleIconClick('narrow')}/>
@@ -490,7 +516,7 @@ const DropdownWithPopup = (
                                 onChange={handleTextareaChange}
                             />
                         </div>
-                        <div>
+                        <div className={"front-size-adjustment"}>
                             <label
                                 style={{
                                     color: isDarkMode ? "white" : "black",

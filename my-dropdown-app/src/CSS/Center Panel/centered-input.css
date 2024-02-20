@@ -3,7 +3,8 @@
     width: 95%;
     height: 90%; /* Adjust the height as needed */
     position: relative; /* Change to relative positioning */
-    margin-top: 30px;
+    margin-top: 20px;
+    overflow: hidden;
 }
 
 .centered-input-box textarea {

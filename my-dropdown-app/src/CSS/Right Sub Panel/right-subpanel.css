@@ -1,9 +1,9 @@
 .right-subpanel {
     position: relative;
-    padding: 10px;
+    padding: 5px;
     box-sizing: border-box;
     height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
-    overflow-y: auto;
+    overflow: hidden;
     border-right: 1px solid gray; /* Add a right border with a color of your choice */
     border-top: 1px solid gray;
     border-bottom: 1px solid gray; /* Add a bottom border */
@@ -14,8 +14,7 @@
 
 .plot-box{
     width: 100%;
-    margin-top: 20px;
-    margin-left: 20px;
+    margin-top: 20px
 }
 .text-checkbox-input-autoscale {
     margin-left: 25px;
