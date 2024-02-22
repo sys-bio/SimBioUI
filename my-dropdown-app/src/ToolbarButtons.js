@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import YAxis from "./YAxis";
+import DropdownContainers from "./DropdownContainers";
 
 class ToolbarDropdown extends Component {
     constructor(props) {
@@ -58,7 +58,7 @@ class ToolbarDropdown extends Component {
 
         if (activeToolbarButton === button && showDropdownToolbar) {
             return (
-                <YAxis
+                <DropdownContainers
                     className={containerClass}
                     options={items}
                     dropdownStyle={dropdownStyle}

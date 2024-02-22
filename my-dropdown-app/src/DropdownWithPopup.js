@@ -9,17 +9,34 @@ import './CSS/Center Panel/center-subpanel.css'
 import './CSS/Center Panel/centered-input.css'
 import './CSS/Right Sub Panel/right-subpanel.css'
 import './CSS/Left Top Corner/left-top-corner.css'
-import './SimulationParameters';
+import { useTabManager } from './useTabManager';
 import SimulationParameters from "./SimulationParameters";
-import YAxis from "./YAxis"
+import DropdownContainers from "./DropdownContainers"
 import {FaBars, FaMoon, FaSun} from 'react-icons/fa'; // Replace 'fa' with the desired icon set
+import { MdClose } from 'react-icons/md';
 const MIN_PANEL_WIDTH = 50;
+
 const DropdownWithPopup = (
     { initialOptions = [],
         additionalElements = [],
         xData = [],
         yData1 = [],
         yData2 = [] }) => {
+    const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(window.innerHeight - 100); // Subtract 100px or any other adjustments you need
+    useEffect(() => {
+        const handleResize = () => {
+            setCenterSubPanelHeight(window.innerHeight - 100); // Adjust this value based on your layout needs
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // Call handleResize initially to set the initial height
+        handleResize();
+
+        // Clean up event listener on component unmount
+        return () => window.removeEventListener('resize', handleResize);
+    }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+
     const [showDropdown, setShowDropdown] = useState(false);
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [options, setOptions] = useState(initialOptions);
@@ -87,6 +104,62 @@ const DropdownWithPopup = (
 
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
+
+    const initialTabData = { textContent: '', xData: [], yData1: [], yData2: [] };
+
+    // Use the custom hook for tab management
+    const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab } = useTabManager(initialTabData);
+    const confirmAndCloseTab = (tabId, event) => {
+        event.stopPropagation(); // Prevent the click from triggering any parent event
+        const isConfirmed = window.confirm("Do you really want to close this tab?");
+        if (isConfirmed) {
+            closeTab(tabId);
+        }
+    };
+
+    const renderTabs = () => (
+        <div className="tabs">
+            {tabs.map(tab => (
+                <button style={{backgroundColor: isDarkMode ? 'black' : '#c4c2c2',
+                        color: isDarkMode ? 'white' : 'black',
+                        border: isDarkMode ? '1px solid white' : '1px solid black'}}
+                        key={tab.id} onClick={() => switchTab(tab.id)} className={`tab-button ${tab.id === activeTabId ? 'active' : ''}`}>
+                    Untitled {tab.id}
+                    <MdClose onClick={(event) => confirmAndCloseTab(tab.id, event)} style={{ cursor: 'pointer', position: 'relative', top: '-10px', marginLeft: '55px'}} />
+                </button>
+            ))}
+            <button className={"plus-button"} onClick={addNewTab}>+</button>
+        </div>
+    );
+
+    // Render the content of the active tab
+    const renderActiveTabContent = () => {
+        const activeTab = tabs.find(tab => tab.id === activeTabId);
+        return activeTab ? (
+            <>
+                <div className={"centered-input-box"} style={{
+                    height: `${centerSubPanelHeight - 80}px`,
+                    width: `${centerPanelWidth - 42}px`,
+                    backgroundColor: isDarkMode ? "black" : "white",
+                    border: isDarkMode ? "white" : "black",
+                    outline: isDarkMode ? '1px solid white' : '1px solid black',
+                    marginLeft: '10px'
+                }}>
+                            <textarea
+                                style={{
+                                    fontSize: `${sizeOfInput}px`,
+                                    height: '100%',
+                                    backgroundColor: isDarkMode ? "black" : "white",
+                                    color: isDarkMode ? "white" : "black"
+                                }}
+                                value={activeTab.textContent || ""}
+                                onChange={handleTextareaChange}
+                            />
+                </div>
+            </>
+        ) : null;
+    };
+
     const toggleDarkMode = () => {
         setIsDarkMode(!isDarkMode);
     };
@@ -108,7 +181,10 @@ const DropdownWithPopup = (
         setGraphs(graphs.map(graph => ({...graph, showSettings: false})).concat(newGraph));
         setActiveGraphIndex(graphs.length); // Update the active graph index to the new graph
     };
+
     const handleTextareaChange = (event) => {
+        const newContent = event.target.value;
+        updateActiveTabContent(newContent);
         const updatedGraphs = graphs.map((graph, index) => {
             if (index === activeGraphIndex) {
                 return { ...graph, textContent: event.target.value };
@@ -218,7 +294,7 @@ const DropdownWithPopup = (
         if (rightResizingRef.current && rightPanelRef.current) {
             // Calculate the new width of the right panel based on the mouse's X position,
             // ensuring the left panel's fixed width is considered in the calculation.
-            let newRightPanelWidth = window.innerWidth - e.clientX - leftPanelFixedWidth;
+            let newRightPanelWidth = window.innerWidth - e.clientX;
 
 
             // Calculate the maximum allowable width for the right panel to ensure
@@ -244,8 +320,6 @@ const DropdownWithPopup = (
         }
     };
 
-
-
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
@@ -270,6 +344,7 @@ const DropdownWithPopup = (
 
 
     const leftSubpanelStyle = {
+        overflow: 'auto',
         width: panelWidth,
         backgroundColor: isDarkMode
             ? (panelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000')
@@ -277,6 +352,7 @@ const DropdownWithPopup = (
         border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
     };
     const rightSubpanelStyle = {
+        overflow: 'auto',
         width: rightPanelWidth,
         backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
         border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
@@ -344,6 +420,16 @@ const DropdownWithPopup = (
         </div>
     );
 
+    const dropdownToolbarStyle = {
+        backgroundColor: isDarkMode ? '#1f1f1e' : '#c4c2c2',
+        borderRadius: '6px',
+        border: '1px solid gray'
+    }
+    const dropdownToolbarButtonsStyle = {
+        backgroundColor: isDarkMode ? '#1f1f1e' : '#c4c2c2',
+        color: isDarkMode ? 'white' : 'black'
+    }
+
     return (
         <>
             <div className={`main-container ${isDarkMode ? 'dark-mode' : 'bright-mode'}`}>
@@ -360,7 +446,7 @@ const DropdownWithPopup = (
                                                 color: isDarkMode ? "white" : "black",
                                                 border: isDarkMode ? "1px solid gray" : "1px solid black"
                                             }}
-                                            >Config</button>
+                                    >Config</button>
                                 </div>
                                 <SimulationParameters
                                     className={"border-with-text-simulation"}
@@ -368,7 +454,7 @@ const DropdownWithPopup = (
                                 />
                                 <div className={"simulate-reset-buttons"}>
                                     <button className={"simulate-style"} style={{
-                                         color: isDarkMode ? "white" : "black"
+                                        color: isDarkMode ? "white" : "black"
                                     }}>Simulate</button>
                                     <button className={"reset-style"} style={{
                                         backgroundColor: isDarkMode ? "black" : "#c4c2c2",
@@ -428,7 +514,7 @@ const DropdownWithPopup = (
                                             setShowDropdownButtons(!showDropdownButtons)}} // Reuse showDropdown for Y-axis
                                     > [A] </button>
                                     {showDropdown && ( // This dropdown will show for both X and Y axis buttons
-                                        <YAxis
+                                        <DropdownContainers
                                             className={"dropdown-container"}
                                             isDarkMode={isDarkMode}
                                             withCheckboxes={true}
@@ -500,23 +586,13 @@ const DropdownWithPopup = (
                             </div>
                         </div>
                     )}
-                    <div className="center-subpanel" style={centerSubPanelStyle}>
-                        <div className={"centered-input-box"} style={{
-                            backgroundColor: isDarkMode ? "black" : "white",
-                            border: isDarkMode ? "white" : "black",
-                            outline: isDarkMode ? '1px solid white' : '1px solid black'
-                        }}>
-                            <textarea
-                                style={{
-                                    fontSize: `${sizeOfInput}px`,
-                                    backgroundColor: isDarkMode ? "black" : "white",
-                                    color: isDarkMode ? "white" : "black"
-                                }}
-                                value={graphs[activeGraphIndex]?.textContent || ""}
-                                onChange={handleTextareaChange}
-                            />
+
+                    <div className="center-subpanel" style={{...centerSubPanelStyle, height: `${centerSubPanelHeight}px`}}>
+                        {renderTabs()}
+                        <div className="tab-content">
+                            {renderActiveTabContent()}
                         </div>
-                        <div className={"front-size-adjustment"}>
+                        <div className={"front-size-adjustment"} style={{height: `${centerSubPanelHeight * 0.1}px`, marginLeft: '10px'}}>
                             <label
                                 style={{
                                     color: isDarkMode ? "white" : "black",
@@ -544,8 +620,10 @@ const DropdownWithPopup = (
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('File')}>File</button>
                             {activeToolbarButton === 'File' && showDropdownToolbar && (
-                                <YAxis
+                                <DropdownContainers
                                     className={"dropdown-file-container"}
+                                    dropdownToolbarStyle={dropdownToolbarStyle}
+                                    dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}
                                     options={fileItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
@@ -559,8 +637,10 @@ const DropdownWithPopup = (
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('Analysis')}>Analysis</button>
                             {activeToolbarButton === 'Analysis' && showDropdownToolbar && (
-                                <YAxis
+                                <DropdownContainers
                                     className={"dropdown-analysis-container"}
+                                    dropdownToolbarStyle={dropdownToolbarStyle}
+                                    dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}
                                     options={analysisItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
@@ -574,8 +654,10 @@ const DropdownWithPopup = (
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('Options')}>Options</button>
                             {activeToolbarButton === 'Options' && showDropdownToolbar && (
-                                <YAxis
+                                <DropdownContainers
                                     className={"dropdown-options-container"}
+                                    dropdownToolbarStyle={dropdownToolbarStyle}
+                                    dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}
                                     options={optionsItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
@@ -589,8 +671,10 @@ const DropdownWithPopup = (
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('Examples')}>Examples</button>
                             {activeToolbarButton === 'Examples' && showDropdownToolbar && (
-                                <YAxis
+                                <DropdownContainers
                                     className={"dropdown-examples-container"}
+                                    dropdownToolbarStyle={dropdownToolbarStyle}
+                                    dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}
                                     options={examplesItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
@@ -604,8 +688,10 @@ const DropdownWithPopup = (
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('Help')}>Help</button>
                             {activeToolbarButton === 'Help' && showDropdownToolbar && (
-                                <YAxis
+                                <DropdownContainers
                                     className={"dropdown-help-container"}
+                                    dropdownToolbarStyle={dropdownToolbarStyle}
+                                    dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}
                                     options={helpItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
@@ -631,7 +717,7 @@ const DropdownWithPopup = (
                         }}>New Graph</button>
                         <div className="graphs-container">
                             {graphs.map((graph, index) => (
-                                <div key={index} className={`graph-container ${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
+                                <div key={index} className={`${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
                                     <PlotGraph xData={graph.xData} yData1={graph.yData1} yData2={graph.yData2} rightPanelWidth={rightPanelWidth} rightPanelHeight={window.innerHeight} isDarkMode={isDarkMode}/>
                                     {graph.showSettings && (
                                         <div>

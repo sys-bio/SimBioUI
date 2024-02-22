@@ -1,6 +1,7 @@
 .right-subpanel {
     position: relative;
-    padding: 5px;
+    overflow: scroll;
+    padding: 1px;
     box-sizing: border-box;
     height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
     overflow: hidden;
@@ -44,5 +45,8 @@
     align-items: center; /* Centers items vertically */
     white-space: nowrap; /* Prevents the label text from wrapping */
     margin-right: 10px; /* Optional: Adds some space between multiple checkbox containers */
+}
+.graphs-container{
+    margin-left: 10px;
 }
 

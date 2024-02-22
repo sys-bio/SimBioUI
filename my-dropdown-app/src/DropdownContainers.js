@@ -1,7 +1,7 @@
 import React from 'react';
 import './CSS/Left Sub Panel/dropdown-components.css'
 
-const YAxis = ({className, isDarkMode, options, setOptions, dropdownStyle, withCheckboxes, func, dropdown_toolbar_buttons_style}) => {
+const DropdownContainers = ({className, dropdownToolbarStyle, dropdownToolbarButtonsStyle, isDarkMode, options, setOptions, dropdownStyle, withCheckboxes, func, dropdown_toolbar_buttons_style}) => {
     const toggleOptionSpecific = (optionValue) => {
         setOptions((prevOptions) => ({
             ...prevOptions,
@@ -46,20 +46,13 @@ const YAxis = ({className, isDarkMode, options, setOptions, dropdownStyle, withC
                 ) : (
                     <div className={className}>
                         <div
-                            style={{
-                                backgroundColor: '#1f1f1e',
-                                borderRadius: '6px',
-                                border: '1px solid gray'
-                            }}
+                            style={dropdownToolbarStyle}
                             className="dropdown-list-toolbar"
                         >
                             {options.map((item, index) => (
                                 <button
                                     key={index}
-                                    style={{
-                                        backgroundColor: '#1f1f1e',
-                                        color: 'white'
-                                    }}
+                                    style={dropdownToolbarButtonsStyle}
                                     className={dropdown_toolbar_buttons_style}
                                     onClick={() => handleButtonClick(item)}
                                 >
@@ -74,4 +67,4 @@ const YAxis = ({className, isDarkMode, options, setOptions, dropdownStyle, withC
     );
 };
 
-export default YAxis;
+export default DropdownContainers;

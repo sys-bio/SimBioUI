@@ -1,9 +1,6 @@
 .centered-input-box {
     padding: 10px; /* Add padding for spacing */
-    width: 95%;
-    height: 90%; /* Adjust the height as needed */
     position: relative; /* Change to relative positioning */
-    margin-top: 20px;
     overflow: hidden;
 }
 
@@ -17,3 +14,29 @@
     resize: none; /* Prevent resizing if you want a fixed size */
     overflow: auto; /* Handle scrolling for overflow text */
 }
+.tabs {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    overflow-x: auto; /* Allow horizontal scrolling */
+}
+
+.tab-button {
+    /* Define default button styles here */
+    padding: 4px 12px;
+    margin-left: 10px;
+    width: 80px;
+    height: 20px
+}
+
+.tab-button.active {
+    /* Define styles for active tab button here */
+    background-color: black;
+    color: white;
+}
+.plus-button {
+    border: 1px solid #ccc;
+    padding: 2px 5px;
+    width: 20px;
+    height: 20px
+}
+
