@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/SimBioUI/static/css/main.efde8a50.css",
-    "main.js": "/SimBioUI/static/js/main.e2936deb.js",
-    "static/js/787.f556b7f6.chunk.js": "/SimBioUI/static/js/787.f556b7f6.chunk.js",
+    "main.css": "/SimBioUI/static/css/main.117b9396.css",
+    "main.js": "/SimBioUI/static/js/main.cc4289cf.js",
+    "static/js/787.6c0c60ae.chunk.js": "/SimBioUI/static/js/787.6c0c60ae.chunk.js",
     "index.html": "/SimBioUI/index.html",
-    "main.efde8a50.css.map": "/SimBioUI/static/css/main.efde8a50.css.map",
-    "main.e2936deb.js.map": "/SimBioUI/static/js/main.e2936deb.js.map",
-    "787.f556b7f6.chunk.js.map": "/SimBioUI/static/js/787.f556b7f6.chunk.js.map"
+    "main.117b9396.css.map": "/SimBioUI/static/css/main.117b9396.css.map",
+    "main.cc4289cf.js.map": "/SimBioUI/static/js/main.cc4289cf.js.map",
+    "787.6c0c60ae.chunk.js.map": "/SimBioUI/static/js/787.6c0c60ae.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.efde8a50.css",
-    "static/js/main.e2936deb.js"
+    "static/css/main.117b9396.css",
+    "static/js/main.cc4289cf.js"
   ]
 }
