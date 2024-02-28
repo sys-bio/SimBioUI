@@ -21,7 +21,6 @@ class DropdownContainers extends Component {
     };
 
     handleButtonClick = (item) => {
-        console.log("Button clicked:");
         if (item === "Import SBML...") {
             this.fileInputRef.current.click();
         } else {
@@ -74,7 +73,6 @@ class DropdownContainers extends Component {
                         ))
                     ) : (
                         <div className={className}>
-                        <button onClick={() => console.log("Hi")}>Test Button</button>
                             <div
                                 style={dropdownToolbarStyle}
                                 className="dropdown-list-toolbar"

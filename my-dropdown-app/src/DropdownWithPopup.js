@@ -599,25 +599,16 @@ const DropdownWithPopup = (
                                 backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('File')}>File</button>
-                            {activeToolbarButton === 'File' && showDropdownToolbar && (
-                                <div className={"dropdown-file-container"}>
-                                   <button onClick={() => console.log("Hi")}>Test Button</button>
-                                        <div
-                                            style={dropdownToolbarStyle}
-                                            className="dropdown-list-toolbar"
-                                        >
-                                            {fileItems.map((item, index) => (
-                                                <button
-                                                    key={index}
-                                                    style={dropdownToolbarButtonsStyle}
-                                                    className={"dropdown-toolbar-button-file"}
-                                                    onClick={() => this.handleButtonClick(item.label)}
-                                                >
-                                                    {item.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
+                            {activeToolbarButton === 'File' && (
+                                <DropdownContainers
+                                    className={"dropdown-file-container"}
+                                    dropdownToolbarStyle={dropdownToolbarStyle}
+                                    dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}
+                                    options={fileItems}
+                                    dropdownStyle={dropdownStyle}
+                                    withCheckboxes={false}
+                                    dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
+                                />
                             )}
                         </div>
                         <div className={"container-of-toolbar-and-dropdown"}>
