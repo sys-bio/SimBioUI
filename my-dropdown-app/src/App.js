@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import DropdownWithPopup from './DropdownWithPopup';
-import {createCpsModule} from './copasijs'
-import {COPASI} from './copasi'
+import createCpsModule from './copasijs.js';
+import COPASI from './copasi.js';
 
 export class App extends React.Component  {
 
@@ -36,17 +36,12 @@ export class App extends React.Component  {
         const initialOptions = { '[A]': true, '[B]': true, '[C]': true };
         const additionalElements = ['[A]', '[B]', '[C]', 'S[2]', 'S[4]', 'S[6]', 'S[8]', 'S[10]', 'S[12]', 'S[14]',
             'J_0', 'J_1', 'J_2', 'J_3', 'J_4', 'J_5'];
-        const xData = [1, 2, 3, 4, 5];
-        const yData1 = [10, 12, 8, 15, 7];
-        const yData2 = [5, 8, 10, 6, 9];
         return (
             <div className="App">
                 <DropdownWithPopup
                     initialOptions={initialOptions}
                     additionalElements={additionalElements}
-                    xData={xData}
-                    yData1={yData1}
-                    yData2={yData2}
+                    data={this.state.data}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>

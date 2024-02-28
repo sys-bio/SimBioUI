@@ -14,14 +14,13 @@ import SimulationParameters from "./SimulationParameters";
 import DropdownContainers from "./DropdownContainers"
 import {FaBars, FaMoon, FaSun} from 'react-icons/fa'; // Replace 'fa' with the desired icon set
 import { MdClose } from 'react-icons/md';
+import {da} from "plotly.js/src/traces/carpet/attributes";
 const MIN_PANEL_WIDTH = 50;
 
 const DropdownWithPopup = (
     { initialOptions = [],
         additionalElements = [],
-        xData = [],
-        yData1 = [],
-        yData2 = [] }) => {
+        data}) => {
     const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(window.innerHeight - 100); // Subtract 100px or any other adjustments you need
     useEffect(() => {
         const handleResize = () => {
@@ -54,7 +53,6 @@ const DropdownWithPopup = (
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [deleteMessage, setDeleteMessage] = useState('');
     const fileItems = [
-        { label: 'New Graph'},
         { label: 'New File'},
         { label: 'New Window'},
         { label: 'Open...'},
@@ -88,9 +86,7 @@ const DropdownWithPopup = (
 
     const [graphs, setGraphs] = useState([{
         // Initial graph data
-        xData: [],
-        yData1: [],
-        yData2: [],
+        data: data,
         xMin: "0.00",
         yMin: "10.00",
         xMax: "0.00",
@@ -105,7 +101,7 @@ const DropdownWithPopup = (
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
 
-    const initialTabData = { textContent: '', xData: [], yData1: [], yData2: [] };
+    const initialTabData = { textContent: '', data: data};
 
     // Use the custom hook for tab management
     const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab } = useTabManager(initialTabData);
@@ -165,22 +161,6 @@ const DropdownWithPopup = (
     };
     const modeIcon = isDarkMode ? <FaSun /> : <FaMoon />;
     const modeTooltip = isDarkMode ? "Switch to Bright Mode" : "Switch to Dark Mode";
-    const addNewGraph = () => {
-        const newGraph = {
-            xData: [],
-            yData1: [],
-            yData2: [],
-            xMin: "0.00",
-            yMin: "10.00",
-            xMax: "0.00",
-            yMax: "10.00",
-            showSettings: true, // Show settings for the new graph
-            textContent: ""
-        };
-        // Set showSettings to false for all existing graphs and add the new graph
-        setGraphs(graphs.map(graph => ({...graph, showSettings: false})).concat(newGraph));
-        setActiveGraphIndex(graphs.length); // Update the active graph index to the new graph
-    };
 
     const handleTextareaChange = (event) => {
         const newContent = event.target.value;
@@ -620,15 +600,24 @@ const DropdownWithPopup = (
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('File')}>File</button>
                             {activeToolbarButton === 'File' && showDropdownToolbar && (
-                                <DropdownContainers
-                                    className={"dropdown-file-container"}
-                                    dropdownToolbarStyle={dropdownToolbarStyle}
-                                    dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}
-                                    options={fileItems}
-                                    dropdownStyle={dropdownStyle}
-                                    withCheckboxes={false}
-                                    dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
-                                />
+                                <div className={"dropdown-file-container"}>
+                                   <button onClick={() => console.log("Hi")}>Test Button</button>
+                                        <div
+                                            style={dropdownToolbarStyle}
+                                            className="dropdown-list-toolbar"
+                                        >
+                                            {fileItems.map((item, index) => (
+                                                <button
+                                                    key={index}
+                                                    style={dropdownToolbarButtonsStyle}
+                                                    className={"dropdown-toolbar-button-file"}
+                                                    onClick={() => this.handleButtonClick(item.label)}
+                                                >
+                                                    {item.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                             )}
                         </div>
                         <div className={"container-of-toolbar-and-dropdown"}>
@@ -711,14 +700,10 @@ const DropdownWithPopup = (
                             resizeStyle={"resize-right-handle"}
                             isRightPanel={true}
                         />
-                        <button onClick={addNewGraph} style={{
-                            backgroundColor: isDarkMode ? 'black' : '#c4c2c2',
-                            color: isDarkMode ? 'white' : 'black'
-                        }}>New Graph</button>
                         <div className="graphs-container">
                             {graphs.map((graph, index) => (
                                 <div key={index} className={`${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
-                                    <PlotGraph xData={graph.xData} yData1={graph.yData1} yData2={graph.yData2} rightPanelWidth={rightPanelWidth} rightPanelHeight={window.innerHeight} isDarkMode={isDarkMode}/>
+                                    <PlotGraph data={data} rightPanelWidth={rightPanelWidth} rightPanelHeight={window.innerHeight} isDarkMode={isDarkMode}/>
                                     {graph.showSettings && (
                                         <div>
                                             <div style={{ display: 'flex', marginTop: '10px' }}>
