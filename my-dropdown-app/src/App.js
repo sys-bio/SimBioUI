@@ -16,7 +16,7 @@ export class App extends React.Component  {
 
     loadCopasiAPI = async () => {
         try {
-            const response = await fetch("brusselator.cps");
+            const response = await fetch(`${process.env.PUBLIC_URL}/brusselator.cps`);
             const brusselator = await response.text();
 
             const cps = await createCpsModule();

@@ -95,8 +95,7 @@ html {
     font-size: 13px;
 }
 .dropdown-toolbar-button-file:nth-child(6)::after,
-.dropdown-toolbar-button-file:nth-child(8)::after,
-.dropdown-toolbar-button-file:nth-child(9)::after{
+.dropdown-toolbar-button-file:nth-child(8)::after{
     content: '';
     display: block;
     background-color: gray;

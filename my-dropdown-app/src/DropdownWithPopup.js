@@ -50,6 +50,8 @@ const DropdownWithPopup = (
     const rightPanelRef = useRef(null);
     const rightResizingRef = useRef(false);
 
+    const fileDropdownRef = useRef(null);
+
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [deleteMessage, setDeleteMessage] = useState('');
     const fileItems = [
@@ -363,21 +365,27 @@ const DropdownWithPopup = (
     };
 
     const handleToolbarButtons = (menu) => {
-        setShowDropdownToolbar(menu !== activeToolbarButton || !showDropdownToolbar);
+        setShowDropdownToolbar(menu !== activeToolbarButton || !setShowDropdownToolbar);
         setActiveToolbarButton(menu === activeToolbarButton ? '' : menu);
     };
 
     useEffect(() => {
-        const handleClickOutside = () => {
-            setShowDropdownToolbar(false);
-        };
+      const handleClickOutside = (event) => {
+        if (showDropdownToolbar && fileDropdownRef.current) {
+            if (!fileDropdownRef.current.contains(event.target)) {
+                setShowDropdownToolbar(false);
+            }
+        }
+      };
 
-        document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+      return () => {
+        // Clean up event listener
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [showDropdownToolbar]); // Dependency on showDropdownToolbar to add/remove the listener appropriately
+
 
     const NumberInput = ({ label, value, onChange }) => (
         <div style={{ marginBottom: '10px' }}>
@@ -594,12 +602,12 @@ const DropdownWithPopup = (
                     </div>
 
                     <div className="top-menu">
-                        <div className={"container-of-toolbar-and-dropdown"}>
+                        <div ref={fileDropdownRef} className={"container-of-toolbar-and-dropdown"}>
                             <button className="top-menu-button" style={{
                                 backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                                 color: isDarkMode ? "white" : "black"
                             }} onClick={() => handleToolbarButtons('File')}>File</button>
-                            {activeToolbarButton === 'File' && (
+                            {activeToolbarButton === 'File' && showDropdownToolbar && (
                                 <DropdownContainers
                                     className={"dropdown-file-container"}
                                     dropdownToolbarStyle={dropdownToolbarStyle}

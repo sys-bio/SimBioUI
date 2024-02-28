@@ -23,6 +23,8 @@ class DropdownContainers extends Component {
     handleButtonClick = (item) => {
         if (item === "Import SBML...") {
             this.fileInputRef.current.click();
+        } else if (item === "New Window") {
+            window.open('https://sys-bio.github.io/SimBioUI/', '_blank');
         } else {
             if (typeof this.props.func === 'function') {
                 this.props.func(item);
