@@ -30,7 +30,7 @@ class PlotGraph extends Component {
                     ]}
                     layout={{
                         width: rightPanelWidth * 0.95,
-                        height: rightPanelHeight * 0.4,
+                        height: rightPanelHeight * 0.45,
                         title: {
                             text: 'Transition of substances in chemical reaction',
                             font: {

@@ -16,6 +16,7 @@ import {FaBars, FaMoon, FaSun} from 'react-icons/fa'; // Replace 'fa' with the d
 import { MdClose } from 'react-icons/md';
 import {da} from "plotly.js/src/traces/carpet/attributes";
 const MIN_PANEL_WIDTH = 50;
+const BREAKPOINT_WIDTH = 960;
 
 const DropdownWithPopup = (
     { initialOptions = [],
@@ -24,15 +25,18 @@ const DropdownWithPopup = (
     const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(window.innerHeight - 100); // Subtract 100px or any other adjustments you need
     useEffect(() => {
         const handleResize = () => {
-            setCenterSubPanelHeight(window.innerHeight - 100); // Adjust this value based on your layout needs
+            // Update the state based on the resized window dimensions
+            if (window.innerWidth < BREAKPOINT_WIDTH) {
+                setCenterSubPanelHeight((window.innerHeight - 100) / 2);
+            } else {
+                setCenterSubPanelHeight(window.innerHeight - 100);
+            }
         };
 
+        // Add event listener for window resize
         window.addEventListener('resize', handleResize);
 
-        // Call handleResize initially to set the initial height
-        handleResize();
-
-        // Clean up event listener on component unmount
+        // Remove event listener on cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
@@ -146,7 +150,6 @@ const DropdownWithPopup = (
                             <textarea
                                 style={{
                                     fontSize: `${sizeOfInput}px`,
-                                    height: '100%',
                                     backgroundColor: isDarkMode ? "black" : "white",
                                     color: isDarkMode ? "white" : "black"
                                 }}
@@ -274,27 +277,12 @@ const DropdownWithPopup = (
 
     const handleRightResize = (e) => {
         if (rightResizingRef.current && rightPanelRef.current) {
-            // Calculate the new width of the right panel based on the mouse's X position,
-            // ensuring the left panel's fixed width is considered in the calculation.
             let newRightPanelWidth = window.innerWidth - e.clientX;
-
-
-            // Calculate the maximum allowable width for the right panel to ensure
-            // the center panel does not go below its minimum width.
-            // This is done by subtracting the left panel's fixed width and the minimum width
-            // for the center panel from the window's inner width.
             const maxRightPanelWidth = window.innerWidth - leftPanelFixedWidth;
-
-            // Ensure the new width of the right panel does not exceed its maximum allowable width
-            // and does not fall below its minimum width constraint.
             newRightPanelWidth = Math.max(Math.min(newRightPanelWidth, maxRightPanelWidth), 0);
 
             // Set the new width for the right panel.
             setRightPanelWidth(newRightPanelWidth);
-
-            // Calculate and update the center panel width, ensuring it also respects its minimum width.
-            // The calculation here ensures that the center panel's width is the remaining space
-            // between the fixed-width left panel and the resized right panel, but not less than its minimum width.
             const newCenterPanelWidth = window.innerWidth - leftPanelFixedWidth - newRightPanelWidth;
             // Ensure center panel width does not go below the minimum width.
             const adjustedCenterPanelWidth = Math.max(newCenterPanelWidth, 0);
@@ -302,16 +290,25 @@ const DropdownWithPopup = (
         }
     };
 
+    const [layoutVertical, setLayoutVertical] = useState(window.innerWidth <= BREAKPOINT_WIDTH);
+
     useEffect(() => {
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
+            setLayoutVertical(window.innerWidth <= BREAKPOINT_WIDTH);
         };
 
         // Recalculate panel widths
         const calculatePanelWidths = () => {
-            const remainingWidth = windowWidth - panelWidth;
-            setCenterPanelWidth(remainingWidth * 0.5); // 50% of remaining width
-            setRightPanelWidth(remainingWidth * 0.5); // 50% of remaining width
+            if (layoutVertical) {
+                const remainingWidth = windowWidth - panelWidth;
+                setCenterPanelWidth(remainingWidth); // 50% of remaining width
+                setRightPanelWidth(remainingWidth); // 50% of remaining width
+            } else {
+                const remainingWidth = windowWidth - panelWidth;
+                setCenterPanelWidth(remainingWidth * 0.5); // 50% of remaining width
+                setRightPanelWidth(remainingWidth * 0.5); // 50% of remaining width
+            }
         };
 
         // Listen for window resize events
@@ -324,27 +321,86 @@ const DropdownWithPopup = (
         return () => window.removeEventListener('resize', handleResize);
     }, [windowWidth, panelWidth]);
 
+        const getPanelStyles = () => {
+            if (layoutVertical) {
+                return {
+                    leftSubpanelStyle: {
+                        overflow: 'scroll',
+                        width: panelWidth,
+                        backgroundColor: isDarkMode
+                            ? (panelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000')
+                            : (panelWidth > MIN_PANEL_WIDTH ? 'white' : '#c4c2c2'), // Adjust colors for dark/bright mode
+                        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
+                    },
+                    centerSubPanelStyle: {
+                        // Adjust styles for center panel when stacked vertically
+                        width: centerPanelWidth,
+                        height: window.innerHeight / 2,
+                        marginTop: '60px',
+                        order: 1 // Place below the left panel
+                    },
+                    rightSubpanelStyle: {
+                        overflow: 'scroll',
+                        width: rightPanelWidth,
+                        height: (window.innerHeight - 100) / 2,
+                        marginBottom: '40px',
+                        order: 2 // Place below the center panel
+                    }
+                };
+            } else {
+                // Original styles for horizontal layout
+                return {
+                    leftSubpanelStyle: {
+                        overflow: 'scroll',
+                        width: panelWidth,
 
-    const leftSubpanelStyle = {
-        overflow: 'auto',
-        width: panelWidth,
-        backgroundColor: isDarkMode
-            ? (panelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000')
-            : (panelWidth > MIN_PANEL_WIDTH ? 'white' : '#c4c2c2'), // Adjust colors for dark/bright mode
-        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
-    };
-    const rightSubpanelStyle = {
-        overflow: 'auto',
-        width: rightPanelWidth,
-        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
-        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
-    };
+                        backgroundColor: isDarkMode
+                            ? (panelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000')
+                            : (panelWidth > MIN_PANEL_WIDTH ? 'white' : '#c4c2c2'), // Adjust colors for dark/bright mode
+                        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
+                    },
+                    centerSubPanelStyle: {
+                        width: centerPanelWidth,
+                        height: (window.innerHeight - 100),
+                        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
+                        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d",
+                        marginTop: "60px", // Adjust the margin-top to move the sub-panel up
+                        marginBottom: "80px" // Remove margin-bottom
+                    },
+                    rightSubpanelStyle: {
+                        overflow: 'scroll',
+                        width: rightPanelWidth,
+                        height: (window.innerHeight - 100),
+                        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
+                        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d",
+                        marginTop: "60px", /* Adjust the margin-top to move the sub-panel up */
+                        marginBottom: "80px" /* Remove margin-bottom */
+                    }
+                };
+            }
+        };
+    const { leftSubpanelStyle, centerSubPanelStyle, rightSubpanelStyle } = getPanelStyles();
 
-    const centerSubPanelStyle = {
-        width: centerPanelWidth,
-        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
-        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
-    }
+//    const leftSubpanelStyle = {
+//        overflow: 'auto',
+//        width: panelWidth,
+//        backgroundColor: isDarkMode
+//            ? (panelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000')
+//            : (panelWidth > MIN_PANEL_WIDTH ? 'white' : '#c4c2c2'), // Adjust colors for dark/bright mode
+//        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
+//    };
+//    const rightSubpanelStyle = {
+//        overflow: 'auto',
+//        width: rightPanelWidth,
+//        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
+//        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
+//    };
+//
+//    const centerSubPanelStyle = {
+//        width: centerPanelWidth,
+//        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
+//        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
+//    }
 
     const handleIconClick = (icon) => {
         if (icon === 'x-axis') {
@@ -421,160 +477,159 @@ const DropdownWithPopup = (
     return (
         <>
             <div className={`main-container ${isDarkMode ? 'dark-mode' : 'bright-mode'}`}>
-                <div className={"panels-container"}>
-                    <div className="left-subpanel" style={leftSubpanelStyle}>
-                        {panelWidth > MIN_PANEL_WIDTH ? (
-                            <><FaBars className={"axis-icon"} size="20" color={isDarkMode ? "white" : "black"}
-                                      onClick={() => handleIconClick('narrow')}/>
-                                <div className={"text-simulation"} style={{ color: isDarkMode ? "white" : "black" }}>
-                                    Time Course Simulation
-                                    <button className={"config-button"}
+            <div className="left-subpanel" style={leftSubpanelStyle}>
+                    {panelWidth > MIN_PANEL_WIDTH ? (
+                        <><FaBars className={"axis-icon"} size="20" color={isDarkMode ? "white" : "black"}
+                                  onClick={() => handleIconClick('narrow')}/>
+                            <div className={"text-simulation"} style={{ color: isDarkMode ? "white" : "black" }}>
+                                Time Course Simulation
+                                <button className={"config-button"}
+                                        style={{
+                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                            color: isDarkMode ? "white" : "black",
+                                            border: isDarkMode ? "1px solid gray" : "1px solid black"
+                                        }}
+                                >Config</button>
+                            </div>
+                            <SimulationParameters
+                                className={"border-with-text-simulation"}
+                                isDarkMode={isDarkMode}
+                            />
+                            <div className={"simulate-reset-buttons"}>
+                                <button className={"simulate-style"} style={{
+                                    color: isDarkMode ? "white" : "black"
+                                }}>Simulate</button>
+                                <button className={"reset-style"} style={{
+                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                    color: isDarkMode ? "white" : "black"
+                                }}
+                                >Reset</button>
+                            </div>
+                            <div className="text-checkbox-input">
+                                <label style={{
+                                    color: isDarkMode ? "white" : "black"
+                                }}>
+                                    <input
+                                        className={"checkbox-input"}
+                                        type="checkbox"
+                                        onChange={(e) => {
+                                            // Handle checkbox change here
+                                            const isChecked = e.target.checked;
+                                            // You can use the checkbox state as needed
+                                        }}
+                                    />
+                                    Always reset initial conditions
+                                </label>
+                            </div>
+                            <div className="border-with-text" style={{
+                                border: isDarkMode ? "1px solid white" : "1px solid black"
+                            }}>
+                                <span className="text-on-border" style={{
+                                    backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                                    color: isDarkMode ? "white" : "black"
+                                }}>X Axis</span>
+                                <button
+                                    className="button-style"
+                                    style={{
+                                        backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+                                        color: isDarkMode ? "white" : "black",
+                                        border: isDarkMode ? "1px solid gray" : "1px solid black"
+                                    }}
+                                > Time </button>
+                            </div>
+
+                            <div className="border-with-text" style={{
+                                border: isDarkMode ? "1px solid white" : "1px solid black"
+                            }}>
+                                <span className="text-on-border" style={{
+                                    backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                                    color: isDarkMode ? "white" : "black"
+                                }}>Y Axis</span>
+                                <button
+                                    className="button-style"
+                                    style={{
+                                        backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+                                        color: isDarkMode ? "white" : "black",
+                                        border: isDarkMode ? "1px solid gray" : "1px solid black"
+                                    }}
+                                    onClick={() => {
+                                        setShowDropdown(!showDropdown);
+                                        setShowDropdownButtons(!showDropdownButtons)}} // Reuse showDropdown for Y-axis
+                                > [A] </button>
+                                {showDropdown && ( // This dropdown will show for both X and Y axis buttons
+                                    <DropdownContainers
+                                        className={"dropdown-container"}
+                                        isDarkMode={isDarkMode}
+                                        withCheckboxes={true}
+                                        options={options}
+                                        setOptions={setOptions}
+                                        dropdownStyle={dropdownStyle}
+                                    />
+                                )}
+                                {showDropdownButtons && (
+                                    <div>
+                                        <button
                                             style={{
                                                 backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                                color: isDarkMode ? "white" : "black",
-                                                border: isDarkMode ? "1px solid gray" : "1px solid black"
-                                            }}
-                                    >Config</button>
-                                </div>
-                                <SimulationParameters
-                                    className={"border-with-text-simulation"}
-                                    isDarkMode={isDarkMode}
-                                />
-                                <div className={"simulate-reset-buttons"}>
-                                    <button className={"simulate-style"} style={{
-                                        color: isDarkMode ? "white" : "black"
-                                    }}>Simulate</button>
-                                    <button className={"reset-style"} style={{
-                                        backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                        color: isDarkMode ? "white" : "black"
-                                    }}
-                                    >Reset</button>
-                                </div>
-                                <div className="text-checkbox-input">
-                                    <label style={{
-                                        color: isDarkMode ? "white" : "black"
-                                    }}>
-                                        <input
-                                            className={"checkbox-input"}
-                                            type="checkbox"
-                                            onChange={(e) => {
-                                                // Handle checkbox change here
-                                                const isChecked = e.target.checked;
-                                                // You can use the checkbox state as needed
-                                            }}
-                                        />
-                                        Always reset initial conditions
-                                    </label>
-                                </div>
-                                <div className="border-with-text" style={{
-                                    border: isDarkMode ? "1px solid white" : "1px solid black"
-                                }}>
-                                    <span className="text-on-border" style={{
-                                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-                                        color: isDarkMode ? "white" : "black"
-                                    }}>X Axis</span>
-                                    <button
-                                        className="button-style"
-                                        style={{
-                                            backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
-                                            color: isDarkMode ? "white" : "black",
-                                            border: isDarkMode ? "1px solid gray" : "1px solid black"
-                                        }}
-                                    > Time </button>
-                                </div>
-
-                                <div className="border-with-text" style={{
-                                    border: isDarkMode ? "1px solid white" : "1px solid black"
-                                }}>
-                                    <span className="text-on-border" style={{
-                                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-                                        color: isDarkMode ? "white" : "black"
-                                    }}>Y Axis</span>
-                                    <button
-                                        className="button-style"
-                                        style={{
-                                            backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
-                                            color: isDarkMode ? "white" : "black",
-                                            border: isDarkMode ? "1px solid gray" : "1px solid black"
-                                        }}
-                                        onClick={() => {
-                                            setShowDropdown(!showDropdown);
-                                            setShowDropdownButtons(!showDropdownButtons)}} // Reuse showDropdown for Y-axis
-                                    > [A] </button>
-                                    {showDropdown && ( // This dropdown will show for both X and Y axis buttons
-                                        <DropdownContainers
-                                            className={"dropdown-container"}
-                                            isDarkMode={isDarkMode}
-                                            withCheckboxes={true}
-                                            options={options}
-                                            setOptions={setOptions}
-                                            dropdownStyle={dropdownStyle}
-                                        />
-                                    )}
-                                    {showDropdownButtons && (
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={selectAllOptions}>Select all</button>
+                                        <button
+                                            style={{
+                                                backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={unselectAllOptions}>Unselect all</button>
+                                        <button
+                                            style={{
+                                                backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={deleteOptions}>Delete</button>
                                         <div>
-                                            <button
-                                                style={{
-                                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                                    color: isDarkMode ? "white" : "black"
-                                                }} onClick={selectAllOptions}>Select all</button>
-                                            <button
-                                                style={{
-                                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                                    color: isDarkMode ? "white" : "black"
-                                                }} onClick={unselectAllOptions}>Unselect all</button>
-                                            <button
-                                                style={{
-                                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                                    color: isDarkMode ? "white" : "black"
-                                                }} onClick={deleteOptions}>Delete</button>
-                                            <div>
-                                                {deleteMessage && <div className="delete-message" style={{
-                                                    color: isDarkMode ? "white" : "black"
-                                                }}>{deleteMessage}</div>}
-                                            </div>
-                                            <button
-                                                style={{
-                                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                                    color: isDarkMode ? "white" : "black"
-                                                }} onClick={() => setShowMoreOptions(true)}>More options</button>
+                                            {deleteMessage && <div className="delete-message" style={{
+                                                color: isDarkMode ? "white" : "black"
+                                            }}>{deleteMessage}</div>}
                                         </div>
-                                    )}
-                                </div>
-                            </>
-                        ) : (
-                            <div className={"parameter-icon"}>
-                                <FaBars className={"axis-icon"} size="25" color="white" onClick={() => handleIconClick('x-axis')}/>
+                                        <button
+                                            style={{
+                                                backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={() => setShowMoreOptions(true)}>More options</button>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
-                    {showMoreOptions && (
-                        <div className="popup">
-                            <div className="popup-left">
-                                {additionalElements.map((element) => (
-                                    <button key={element} onClick={() => addElementToSelected(element)}>
-                                        {element}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="popup-right">
-                                <div className={"small-text"}>
-                                    {selectedElements.map((element) => (
-                                        <div key={element}>{element}</div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="popup-top">
-                                <button onClick={addAllElements}>Add All</button>
-                                <button onClick={clearAllElements}>Clear All</button>
-                            </div>
-                            <div className="popup-bottom">
-                                <button onClick={applySelectedElements}>Apply</button>
-                                <button onClick={closePopup}>Close</button>
-                            </div>
+                        </>
+                    ) : (
+                        <div className={"parameter-icon"}>
+                            <FaBars className={"axis-icon"} size="25" color="white" onClick={() => handleIconClick('x-axis')}/>
                         </div>
                     )}
-
+                </div>
+                {showMoreOptions && (
+                    <div className="popup">
+                        <div className="popup-left">
+                            {additionalElements.map((element) => (
+                                <button key={element} onClick={() => addElementToSelected(element)}>
+                                    {element}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="popup-right">
+                            <div className={"small-text"}>
+                                {selectedElements.map((element) => (
+                                    <div key={element}>{element}</div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="popup-top">
+                            <button onClick={addAllElements}>Add All</button>
+                            <button onClick={clearAllElements}>Clear All</button>
+                        </div>
+                        <div className="popup-bottom">
+                            <button onClick={applySelectedElements}>Apply</button>
+                            <button onClick={closePopup}>Close</button>
+                        </div>
+                    </div>
+                )}
+                <div className={"panels-container"} style={{ flexDirection: layoutVertical ? 'column' : 'row', width: `${window.innerWidth - panelWidth}px`}}>
                     <div className="center-subpanel" style={{...centerSubPanelStyle, height: `${centerSubPanelHeight}px`}}>
                         {renderTabs()}
                         <div className="tab-content">
@@ -600,8 +655,98 @@ const DropdownWithPopup = (
                             />
                         </div>
                     </div>
+                    <div ref={rightPanelRef} className="right-subpanel" style={rightSubpanelStyle}>
+                        {!layoutVertical && (
+                                <ResizingHandle
+                                    panelRef={rightPanelRef}
+                                    resizingRef={rightResizingRef}
+                                    handleResize={handleRightResize}
+                                    resizeStyle={"resize-right-handle"}
+                                    isRightPanel={true}
+                                />
+                        )}
+                        <div className="graphs-container">
+                            {graphs.map((graph, index) => (
+                                <div key={index} className={`${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
+                                    <PlotGraph
+                                        data={data}
+                                        rightPanelWidth={rightPanelWidth}
+                                        rightPanelHeight={window.innerHeight}
+                                        isDarkMode={isDarkMode}/>
+                                    {graph.showSettings && (
+                                        <div>
+                                            <div style={{ display: 'flex', marginTop: '10px' }}>
+                                                <div style={{ marginRight: '10px' }}>
+                                                    <NumberInput label="X Minimum:" value={graph.xMin} onChange={(newValue) => updateGraphSetting(index, 'xMin', newValue)} />
+                                                    <NumberInput label="X Maximum:" value={graph.xMax} onChange={(newValue) => updateGraphSetting(index, 'xMax', newValue)} />
+                                                </div>
+                                                <div>
+                                                    <NumberInput label="Y Minimum:" value={graph.yMin} onChange={(newValue) => updateGraphSetting(index, 'yMin', newValue)} />
+                                                    <NumberInput label="Y Maximum:" value={graph.yMax} onChange={(newValue) => updateGraphSetting(index, 'yMax', newValue)} />
+                                                </div>
+                                                <div className="text-checkbox-input-autoscale" style={{ display: 'flex', justifyContent: 'space-between',
+                                                    alignItems: 'flex-start', marginBottom: '10px' }}>
+                                                    <div className="autoscale-container">
+                                                        <div className="checkbox-container">
+                                                            <label className="label-space" style={{
+                                                                color: isDarkMode ? 'white' : "black"
+                                                            }}>
+                                                                <input
+                                                                    className={"checkbox-input"}
+                                                                    type="checkbox"
+                                                                    onChange={(e) => {
+                                                                        // Handle checkbox change here
+                                                                        const isChecked = e.target.checked;
+                                                                        // You can use the checkbox state as needed
+                                                                    }}
+                                                                />
+                                                                Autoscale X
+                                                            </label>
+                                                        </div>
+                                                        <div className="checkbox-container">
+                                                            <label style={{
+                                                                color: isDarkMode ? 'white' : "black"
+                                                            }}>
+                                                                <input
+                                                                    className="checkbox-input"
+                                                                    type="checkbox"
+                                                                    onChange={(e) => {
+                                                                        // Handle checkbox change here
+                                                                        const isChecked = e.target.checked;
+                                                                        // You can use the checkbox state as needed
+                                                                    }}
+                                                                />
+                                                                Autoscale Y
+                                                            </label>
+                                                        </div>
 
-                    <div className="top-menu">
+                                                    </div>
+                                                    <div className="edit-export-buttons" style=
+                                                        {{ display: 'flex',
+                                                            flexDirection: 'column',
+                                                            marginTop: '-10px',
+                                                            marginLeft: '10px',
+                                                        }}>
+                                                        <button style={{
+                                                            marginBottom: '10px',
+                                                            backgroundColor: isDarkMode ? 'black' : '#c4c2c2',
+                                                            color: isDarkMode ? 'white' : 'black'
+                                                        }}>Edit Graph</button>
+                                                        <button className={'edit-export-style'} style={{
+                                                            backgroundColor: isDarkMode ? 'black' : '#c4c2c2',
+                                                            color: isDarkMode ? 'white' : 'black'
+                                                        }}> Export To PDF</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                <div className="top-menu">
                         <div ref={fileDropdownRef} className={"container-of-toolbar-and-dropdown"}>
                             <button className="top-menu-button" style={{
                                 backgroundColor: isDarkMode ? "#2e2d2d" : "white",
@@ -691,91 +836,6 @@ const DropdownWithPopup = (
                             {modeIcon}
                         </button>
                     </div>
-                    <div ref={rightPanelRef} className="right-subpanel" style={rightSubpanelStyle}>
-                        <ResizingHandle
-                            panelRef={rightPanelRef}
-                            resizingRef={rightResizingRef}
-                            handleResize={handleRightResize}
-                            resizeStyle={"resize-right-handle"}
-                            isRightPanel={true}
-                        />
-                        <div className="graphs-container">
-                            {graphs.map((graph, index) => (
-                                <div key={index} className={`${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
-                                    <PlotGraph data={data} rightPanelWidth={rightPanelWidth} rightPanelHeight={window.innerHeight} isDarkMode={isDarkMode}/>
-                                    {graph.showSettings && (
-                                        <div>
-                                            <div style={{ display: 'flex', marginTop: '10px' }}>
-                                                <div style={{ marginRight: '10px' }}>
-                                                    <NumberInput label="X Minimum:" value={graph.xMin} onChange={(newValue) => updateGraphSetting(index, 'xMin', newValue)} />
-                                                    <NumberInput label="X Maximum:" value={graph.xMax} onChange={(newValue) => updateGraphSetting(index, 'xMax', newValue)} />
-                                                </div>
-                                                <div>
-                                                    <NumberInput label="Y Minimum:" value={graph.yMin} onChange={(newValue) => updateGraphSetting(index, 'yMin', newValue)} />
-                                                    <NumberInput label="Y Maximum:" value={graph.yMax} onChange={(newValue) => updateGraphSetting(index, 'yMax', newValue)} />
-                                                </div>
-                                                <div className="text-checkbox-input-autoscale" style={{ display: 'flex', justifyContent: 'space-between',
-                                                    alignItems: 'flex-start', marginBottom: '10px' }}>
-                                                    <div className="autoscale-container">
-                                                        <div className="checkbox-container">
-                                                            <label className="label-space" style={{
-                                                                color: isDarkMode ? 'white' : "black"
-                                                            }}>
-                                                                <input
-                                                                    className={"checkbox-input"}
-                                                                    type="checkbox"
-                                                                    onChange={(e) => {
-                                                                        // Handle checkbox change here
-                                                                        const isChecked = e.target.checked;
-                                                                        // You can use the checkbox state as needed
-                                                                    }}
-                                                                />
-                                                                Autoscale X
-                                                            </label>
-                                                        </div>
-                                                        <div className="checkbox-container">
-                                                            <label style={{
-                                                                color: isDarkMode ? 'white' : "black"
-                                                            }}>
-                                                                <input
-                                                                    className="checkbox-input"
-                                                                    type="checkbox"
-                                                                    onChange={(e) => {
-                                                                        // Handle checkbox change here
-                                                                        const isChecked = e.target.checked;
-                                                                        // You can use the checkbox state as needed
-                                                                    }}
-                                                                />
-                                                                Autoscale Y
-                                                            </label>
-                                                        </div>
-
-                                                    </div>
-                                                    <div className="edit-export-buttons" style=
-                                                        {{ display: 'flex',
-                                                            flexDirection: 'column',
-                                                            marginTop: '-10px',
-                                                            marginLeft: '10px',
-                                                        }}>
-                                                        <button style={{
-                                                            marginBottom: '10px',
-                                                            backgroundColor: isDarkMode ? 'black' : '#c4c2c2',
-                                                            color: isDarkMode ? 'white' : 'black'
-                                                        }}>Edit Graph</button>
-                                                        <button className={'edit-export-style'} style={{
-                                                            backgroundColor: isDarkMode ? 'black' : '#c4c2c2',
-                                                            color: isDarkMode ? 'white' : 'black'
-                                                        }}> Export To PDF</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
             </div>
         </>
     );

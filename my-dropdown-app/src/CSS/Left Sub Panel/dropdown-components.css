@@ -38,18 +38,18 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #2e2d2d;
+    background-color: gray;
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-track {
-    background-color: gray;
+    background-color: #2e2d2d;
 }
 
 /* For Firefox */
 html {
     scrollbar-width: thin;
-    scrollbar-color: #2e2d2d gray;
+    scrollbar-color: gray #2e2d2d;
 }
 
 .delete-message {
@@ -123,8 +123,3 @@ html {
     margin-top: 10px;
     background-color: gray;
 }
-
-
-
-
-
