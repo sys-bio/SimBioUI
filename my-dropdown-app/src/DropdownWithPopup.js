@@ -20,9 +20,17 @@ const BREAKPOINT_WIDTH = 960;
 
 const DropdownWithPopup = (
     { initialOptions = [],
+        onParametersChange,
+        simulationParam,
+        SBMLContent,
+        handleExportSBML,
+        handleTextChange,
+        handleResetInApp,
+        handleSBMLfile,
         additionalElements = [],
         data}) => {
-    const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(window.innerHeight - 100); // Subtract 100px or any other adjustments you need
+    const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(
+            window.innerWidth <= BREAKPOINT_WIDTH ? (window.innerHeight - 100) / 2 : window.innerHeight - 100); // Subtract 100px or any other adjustments you need
     useEffect(() => {
         const handleResize = () => {
             // Update the state based on the resized window dimensions
@@ -90,8 +98,7 @@ const DropdownWithPopup = (
         { label: 'About Iridium'}
     ];
 
-    const [graphs, setGraphs] = useState([{
-        // Initial graph data
+    const initialGraphState = {
         data: data,
         xMin: "0.00",
         yMin: "10.00",
@@ -99,9 +106,8 @@ const DropdownWithPopup = (
         yMax: "10.00",
         showSettings: true, // Show settings for the first graph initially
         textContext: ""
-    }]);
-
-    const [activeGraphIndex, setActiveGraphIndex] = useState(0); // Index of the currently active graph
+    };
+    const [graph, setGraph] = useState(initialGraphState);
     const [activeToolbarButton, setActiveToolbarButton] = useState('');
 
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
@@ -110,7 +116,7 @@ const DropdownWithPopup = (
     const initialTabData = { textContent: '', data: data};
 
     // Use the custom hook for tab management
-    const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab } = useTabManager(initialTabData);
+    const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab, getContentOfActiveTab } = useTabManager(initialTabData);
     const confirmAndCloseTab = (tabId, event) => {
         event.stopPropagation(); // Prevent the click from triggering any parent event
         const isConfirmed = window.confirm("Do you really want to close this tab?");
@@ -168,36 +174,12 @@ const DropdownWithPopup = (
     const modeTooltip = isDarkMode ? "Switch to Bright Mode" : "Switch to Dark Mode";
 
     const handleTextareaChange = (event) => {
-        const newContent = event.target.value;
-        updateActiveTabContent(newContent);
-        const updatedGraphs = graphs.map((graph, index) => {
-            if (index === activeGraphIndex) {
-                return { ...graph, textContent: event.target.value };
-            }
-            return graph;
-        });
-        setGraphs(updatedGraphs);
+        const content = event.target.value;
+        updateActiveTabContent(content);
     };
-
-    // Function to select an active graph
-    const selectGraph = (index) => {
-        setActiveGraphIndex(index);
-        // Only show settings for the selected graph
-        setGraphs(graphs.map((graph, i) => ({
-            ...graph,
-            showSettings: i === index
-        })));
+    const handleContentSelect = (content) => {
+        updateActiveTabContent(content); // Update active tab's content
     };
-
-    const updateGraphSetting = (index, setting, newValue) => {
-        setGraphs(graphs.map((graph, i) => {
-            if (i === index) {
-                return { ...graph, [setting]: newValue };
-            }
-            return graph;
-        }));
-    };
-
     const toggleOption = (optionValue) => {
         setOptions((prevOptions) => ({
             ...prevOptions,
@@ -300,12 +282,11 @@ const DropdownWithPopup = (
 
         // Recalculate panel widths
         const calculatePanelWidths = () => {
+            const remainingWidth = windowWidth - panelWidth;
             if (layoutVertical) {
-                const remainingWidth = windowWidth - panelWidth;
                 setCenterPanelWidth(remainingWidth); // 50% of remaining width
                 setRightPanelWidth(remainingWidth); // 50% of remaining width
             } else {
-                const remainingWidth = windowWidth - panelWidth;
                 setCenterPanelWidth(remainingWidth * 0.5); // 50% of remaining width
                 setRightPanelWidth(remainingWidth * 0.5); // 50% of remaining width
             }
@@ -381,27 +362,6 @@ const DropdownWithPopup = (
         };
     const { leftSubpanelStyle, centerSubPanelStyle, rightSubpanelStyle } = getPanelStyles();
 
-//    const leftSubpanelStyle = {
-//        overflow: 'auto',
-//        width: panelWidth,
-//        backgroundColor: isDarkMode
-//            ? (panelWidth > MIN_PANEL_WIDTH ? '#2e2d2d' : '#000000')
-//            : (panelWidth > MIN_PANEL_WIDTH ? 'white' : '#c4c2c2'), // Adjust colors for dark/bright mode
-//        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
-//    };
-//    const rightSubpanelStyle = {
-//        overflow: 'auto',
-//        width: rightPanelWidth,
-//        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
-//        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
-//    };
-//
-//    const centerSubPanelStyle = {
-//        width: centerPanelWidth,
-//        backgroundColor: isDarkMode ? '#2e2d2d' : 'white',
-//        border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d"
-//    }
-
     const handleIconClick = (icon) => {
         if (icon === 'x-axis') {
             // Apply the new width to the left panel
@@ -421,9 +381,34 @@ const DropdownWithPopup = (
     };
 
     const handleToolbarButtons = (menu) => {
-        setShowDropdownToolbar(menu !== activeToolbarButton || !setShowDropdownToolbar);
+        setShowDropdownToolbar(menu !== activeToolbarButton);
         setActiveToolbarButton(menu === activeToolbarButton ? '' : menu);
     };
+
+    const handleSimulateButtonClick = () => {
+        handleTextChange(getContentOfActiveTab());
+    }
+
+    const handleLocalReset = () => {
+        // Reset the active tab's content
+        updateActiveTabContent("");
+        handleResetInApp(true);
+        setGraph ({
+            xMin: "0.00",
+            yMin: "10.00",
+            xMax: "0.00",
+            yMax: "10.00",
+            showSettings: true, // Show settings for the first graph initially
+            textContext: ""
+        });
+    };
+
+    // Example logic in DropdownWithPopup
+    const onExportSBMLSelected = () => {
+      // Assuming `getContentOfActiveTab` or similar method exists to get the current content
+      const antimonyContent = getContentOfActiveTab(); // You need to implement this
+      handleExportSBML(antimonyContent);
+    }
 
     useEffect(() => {
       const handleClickOutside = (event) => {
@@ -441,7 +426,6 @@ const DropdownWithPopup = (
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }, [showDropdownToolbar]); // Dependency on showDropdownToolbar to add/remove the listener appropriately
-
 
     const NumberInput = ({ label, value, onChange }) => (
         <div style={{ marginBottom: '10px' }}>
@@ -494,15 +478,20 @@ const DropdownWithPopup = (
                             <SimulationParameters
                                 className={"border-with-text-simulation"}
                                 isDarkMode={isDarkMode}
+                                onParametersChange={onParametersChange}
+                                simulationParam={simulationParam}
                             />
                             <div className={"simulate-reset-buttons"}>
                                 <button className={"simulate-style"} style={{
                                     color: isDarkMode ? "white" : "black"
-                                }}>Simulate</button>
-                                <button className={"reset-style"} style={{
-                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                    color: isDarkMode ? "white" : "black"
                                 }}
+                                onClick={handleSimulateButtonClick}>Simulate</button>
+                                <button className={"reset-style"}
+                                    onClick={handleLocalReset}
+                                    style={{
+                                        backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                        color: isDarkMode ? "white" : "black"
+                                    }}
                                 >Reset</button>
                             </div>
                             <div className="text-checkbox-input">
@@ -666,8 +655,6 @@ const DropdownWithPopup = (
                                 />
                         )}
                         <div className="graphs-container">
-                            {graphs.map((graph, index) => (
-                                <div key={index} className={`${index === activeGraphIndex ? 'active' : ''}`} onClick={() => selectGraph(index)}>
                                     <PlotGraph
                                         data={data}
                                         rightPanelWidth={rightPanelWidth}
@@ -741,8 +728,6 @@ const DropdownWithPopup = (
                                             </div>
                                         </div>
                                     )}
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </div>
@@ -754,6 +739,9 @@ const DropdownWithPopup = (
                             }} onClick={() => handleToolbarButtons('File')}>File</button>
                             {activeToolbarButton === 'File' && showDropdownToolbar && (
                                 <DropdownContainers
+                                    onExportSBMLSelected={onExportSBMLSelected}
+                                    SBMLContent={SBMLContent}
+                                    onContentSelect={handleContentSelect}
                                     className={"dropdown-file-container"}
                                     dropdownToolbarStyle={dropdownToolbarStyle}
                                     dropdownToolbarButtonsStyle={dropdownToolbarButtonsStyle}

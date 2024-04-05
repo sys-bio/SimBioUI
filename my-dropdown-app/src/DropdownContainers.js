@@ -20,11 +20,52 @@ class DropdownContainers extends Component {
         }));
     };
 
+    handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = (e) => {
+                const fileContent = e.target.result;
+                if (typeof this.props.onContentSelect === 'function') {
+                    this.props.onContentSelect(fileContent);
+                }
+            };
+        }
+    };
+    exportSBMLFile = () => {
+        const filename = "exported_model.xml";
+        const content = this.props.SBMLContent;
+        if (!content) {
+            console.error("SBML content is empty or undefined.");
+            return;
+        }
+
+        // Create a Blob from the SBML content
+        const blob = new Blob([content], { type: 'application/xml' });
+
+        // Create a temporary link to trigger the download
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+
+        // Append to the document and trigger the download
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up by removing the link
+        document.body.removeChild(link);
+    };
+
     handleButtonClick = (item) => {
-        if (item === "Import SBML...") {
+        if (item === "Import SBML..." || item === "Open...") {
             this.fileInputRef.current.click();
         } else if (item === "New Window") {
             window.open('https://sys-bio.github.io/SimBioUI/', '_blank');
+        } else if (item === "Export SBML...") {
+            this.props.onExportSBMLSelected(() => {
+                this.exportSBMLFile();
+            });
         } else {
             if (typeof this.props.func === 'function') {
                 this.props.func(item);
@@ -32,18 +73,10 @@ class DropdownContainers extends Component {
         }
     };
 
-    handleFileSelect = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            // Handle the file, e.g., uploading or processing
-            console.log("Selected file:", file.name);
-            // Optionally, you can call an upload function here
-        }
-    };
-
     render() {
         const { className, dropdownToolbarStyle, dropdownToolbarButtonsStyle, isDarkMode, dropdownStyle, withCheckboxes, dropdown_toolbar_buttons_style } = this.props;
         const { options } = this.state;
+        console.log(this.props.SBMLContent);
         return (
             <div className={className}>
                 <div

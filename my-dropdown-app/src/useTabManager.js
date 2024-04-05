@@ -35,6 +35,10 @@ export function useTabManager(initialTabData) {
         });
     };
 
+    const getContentOfActiveTab = () => {
+        const activeTab = tabs.find(tab => tab.id === activeTabId);
+        return activeTab ? activeTab.textContent : '';
+    };
 
-    return { tabs, addNewTab, switchTab, updateActiveTabContent, closeTab, activeTabId };
+    return { tabs, addNewTab, switchTab, updateActiveTabContent, closeTab, activeTabId, getContentOfActiveTab };
 }

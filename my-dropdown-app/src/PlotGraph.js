@@ -6,28 +6,26 @@ class PlotGraph extends Component {
         const { rightPanelWidth, rightPanelHeight, isDarkMode } = this.props;
         const baseFontSize = 12;
         const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
+        const xValues = this.props.data.columns[0];
+        const plotsCount = this.props.data.columns.length - 1; // Excluding x-axis column
 
+        // Generate plot data configurations dynamically
+        const plotData = [];
+        for (let i = 1; i <= plotsCount; i++) {
+            plotData.push({
+                x: xValues,
+                y: this.props.data.columns[i],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: `Line ${i}`,
+                marker: { color: i % 2 === 0 ? 'red' : (isDarkMode ? 'black' : 'white') }, // Alternate color for even series
+                line: { width: 1 },
+            });
+        }
         return (
             <div>
                 <Plot
-                    data={[
-                        {
-                            x: this.props.data.columns[0],
-                            y: this.props.data.columns[1],
-                            type: 'scatter',
-                            mode: 'lines+markers',
-                            name: 'Line 1',
-                            marker: {color: isDarkMode ? 'black' : 'white'}, // Ensure visibility on dark background
-                        },
-                        {
-                            x: this.props.data.columns[0],
-                            y: this.props.data.columns[2],
-                            type: 'scatter',
-                            mode: 'lines+markers',
-                            name: 'Line 2',
-                            marker: {color: 'red'}, // Ensure visibility on dark background
-                        },
-                    ]}
+                    data={plotData}
                     layout={{
                         width: rightPanelWidth * 0.95,
                         height: rightPanelHeight * 0.45,
@@ -54,6 +52,7 @@ class PlotGraph extends Component {
                             },
                             gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
                             zerolinecolor: 'black', // Color for x=0 line, match gridcolor for consistency
+
                         },
                         yaxis: {
                             title: {
@@ -69,6 +68,7 @@ class PlotGraph extends Component {
                             },
                             gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
                             zerolinecolor: 'black', // Color for y=0 line, match gridcolor for consistency
+
                         }
                     }}
                 />
