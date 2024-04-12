@@ -20,7 +20,9 @@ const BREAKPOINT_WIDTH = 960;
 
 const DropdownWithPopup = (
     { initialOptions = [],
+        convertedAnt,
         onParametersChange,
+        onCheckboxChange,
         simulationParam,
         SBMLContent,
         handleExportSBML,
@@ -46,7 +48,8 @@ const DropdownWithPopup = (
 
         // Remove event listener on cleanup
         return () => window.removeEventListener('resize', handleResize);
-    }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+    }, []);
+    const [isChecked, setIsChecked] = useState(true);
 
     const [showDropdown, setShowDropdown] = useState(false);
     const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -70,8 +73,6 @@ const DropdownWithPopup = (
         { label: 'New File'},
         { label: 'New Window'},
         { label: 'Open...'},
-        { label: 'Save'},
-        { label: 'Save As...'},
         { label: 'Import SBML...'},
         {label: 'Export SBML...'},
         {label: 'Save Graph as PDF'},
@@ -114,6 +115,17 @@ const DropdownWithPopup = (
     const [isDarkMode, setIsDarkMode] = useState(true);
 
     const initialTabData = { textContent: '', data: data};
+    const plotGraphRef = useRef(null);
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const updateSelectedOptions = (newOptions) => {
+        setSelectedOptions(newOptions);
+    }
+    const handleDownloadPDF = () => {
+        if (plotGraphRef.current) {
+            plotGraphRef.current.downloadPDF();
+        }
+    };
+
 
     // Use the custom hook for tab management
     const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab, getContentOfActiveTab } = useTabManager(initialTabData);
@@ -180,6 +192,15 @@ const DropdownWithPopup = (
     const handleContentSelect = (content) => {
         updateActiveTabContent(content); // Update active tab's content
     };
+    useEffect(() => {
+        if (convertedAnt) {
+            handleContentSelect(convertedAnt);
+        }
+    }, [convertedAnt]);
+
+   const onImportSBML = (content) => {
+        handleSBMLfile(content);
+   }
     const toggleOption = (optionValue) => {
         setOptions((prevOptions) => ({
             ...prevOptions,
@@ -384,10 +405,31 @@ const DropdownWithPopup = (
         setShowDropdownToolbar(menu !== activeToolbarButton);
         setActiveToolbarButton(menu === activeToolbarButton ? '' : menu);
     };
-
+    // This should be part of your React functional component
     const handleSimulateButtonClick = () => {
-        handleTextChange(getContentOfActiveTab());
-    }
+        // Update options - Assuming this is some state setting function
+        setOptions(initialOptions.initialOptions);
+
+        // Update checkbox state or perform other immediate logic
+        onCheckboxChange(isChecked);
+
+        // If handleTextChange depends on updated state or needs fresh data
+        const currentContent = getContentOfActiveTab();
+        handleTextChange(currentContent);
+    };
+
+    // Use useEffect at the top level of your component to react to changes
+    useEffect(() => {
+        if (data) {
+            const newOptions = data.titles.reduce((acc, title) => ({
+                ...acc,
+                [title]: true
+            }), {});
+
+            console.log(newOptions);
+            setSelectedOptions(newOptions);
+        }
+    }, [data]); // Dependency on 'data'
 
     const handleLocalReset = () => {
         // Reset the active tab's content
@@ -475,14 +517,16 @@ const DropdownWithPopup = (
                                         }}
                                 >Config</button>
                             </div>
+
+                            <div className={"simulate-reset-buttons"}>
                             <SimulationParameters
                                 className={"border-with-text-simulation"}
                                 isDarkMode={isDarkMode}
                                 onParametersChange={onParametersChange}
                                 simulationParam={simulationParam}
                             />
-                            <div className={"simulate-reset-buttons"}>
-                                <button className={"simulate-style"} style={{
+                                <button className={"simulate-style"}
+                                    style={{
                                     color: isDarkMode ? "white" : "black"
                                 }}
                                 onClick={handleSimulateButtonClick}>Simulate</button>
@@ -500,12 +544,9 @@ const DropdownWithPopup = (
                                 }}>
                                     <input
                                         className={"checkbox-input"}
+                                        checked={isChecked}
                                         type="checkbox"
-                                        onChange={(e) => {
-                                            // Handle checkbox change here
-                                            const isChecked = e.target.checked;
-                                            // You can use the checkbox state as needed
-                                        }}
+                                        onChange={(e) => setIsChecked(e.target.checked)}
                                     />
                                     Always reset initial conditions
                                 </label>
@@ -542,16 +583,17 @@ const DropdownWithPopup = (
                                         border: isDarkMode ? "1px solid gray" : "1px solid black"
                                     }}
                                     onClick={() => {
+                                        setOptions(initialOptions.initialOptions);
                                         setShowDropdown(!showDropdown);
                                         setShowDropdownButtons(!showDropdownButtons)}} // Reuse showDropdown for Y-axis
-                                > [A] </button>
+                                > Select Y </button>
                                 {showDropdown && ( // This dropdown will show for both X and Y axis buttons
                                     <DropdownContainers
+                                        updateOptions={updateSelectedOptions}
                                         className={"dropdown-container"}
                                         isDarkMode={isDarkMode}
                                         withCheckboxes={true}
                                         options={options}
-                                        setOptions={setOptions}
                                         dropdownStyle={dropdownStyle}
                                     />
                                 )}
@@ -656,6 +698,8 @@ const DropdownWithPopup = (
                         )}
                         <div className="graphs-container">
                                     <PlotGraph
+                                        ref={plotGraphRef}
+                                        selectedOptions={selectedOptions}
                                         data={data}
                                         rightPanelWidth={rightPanelWidth}
                                         rightPanelHeight={window.innerHeight}
@@ -739,8 +783,10 @@ const DropdownWithPopup = (
                             }} onClick={() => handleToolbarButtons('File')}>File</button>
                             {activeToolbarButton === 'File' && showDropdownToolbar && (
                                 <DropdownContainers
+                                    onDownloadPDF={handleDownloadPDF}
                                     onExportSBMLSelected={onExportSBMLSelected}
                                     SBMLContent={SBMLContent}
+                                    onImportSBML={onImportSBML}
                                     onContentSelect={handleContentSelect}
                                     className={"dropdown-file-container"}
                                     dropdownToolbarStyle={dropdownToolbarStyle}

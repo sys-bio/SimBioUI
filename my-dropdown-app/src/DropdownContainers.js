@@ -6,31 +6,51 @@ class DropdownContainers extends Component {
         super(props);
         this.state = {
             options: this.props.options,
+            showExportModal: false, // Whether to show the export modal
+            customFilename: 'exported_model.xml',
         };
         this.fileInputRef = React.createRef();
         this.handleButtonClick = this.handleButtonClick.bind(this);
     }
 
     toggleOptionSpecific = (optionValue) => {
-        this.setState((prevState) => ({
+        this.setState(prevState => ({
             options: {
                 ...prevState.options,
-                [optionValue]: !prevState.options[optionValue], // Toggle the checkbox state
-            },
-        }));
+                [optionValue]: !prevState.options[optionValue]
+            }
+        }), () => {
+            this.props.updateOptions(this.state.options);
+        });
     };
+
 
     handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.readAsText(file);
             reader.onload = (e) => {
                 const fileContent = e.target.result;
-                if (typeof this.props.onContentSelect === 'function') {
-                    this.props.onContentSelect(fileContent);
+                const fileName = file.name;
+                const fileExtension = fileName.split('.').pop().toLowerCase();
+                switch (fileExtension) {
+                    case 'txt':
+                    case 'ant':
+                        // Process as text file
+                        if (typeof this.props.onContentSelect === 'function') {
+                            this.props.onContentSelect(fileContent);
+                        }
+                        break;
+                    case 'xml':
+                        if (typeof this.props.onContentSelect === 'function') {
+                            this.props.onImportSBML(fileContent);
+                        }
+                        break;
+                    default:
+                        console.error("Unsupported file format");
                 }
             };
+            reader.readAsText(file);
         }
     };
     exportSBMLFile = () => {
@@ -58,14 +78,16 @@ class DropdownContainers extends Component {
     };
 
     handleButtonClick = (item) => {
-        if (item === "Import SBML..." || item === "Open...") {
+        if (item === "Open...") {
+            this.fileInputRef.current.click();
+        } else if (item === "Import SBML...") {
             this.fileInputRef.current.click();
         } else if (item === "New Window") {
             window.open('https://sys-bio.github.io/SimBioUI/', '_blank');
         } else if (item === "Export SBML...") {
-            this.props.onExportSBMLSelected(() => {
-                this.exportSBMLFile();
-            });
+            this.props.onExportSBMLSelected();
+        } else if (item === "Save Graph as PDF") {
+             this.props.onDownloadPDF();
         } else {
             if (typeof this.props.func === 'function') {
                 this.props.func(item);
