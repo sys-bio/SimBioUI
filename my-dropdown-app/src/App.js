@@ -28,31 +28,37 @@ export class App extends React.Component  {
                 numPoints: 100
             },
             initialOptions: "",
+            simulationParameterChanges: false
         };
     };
     handleCheckboxChange = (isChecked) => {
-        this.setState({ isChecked }, () => {
-            if (isChecked) {
-                const updates = { changeValues: "Change" };  // Always update changeValues when isChecked
+        if (this.state.simulationParameterChanges) {
+            this.loadCopasiAPI();
+            this.setState({simulationParameterChanges: false});
+        } else {
+            this.setState({ isChecked }, () => {
+                if (isChecked) {
+                    const updates = { changeValues: "Change" };  // Always update changeValues when isChecked
 
-                if (this.state.changeValues !== "") {
-                    const { timeStart, timeEnd } = this.state.simulationParameters;
-                    // Calculate the new values
-                    let newTimeStart = timeEnd;  // Assuming sF should be the current timeEnd
-                    let newTimeEnd = 2 * timeEnd - timeStart;  // Assuming eF is 2 * current timeEnd - current timeStart
-
-                    // Prepare updated simulation parameters
-                    updates.simulationParameters = {
-                        ...this.state.simulationParameters,
-                        timeStart: newTimeStart,
-                        timeEnd: newTimeEnd
-                    };
+                    if (this.state.changeValues !== "") {
+                        const { timeStart, timeEnd } = this.state.simulationParameters;
+                        // Calculate the new values
+                        let newTimeStart = timeEnd;  // Assuming sF should be the current timeEnd
+                        let newTimeEnd = 3 * timeEnd - timeStart;  // Assuming eF is 2 * current timeEnd - current timeStart
+                        this.setState(prevState => ({ index: prevState.index + 1 }));
+                        // Prepare updated simulation parameters
+                        updates.simulationParameters = {
+                            ...this.state.simulationParameters,
+                            timeStart: newTimeStart,
+                            timeEnd: newTimeEnd
+                        };
+                    }
+                    this.setState(updates, () => {
+                        this.loadCopasiAPI();
+                    });
                 }
-                this.setState(updates, () => {
-                    this.handleTextChange(this.state.textareaContent);
-                });
-            }
-        });
+            });
+        }
     }
 
     handleParametersChange = (parameterName, value) => {
@@ -60,7 +66,8 @@ export class App extends React.Component  {
             simulationParameters: {
                 ...prevState.simulationParameters,
                 [parameterName]: parseFloat(value)
-            }
+            },
+            simulationParameterChanges: true
         }));
     }
 
@@ -80,19 +87,36 @@ export class App extends React.Component  {
         this.loadAntimonyLib(this.handleTextChange);
     }
 
-    handleTextChange = (content) => {
-
-        this.setState({textareaContent: content});
-        var sbml;
-        if (content.trim() !== "") {
-            const result = ant_wrap.convertAntimonyToSBML(content);
-            if(result.isSuccess()) {
-                sbml = result.getResult();
-                this.setState({ sbmlCode: sbml, convertedAnt: ""}, () => {
-                    this.loadCopasiAPI();
-                });
-            }
+    handleTextChange = (content, reset) => {
+        // Check if content has changed
+        if (content === this.state.textareaContent && reset === false) {
+            return; // Exit the function if content hasn't changed
         }
+        this.setState(prevState => ({
+            textareaContent: content,
+            index: 1,
+            simulationParameters: {
+                ...prevState.simulationParameters,
+                timeStart: 0.0, // Reset timeStart to 0
+                timeEnd: 40.0   // Reset timeEnd to 40
+            }
+        }), () => {
+            if (content.trim() !== "") {
+                const result = ant_wrap.convertAntimonyToSBML(content);
+                if(result.isSuccess()) {
+                    const sbml = result.getResult();
+                    this.setState({
+                        sbmlCode: sbml,
+                        convertedAnt: ""
+                    }, () => {
+                        this.loadCopasiAPI();
+                    });
+                } else {
+                    // Show popup indicating that Antimony syntax is invalid
+                    alert('Antimony syntax is not valid.');
+                }
+            }
+        });
     }
 
     handleSBMLfile = (content) => {
@@ -117,7 +141,7 @@ export class App extends React.Component  {
               this.promptForFileNameAndDownload(sbml);
             });
           } else {
-            alert('Conversion failed');
+            alert('Antimony syntax is not valid');
           }
         } else {
           alert('No content provided');
@@ -161,6 +185,7 @@ export class App extends React.Component  {
 
             const modelInfo = instance.loadModel(this.state.sbmlCode);
             const simResults = JSON.parse(instance.Module.simulateEx(timeStart,timeEnd,numPoints));
+
             this.setState({
                 copasi: instance,
                 data: {

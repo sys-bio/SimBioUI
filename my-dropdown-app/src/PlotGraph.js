@@ -33,8 +33,7 @@ class PlotGraph extends Component {
     const baseFontSize = 12;
     const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
     const xValues = this.props.data.columns[0];
-    const plotsCount = this.props.data.columns.length - 1; // Excluding x-axis column
-
+    const plotsCount = this.props.data.columns.length;
     // Generate plot data configurations dynamically, but filter based on selected options
     const plotData = [];
     const colors = ['black', 'light blue', 'green', 'red', 'purple', 'yellow', 'cyan', 'magenta'];
@@ -44,13 +43,14 @@ class PlotGraph extends Component {
                 x: xValues,
                 y: this.props.data.columns[i],
                 type: 'scatter',
-                mode: 'lines+markers',
+                mode: 'lines',
                 name: this.props.data.titles[i],
                 marker: { color: colors[i % colors.length] }, // Alternate color for even series
-                line: { width: 1 },
+                line: { width: 2 },
             });
         }
     }
+
         return (
             <div>
                 <Plot
@@ -81,8 +81,7 @@ class PlotGraph extends Component {
                                 size: dynamicFontSize * 0.8, // Smaller font size for ticks
                             },
                             gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
-                            zerolinecolor: 'black', // Color for x=0 line, match gridcolor for consistency
-
+                            zerolinecolor: 'black',
                         },
                         yaxis: {
                             title: {
@@ -99,7 +98,7 @@ class PlotGraph extends Component {
                             gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
                             zerolinecolor: 'black', // Color for y=0 line, match gridcolor for consistency
 
-                        }
+                        },
                     }}
                 />
             </div>

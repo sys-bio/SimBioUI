@@ -49,6 +49,7 @@ const DropdownWithPopup = (
         // Remove event listener on cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+    const [previousContent, setPreviousContent] = useState("");
     const [isChecked, setIsChecked] = useState(true);
 
     const [showDropdown, setShowDropdown] = useState(false);
@@ -410,12 +411,17 @@ const DropdownWithPopup = (
         // Update options - Assuming this is some state setting function
         setOptions(initialOptions.initialOptions);
 
-        // Update checkbox state or perform other immediate logic
-        onCheckboxChange(isChecked);
-
-        // If handleTextChange depends on updated state or needs fresh data
+        // Check if content has changed
         const currentContent = getContentOfActiveTab();
-        handleTextChange(currentContent);
+        if (currentContent !== previousContent) {
+            // Content has changed, call handleTextChange
+            handleTextChange(currentContent, false);
+        } else {
+            onCheckboxChange(isChecked);
+        }
+
+        // Update previousContent for future comparison
+        setPreviousContent(currentContent);
     };
 
     // Use useEffect at the top level of your component to react to changes
@@ -432,18 +438,13 @@ const DropdownWithPopup = (
     }, [data]); // Dependency on 'data'
 
     const handleLocalReset = () => {
-        // Reset the active tab's content
-        updateActiveTabContent("");
-        handleResetInApp(true);
-        setGraph ({
-            xMin: "0.00",
-            yMin: "10.00",
-            xMax: "0.00",
-            yMax: "10.00",
-            showSettings: true, // Show settings for the first graph initially
-            textContext: ""
-        });
+          handleTextChange(getContentOfActiveTab(), true);
     };
+
+    const resetInitialConditions = (e) => {
+        setIsChecked(e.target.checked);
+        handleTextChange(getContentOfActiveTab(), true);
+    }
 
     // Example logic in DropdownWithPopup
     const onExportSBMLSelected = () => {
@@ -546,7 +547,7 @@ const DropdownWithPopup = (
                                         className={"checkbox-input"}
                                         checked={isChecked}
                                         type="checkbox"
-                                        onChange={(e) => setIsChecked(e.target.checked)}
+                                        onChange={resetInitialConditions}
                                     />
                                     Always reset initial conditions
                                 </label>
