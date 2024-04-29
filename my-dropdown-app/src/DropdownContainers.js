@@ -6,11 +6,21 @@ class DropdownContainers extends Component {
         super(props);
         this.state = {
             options: this.props.options,
+            sliderValues: {},
             showExportModal: false, // Whether to show the export modal
             customFilename: 'exported_model.xml',
         };
         this.fileInputRef = React.createRef();
         this.handleButtonClick = this.handleButtonClick.bind(this);
+        this.handleSliderChange = this.handleSliderChange.bind(this);
+    }
+    componentDidMount() {
+        // Initialize slider values
+        const sliderValues = {};
+        Object.keys(this.props.options).forEach(option => {
+            sliderValues[option] = 0; // Initialize sliders at 0, adjust as needed
+        });
+        this.setState({ sliderValues });
     }
 
     toggleOptionSpecific = (optionValue) => {
@@ -24,6 +34,14 @@ class DropdownContainers extends Component {
         });
     };
 
+    handleSliderChange(option, value) {
+        this.setState(prevState => ({
+            sliderValues: {
+                ...prevState.sliderValues,
+                [option]: value
+            }
+        }));
+    }
 
     handleFileSelect = (event) => {
         const file = event.target.files[0];
@@ -97,38 +115,40 @@ class DropdownContainers extends Component {
 
     render() {
         const { className, dropdownToolbarStyle, dropdownToolbarButtonsStyle, isDarkMode, dropdownStyle, withCheckboxes, dropdown_toolbar_buttons_style } = this.props;
-        const { options } = this.state;
-        console.log(this.props.SBMLContent);
+        const { options, sl } = this.state;
         return (
             <div className={className}>
-                <div
-                    style={{
-                        ...dropdownStyle,
-                        display: 'block',
-                        maxHeight: '200px', // Ensure the dropdown has a maximum height
-                        overflowY: 'scroll', // Add scroll if content overflows
-                        backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
-                    }}
-                    className="dropdown-list"
-                >
-                    {withCheckboxes ? (
-                        Object.keys(options).map((option) => (
-                            <div key={option} className="dropdown-checkbox-item">
-                                <input
-                                    type="checkbox"
-                                    id={`checkbox-${option}`}
-                                    checked={options[option]}
-                                    onChange={() => this.toggleOptionSpecific(option)}
-                                />
-                                <label
-                                    htmlFor={`checkbox-${option}`}
-                                    style={{ color: isDarkMode ? "white" : "black" }} // Adjust label color based on isDarkMode
-                                >
-                                    {option}
-                                </label>
-                            </div>
-                        ))
-                    ) : (
+                            <div style={{
+                                ...dropdownStyle,
+                                display: 'block',
+                                maxHeight: '200px',
+                                overflowY: 'scroll',
+                                backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+                            }} className="dropdown-list">
+                                {withCheckboxes ? (
+                                    Object.keys(options).map((option) => (
+                                        <div key={option} className="dropdown-checkbox-item">
+                                            <input
+                                                type="checkbox"
+                                                id={`checkbox-${option}`}
+                                                checked={options[option]}
+                                                onChange={() => this.toggleOptionSpecific(option)}
+                                            />
+                                            <label htmlFor={`checkbox-${option}`} style={{ color: isDarkMode ? "white" : "black" }}>
+                                                {option}
+                                            </label>
+                                            {/* Slider input next to each checkbox */}
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="100" // Adjust max as needed
+                                                value={sliderValues[option] || 0}
+                                                onChange={(e) => this.handleSliderChange(option, e.target.value)}
+                                                style={{ marginLeft: '10px' }}
+                                            />
+                                        </div>
+                                    ))
+                                )  : (
                         <div className={className}>
                             <div
                                 style={dropdownToolbarStyle}

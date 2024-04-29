@@ -31,9 +31,7 @@ const DropdownWithPopup = (
         handleSBMLfile,
         additionalElements = [],
         data}) => {
-    const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(
-            window.innerWidth <= BREAKPOINT_WIDTH ? (window.innerHeight - 100) / 2 : window.innerHeight - 100); // Subtract 100px or any other adjustments you need
-    useEffect(() => {
+     useEffect(() => {
         const handleResize = () => {
             // Update the state based on the resized window dimensions
             if (window.innerWidth < BREAKPOINT_WIDTH) {
@@ -52,11 +50,16 @@ const DropdownWithPopup = (
     const [previousContent, setPreviousContent] = useState("");
     const [isChecked, setIsChecked] = useState(true);
 
+    const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(window.innerWidth <= BREAKPOINT_WIDTH ? (window.innerHeight - 100) / 2 : window.innerHeight - 100);
+    const [showSplitView, setShowSplitView] = useState(false); // State to manage split view display
+
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showXDropdown, setShowXDropdown] = useState(false);
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [options, setOptions] = useState(initialOptions);
     const [selectedElements, setSelectedElements] = useState([]);
     const [showDropdownButtons, setShowDropdownButtons] = useState(false);
+    const [showXDropdownButtons, setShowXDropdownButtons] = useState(false);
 
     const leftPanelFixedWidth = 300; // Fixed width for the left panel
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -152,32 +155,251 @@ const DropdownWithPopup = (
             <button className={"plus-button"} onClick={addNewTab}>+</button>
         </div>
     );
+    const kOptions = ['K1', 'K2', 'K3'];
+    const [kOptions_for_sliders, set_kOptions_for_sliders] = useState({
+        K1: true,
+        K2: true,
+        K3: true
+    });
 
-    // Render the content of the active tab
+    const [sliderValues, setSliderValues] = useState({
+        K1: 50,
+        K2: 50,
+        K3: 50
+    });
+
+    const [minMaxValues, setMinMaxValues] = useState({
+        K1: { min: 0, max: 100 },
+        K2: { min: 0, max: 100 },
+        K3: { min: 0, max: 100 }
+    });
+
+    const [tempMinMaxValues, setTempMinMaxValues] = useState({});
+
+    const [selectedParameter, setSelectedParameter] = useState(null);
+
+    const handleCheckboxChange = (option) => {
+        setKOptionsForSliders(prev => ({ ...prev, [option]: !prev[option] }));
+    };
+
+    const handleSliderChange = (option, value) => {
+        setSliderValues(prev => ({ ...prev, [option]: value }));
+    };
+
+    const handleLabelClick = (parameter) => {
+        setSelectedParameter(parameter);
+    };
+
+    const handleMinValueChange = (e) => {
+        const parameter = selectedParameter;
+        const newMin = parseInt(e.target.value);
+        setTempMinMaxValues(prev => ({
+            ...prev,
+            [parameter]: {
+                ...prev[parameter],
+                min: newMin
+            }
+        }));
+    };
+
+    const handleMaxValueChange = (e) => {
+        const parameter = selectedParameter;
+        const newMax = parseInt(e.target.value);
+        setTempMinMaxValues(prev => ({
+            ...prev,
+            [parameter]: {
+                ...prev[parameter],
+                max: newMax
+            }
+        }));
+    };
+
+    const handleEnterClick = () => {
+        if (selectedParameter) {
+            const parameter = selectedParameter;
+            const newMin = tempMinMaxValues[parameter].min;
+            const newMax = tempMinMaxValues[parameter].max;
+            const newValue = Math.floor((newMin + newMax) / 2);
+
+            setSliderValues(prev => ({
+                ...prev,
+                [parameter]: newValue
+            }));
+            setMinMaxValues(prev => ({
+                ...prev,
+                [parameter]: {
+                    min: newMin,
+                    max: newMax
+                }
+            }));
+        }
+    };
+
     const renderActiveTabContent = () => {
         const activeTab = tabs.find(tab => tab.id === activeTabId);
-        return activeTab ? (
-            <>
-                <div className={"centered-input-box"} style={{
-                    height: `${centerSubPanelHeight - 80}px`,
-                    width: `${centerPanelWidth - 42}px`,
-                    backgroundColor: isDarkMode ? "black" : "white",
-                    border: isDarkMode ? "white" : "black",
-                    outline: isDarkMode ? '1px solid white' : '1px solid black',
-                    marginLeft: '10px'
-                }}>
-                            <textarea
-                                style={{
-                                    fontSize: `${sizeOfInput}px`,
-                                    backgroundColor: isDarkMode ? "black" : "white",
-                                    color: isDarkMode ? "white" : "black"
-                                }}
-                                value={activeTab.textContent || ""}
-                                onChange={handleTextareaChange}
-                            />
-                </div>
-            </>
-        ) : null;
+        if (!activeTab) return null;
+        if (showSplitView) {
+            // When split view is active, display text input on top and a blue box on bottom
+            return (
+                <>
+                    <div className={"centered-input-box"} style={{
+                        height: `${(centerSubPanelHeight - 80) / 2}px`,
+                        width: `${centerPanelWidth - 42}px`,
+                        backgroundColor: isDarkMode ? "black" : "white",
+                        border: isDarkMode ? "white" : "black",
+                        outline: isDarkMode ? '1px solid white' : '1px solid black',
+                        marginLeft: '10px'
+                    }}>
+                        <textarea
+                            style={{
+                                fontSize: `${sizeOfInput}px`,
+                                backgroundColor: isDarkMode ? "black" : "white",
+                                color: isDarkMode ? "white" : "black",
+                                height: '100%', // Make sure the textarea fills the container
+                                resize: 'none', // Optional: disable resizing of the textarea
+                            }}
+                            value={activeTab.textContent || ""}
+                            onChange={handleTextareaChange}
+                        />
+                    </div>
+                    <div style={{
+                        height: `${(centerSubPanelHeight - 104) / 2}px`,
+                        width: `${centerPanelWidth - 22}px`,
+                        backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2', // Set the background color to blue for the bottom half
+                        border: isDarkMode ? '1px solid white' : '1px solid black',
+                        color: 'white', // Set the text color to white if needed
+                        marginLeft: '10px',
+                        marginTop: '10px',
+                        display: 'flex', // Use flexbox to layout children side by side
+                        flexDirection: 'row', // Align children horizontally
+                        alignItems: 'flex-start', // Align items at the start of the flex container
+                    }}>
+                        {/* Container for checkboxes */}
+                        <div style={{
+                            height: '90%', // Set to 90% of the parent div's height
+                            width: '40%', // Adjusted width to make space for sliders
+                            marginTop: '15px',
+                            backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2',
+                            display: 'flex', // Further nest flexbox for internal layout
+                            flexDirection: 'column', // Stack children vertically
+                        }}>
+                            <p style={{
+                                fontSize: '12px',
+                                marginLeft: '25px',
+                                color: isDarkMode ? 'white' : 'black' // Ensure text is white for visibility on dark backgrounds
+                            }}>
+                                Add slider
+                            </p>
+                            <div style={{
+                                height: '50%', // Height of the checkbox container
+                                width: '50%', // Adjust width to fill parent
+                                backgroundColor: isDarkMode ? 'black' : '#c4c2c2', // Set the background color to blue for the bottom half
+                                border: isDarkMode ? '1px solid #2273f5' : '1px solid black',
+                                marginLeft: '25px',
+                                padding: '5px' // Padding around content
+                            }}>
+                                {kOptions.map((option) => (
+                                    <div key={option} style={{ color: isDarkMode ? 'white' : 'black', padding: '5px', fontSize: '12px' }}>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                checked={kOptions_for_sliders[option]}
+                                                onChange={() => handleCheckboxChange(option)}
+                                            />
+                                            {option}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div style={{
+                            height: '70%', // Set to 90% of the parent div's height
+                            width: '90%', // Set to 50% to fit next to checkboxes
+                            backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2',
+                            display: 'flex', // Use flexbox to layout sliders
+                            flexDirection: 'column', // Stack sliders vertically
+                            justifyContent: 'center', // Center sliders vertically within the container
+                            padding: '10px', // Padding around sliders
+                            marginLeft: '-30px',
+                            marginRight: '10px'
+                        }}>
+                        {selectedParameter && (
+                            <div>
+                                <span>Change {selectedParameter}</span>
+                                <div className="minMaxInputContainer">
+                                    <label>Min Value:</label>
+                                    <input
+                                        type="number"
+                                        value={tempMinMaxValues[selectedParameter] ? tempMinMaxValues[selectedParameter].min : minMaxValues[selectedParameter].min}
+                                        onChange={handleMinValueChange}
+                                    />
+                                </div>
+                                <div className="minMaxInputContainer">
+                                    <label>Max Value:</label>
+                                    <input
+                                        type="number"
+                                        value={tempMinMaxValues[selectedParameter] ? tempMinMaxValues[selectedParameter].max : minMaxValues[selectedParameter].max}
+                                        onChange={handleMaxValueChange}
+                                    />
+                                </div>
+                                <button style={{fontSize: '12px', backgroundColor: 'black', color: 'white'}} onClick={handleEnterClick}>Apply</button>
+                            </div>
+                        )}
+                            {kOptions.map((option) => (
+                                kOptions_for_sliders[option] && (
+                                    <div key={option + '-slider'} className="slidecontainer" style={{ width: '100%', margin: '10px 0', display: 'flex', alignItems: 'center' }}>
+                                        {/* Slider input */}
+                                        <div style={{ flex: 1 }}>
+                                            <input
+                                                type="range"
+                                                min={minMaxValues[option].min}
+                                                max={minMaxValues[option].max}
+                                                value={sliderValues[option]}
+                                                onChange={(e) => handleSliderChange(option, e.target.value)}
+                                                style={{
+                                                    width: '100%',
+                                                    background: `linear-gradient(to right, #2273f5 0%, blue ${(sliderValues[option] / (minMaxValues[option].max + minMaxValues[option].min) * 100)}%, #d3d3d3 ${(sliderValues[option] / (minMaxValues[option].max + minMaxValues[option].min) * 100)}%, #d3d3d3 100%, transparent 100%)`
+                                                }}
+                                                className="slider"
+                                            />
+                                        </div>
+                                        <div className="labelContainer">
+                                            <label className="sliderLabel" style={{ marginLeft: '15px', fontSize:'12px', marginTop: '7px' }} onClick={() => handleLabelClick(option)}>
+                                                <span>{option} [{minMaxValues[option]?.min || 0}, {minMaxValues[option]?.max || 100}]</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                )
+                            ))}
+                        </div>
+                    </div>
+                </>
+            );
+        } else {
+            return activeTab ? (
+                <>
+                    <div className={"centered-input-box"} style={{
+                        height: `${centerSubPanelHeight - 80}px`,
+                        width: `${centerPanelWidth - 42}px`,
+                        backgroundColor: isDarkMode ? "black" : "white",
+                        border: isDarkMode ? "white" : "black",
+                        outline: isDarkMode ? '1px solid white' : '1px solid black',
+                        marginLeft: '10px'
+                    }}>
+                        <textarea
+                            style={{
+                                fontSize: `${sizeOfInput}px`,
+                                backgroundColor: isDarkMode ? "black" : "white",
+                                color: isDarkMode ? "white" : "black"
+                            }}
+                            value={activeTab.textContent || ""}
+                            onChange={handleTextareaChange}
+                        />
+                    </div>
+                </>
+            ) : null;
+        }
     };
 
     const toggleDarkMode = () => {
@@ -501,6 +723,10 @@ const DropdownWithPopup = (
         color: isDarkMode ? 'white' : 'black'
     }
 
+    const handleSlideButtonClick = () => {
+        setShowSplitView(!showSplitView); // Toggle the split view on button click
+    };
+
     return (
         <>
             <div className={`main-container ${isDarkMode ? 'dark-mode' : 'bright-mode'}`}>
@@ -538,6 +764,7 @@ const DropdownWithPopup = (
                                         color: isDarkMode ? "white" : "black"
                                     }}
                                 >Reset</button>
+                                <button onClick={handleSlideButtonClick}>Slide</button>
                             </div>
                             <div className="text-checkbox-input">
                                 <label style={{
@@ -566,7 +793,50 @@ const DropdownWithPopup = (
                                         color: isDarkMode ? "white" : "black",
                                         border: isDarkMode ? "1px solid gray" : "1px solid black"
                                     }}
+                                    onClick={() => {
+                                        setOptions(initialOptions.initialOptions);
+                                        setShowXDropdown(!showXDropdown);
+                                        setShowXDropdownButtons(!showXDropdownButtons)}}
                                 > Time </button>
+                                {showXDropdown && ( // This dropdown will show for both X and Y axis buttons
+                                    <DropdownContainers
+                                        updateOptions={updateSelectedOptions}
+                                        className={"dropdown-container"}
+                                        isDarkMode={isDarkMode}
+                                        withCheckboxes={true}
+                                        options={options}
+                                        dropdownStyle={dropdownStyle}
+                                    />
+                                )}
+                                {showXDropdownButtons && (
+                                    <div>
+                                        <button
+                                            style={{
+                                                backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={selectAllOptions}>Select all</button>
+                                        <button
+                                            style={{
+                                                backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={unselectAllOptions}>Unselect all</button>
+                                        <button
+                                            style={{
+                                                backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={deleteOptions}>Delete</button>
+                                        <div>
+                                            {deleteMessage && <div className="delete-message" style={{
+                                                color: isDarkMode ? "white" : "black"
+                                            }}>{deleteMessage}</div>}
+                                        </div>
+                                        <button
+                                            style={{
+                                                backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                                color: isDarkMode ? "white" : "black"
+                                            }} onClick={() => setShowMoreOptions(true)}>More options</button>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="border-with-text" style={{
@@ -876,3 +1146,4 @@ const DropdownWithPopup = (
     );
 };
 export default DropdownWithPopup;
+

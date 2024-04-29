@@ -1,11 +1,27 @@
-// SimulationParameters.js
-const SimulationParameters = ({ className, isDarkMode, onParametersChange, simulationParam }) => {
+import React, { useState } from 'react';
+
+const SimulationParameters = ({ className, isDarkMode, onParametersChange }) => {
+    const [timeStart, setTimeStart] = useState('0');
+    const [timeEnd, setTimeEnd] = useState('20');
+    const [numPoints, setNumPoints] = useState('200');
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        const newValue = value === '' ? '0' : value;
-        onParametersChange(name, newValue);
+        // Let the input be empty if the user clears it
+        switch (name) {
+            case 'timeStart':
+                setTimeStart(value);
+                break;
+            case 'timeEnd':
+                setTimeEnd(value);
+                break;
+            case 'numPoints':
+                setNumPoints(value);
+                break;
+        }
+        onParametersChange(name, value);
     };
+
     return (
         <div className={className}
              style={{
@@ -17,13 +33,11 @@ const SimulationParameters = ({ className, isDarkMode, onParametersChange, simul
                       color: isDarkMode ? "white" : "black"
                   }}
             >Simulation Parameters</span>
-            <div className={"small-text"}
-                style={{
-                    color: isDarkMode ? "white" : "black"
-                }}
-                >Time Start:
+            <div className="small-text"
+                 style={{ color: isDarkMode ? "white" : "black" }}
+            >Time Start:
                 <input
-                    className={"parameter-input-box"}
+                    className="parameter-input-box"
                     style={{
                         backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                         border: isDarkMode ? "1px solid gray" : "1px solid black",
@@ -31,44 +45,39 @@ const SimulationParameters = ({ className, isDarkMode, onParametersChange, simul
                     }}
                     type="text"
                     name="timeStart"
-                    placeholder="0.0"
-                    value={simulationParam.simulationParameters.timeStart}
+                    value={timeStart}
                     onChange={handleInputChange}
-            /></div>
-            <div className={"small-text"}
-                 style={{
-                     color: isDarkMode ? "white" : "black"
-                 }}
+                />
+            </div>
+            <div className="small-text"
+                 style={{ color: isDarkMode ? "white" : "black" }}
             >Time End:
                 <input
-                    className={"parameter-input-box"}
+                    className="parameter-input-box"
                     style={{
                         backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                         border: isDarkMode ? "1px solid gray" : "1px solid black",
                         color: isDarkMode ? "lightgray" : "black"
                     }}
                     type="text"
-                    placeholder="40.0"
                     name="timeEnd"
-                    value={simulationParam.simulationParameters.timeEnd}
+                    value={timeEnd}
                     onChange={handleInputChange}
-            /></div>
-            <div className={"small-text"}
-                 style={{
-                     color: isDarkMode ? "white" : "black"
-                 }}
-                >Number of points:
+                />
+            </div>
+            <div className="small-text"
+                 style={{ color: isDarkMode ? "white" : "black" }}
+            >Number of points:
                 <input
-                    className={"parameter-input-box"}
+                    className="parameter-input-box"
                     style={{
                         backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                         border: isDarkMode ? "1px solid gray" : "1px solid black",
                         color: isDarkMode ? "lightgray" : "black"
                     }}
                     type="text"
-                    placeholder="100"
                     name="numPoints"
-                    value={simulationParam.simulationParameters.numPoints}
+                    value={numPoints}
                     onChange={handleInputChange}
                 />
             </div>

@@ -20,12 +20,12 @@ export class App extends React.Component  {
             sbmlCode: "",
             sbmlExport:"",
             convertedAnt: "",
-            isChecked: true,
+            isChecked: false,
             changeValues: "",
             simulationParameters: {
                 timeStart: 0.0,
-                timeEnd: 40.0,
-                numPoints: 100
+                timeEnd: 20.0,
+                numPoints: 200
             },
             initialOptions: "",
             simulationParameterChanges: false
@@ -37,22 +37,19 @@ export class App extends React.Component  {
             this.setState({simulationParameterChanges: false});
         } else {
             this.setState({ isChecked }, () => {
-                if (isChecked) {
-                    const updates = { changeValues: "Change" };  // Always update changeValues when isChecked
-
-                    if (this.state.changeValues !== "") {
-                        const { timeStart, timeEnd } = this.state.simulationParameters;
-                        // Calculate the new values
-                        let newTimeStart = timeEnd;  // Assuming sF should be the current timeEnd
-                        let newTimeEnd = 3 * timeEnd - timeStart;  // Assuming eF is 2 * current timeEnd - current timeStart
-                        this.setState(prevState => ({ index: prevState.index + 1 }));
-                        // Prepare updated simulation parameters
-                        updates.simulationParameters = {
-                            ...this.state.simulationParameters,
-                            timeStart: newTimeStart,
-                            timeEnd: newTimeEnd
-                        };
-                    }
+                if (!isChecked) {
+                    const updates = {};
+                    const { timeStart, timeEnd } = this.state.simulationParameters;
+                    // Calculate the new values
+                    let newTimeStart = timeEnd;  // Assuming sF should be the current timeEnd
+                    let newTimeEnd = 2.5 * timeEnd - timeStart;  // Assuming eF is 2 * current timeEnd - current timeStart
+                    this.setState(prevState => ({ index: prevState.index + 1 }));
+                    // Prepare updated simulation parameters
+                    updates.simulationParameters = {
+                        ...this.state.simulationParameters,
+                        timeStart: newTimeStart,
+                        timeEnd: newTimeEnd
+                    };
                     this.setState(updates, () => {
                         this.loadCopasiAPI();
                     });
@@ -98,7 +95,7 @@ export class App extends React.Component  {
             simulationParameters: {
                 ...prevState.simulationParameters,
                 timeStart: 0.0, // Reset timeStart to 0
-                timeEnd: 40.0   // Reset timeEnd to 40
+                timeEnd: 20.0   // Reset timeEnd to 40
             }
         }), () => {
             if (content.trim() !== "") {
