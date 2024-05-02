@@ -29,27 +29,36 @@ class PlotGraph extends Component {
     };
 
     render() {
-    const { rightPanelWidth, rightPanelHeight, isDarkMode } = this.props;
-    const baseFontSize = 12;
-    const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
-    const xValues = this.props.data.columns[0];
-    const plotsCount = this.props.data.columns.length;
-    // Generate plot data configurations dynamically, but filter based on selected options
-    const plotData = [];
-    const colors = ['black', 'light blue', 'green', 'red', 'purple', 'yellow', 'cyan', 'magenta'];
-    for (let i = 1; i <= plotsCount; i++) {
-        if (this.props.selectedOptions[this.props.data.titles[i]]) { // Check if the option for this series is true
-            plotData.push({
-                x: xValues,
-                y: this.props.data.columns[i],
-                type: 'scatter',
-                mode: 'lines',
-                name: this.props.data.titles[i],
-                marker: { color: colors[i % colors.length] }, // Alternate color for even series
-                line: { width: 2 },
-            });
+        let indexOfX;
+        let name_of_xAxis;
+        if (this.props.xAxis_selected_option == null) {
+            indexOfX = 0;
+            name_of_xAxis = "Time";
+        } else {
+            indexOfX = this.props.data.titles.indexOf(this.props.xAxis_selected_option);
+            name_of_xAxis = this.props.xAxis_selected_option;
         }
-    }
+        const { rightPanelWidth, rightPanelHeight, isDarkMode } = this.props;
+        const baseFontSize = 12;
+        const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
+        const xValues = this.props.data.columns[indexOfX];
+        const plotsCount = this.props.data.columns.length;
+        // Generate plot data configurations dynamically, but filter based on selected options
+        const plotData = [];
+        const colors = ['black', 'light blue', 'green', 'red', 'purple', 'yellow', 'cyan', 'magenta'];
+        for (let i = 0; i <= plotsCount; i++) {
+            if (this.props.selectedOptions[this.props.data.titles[i]]) { // Check if the option for this series is true
+                plotData.push({
+                    x: xValues,
+                    y: this.props.data.columns[i],
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: this.props.data.titles[i],
+                    marker: { color: colors[i % colors.length] }, // Alternate color for even series
+                    line: { width: 2 },
+                });
+            }
+        }
 
         return (
             <div>
@@ -70,7 +79,7 @@ class PlotGraph extends Component {
                         plot_bgcolor: isDarkMode ? 'white' : '#c4c2c2', // Dark background color
                         xaxis: {
                             title: {
-                                text: 'Time',
+                                text: name_of_xAxis,
                                 font: {
                                     color: isDarkMode ? 'black' : 'white',
                                     size: dynamicFontSize, // Apply dynamic font size

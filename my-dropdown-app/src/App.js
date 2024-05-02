@@ -27,8 +27,9 @@ export class App extends React.Component  {
                 timeEnd: 20.0,
                 numPoints: 200
             },
-            initialOptions: "",
-            simulationParameterChanges: false
+            initialOptions: [],
+            simulationParameterChanges: false,
+            oldNumPoints: 0
         };
     };
     handleCheckboxChange = (isChecked) => {
@@ -40,9 +41,9 @@ export class App extends React.Component  {
                 if (!isChecked) {
                     const updates = {};
                     const { timeStart, timeEnd } = this.state.simulationParameters;
-                    // Calculate the new values
+                    let dist = timeEnd - timeStart;
                     let newTimeStart = timeEnd;  // Assuming sF should be the current timeEnd
-                    let newTimeEnd = 2.5 * timeEnd - timeStart;  // Assuming eF is 2 * current timeEnd - current timeStart
+                    let newTimeEnd = newTimeStart + dist;
                     this.setState(prevState => ({ index: prevState.index + 1 }));
                     // Prepare updated simulation parameters
                     updates.simulationParameters = {
@@ -176,13 +177,12 @@ export class App extends React.Component  {
 //            const response = await fetch(`${process.env.PUBLIC_URL}/brusselator-model.xml`);
 //            const brusselator = await response.text();
             const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
-
             const cps = await createCpsModule();
             const instance = new COPASI(cps);
-
             const modelInfo = instance.loadModel(this.state.sbmlCode);
-            const simResults = JSON.parse(instance.Module.simulateEx(timeStart,timeEnd,numPoints));
-
+            //console.log(numPoints + oldNumPoints);
+            const simResults = JSON.parse(instance.Module.simulateEx(timeStart,timeEnd, numPoints));
+            const dist_old_with_current_NumPoints = numPoints - simResults.columns[0].length;
             this.setState({
                 copasi: instance,
                 data: {
@@ -190,6 +190,7 @@ export class App extends React.Component  {
                     titles: simResults.titles // Assuming simResults contains a titles array
                 },
                 info: modelInfo,
+                oldNumPoints: dist_old_with_current_NumPoints,
                 initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {})});
         } catch (err) {
             console.error(`Error in loadCopasiAPI: ${err.message}`);
@@ -198,15 +199,16 @@ export class App extends React.Component  {
 
     render() {
         const simulationParameters = this.state;
-        const initialOptions = this.state;
+        //const initialOptions = this.state;
+        //console.log(this.state.initialOptions);
         const additionalElements = ['[A]', '[B]', '[C]', 'S[2]', 'S[4]', 'S[6]', 'S[8]', 'S[10]', 'S[12]', 'S[14]',
             'J_0', 'J_1', 'J_2', 'J_3', 'J_4', 'J_5'];
         return (
             <div className="App">
                 <DropdownWithPopup
                     handleSBMLfile={this.handleSBMLfile}
-                    initialOptions={initialOptions}
                     onParametersChange={this.handleParametersChange}
+                    initialOptions={this.state.initialOptions}
                     handleExportSBML={this.handleExportSBML}
                     simulationParam={simulationParameters}
                     SBMLContent={this.state.sbmlExport}
@@ -227,4 +229,3 @@ export class App extends React.Component  {
 }
 
 export default App;
-

@@ -19,7 +19,7 @@ const MIN_PANEL_WIDTH = 50;
 const BREAKPOINT_WIDTH = 960;
 
 const DropdownWithPopup = (
-    { initialOptions = [],
+    { initialOptions,
         convertedAnt,
         onParametersChange,
         onCheckboxChange,
@@ -121,6 +121,11 @@ const DropdownWithPopup = (
     const initialTabData = { textContent: '', data: data};
     const plotGraphRef = useRef(null);
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [xAxis_selected_option, set_xAxis_selected_option] = useState(null);
+
+    const handleXOptionSelected = (option) => {
+        set_xAxis_selected_option(option);
+    };
     const updateSelectedOptions = (newOptions) => {
         setSelectedOptions(newOptions);
     }
@@ -630,34 +635,39 @@ const DropdownWithPopup = (
     };
     // This should be part of your React functional component
     const handleSimulateButtonClick = () => {
-        // Update options - Assuming this is some state setting function
-        setOptions(initialOptions.initialOptions);
+        // Update options - Assuming this sets the options from predefined initial options
+        //const modifiedInitialOptions = { ...initialOptions.initialOptions };
 
+//        // Get all the keys from the modified initial options object
+//        const keys = Object.keys(modifiedInitialOptions);
+//
+//        // Set the first option to false, ensuring it is the first one by index order
+//        if (keys.length > 0) {
+//            modifiedInitialOptions[keys[0]] = false;
+//        }
+//
+//        // Update options with the modified initial options
+//        setOptions(modifiedInitialOptions);
         // Check if content has changed
         const currentContent = getContentOfActiveTab();
         if (currentContent !== previousContent) {
             // Content has changed, call handleTextChange
             handleTextChange(currentContent, false);
         } else {
+            // Call onCheckboxChange if the content hasn't changed
             onCheckboxChange(isChecked);
         }
-
-        // Update previousContent for future comparison
         setPreviousContent(currentContent);
     };
-
-    // Use useEffect at the top level of your component to react to changes
     useEffect(() => {
-        if (data) {
-            const newOptions = data.titles.reduce((acc, title) => ({
-                ...acc,
-                [title]: true
-            }), {});
-
-            console.log(newOptions);
-            setSelectedOptions(newOptions);
+        const modifiedInitialOptions = { ...initialOptions };
+        const keys = Object.keys(modifiedInitialOptions);
+        if (keys.length > 0) {
+            modifiedInitialOptions[keys[0]] = false;
         }
-    }, [data]); // Dependency on 'data'
+        setOptions(modifiedInitialOptions);
+        setSelectedOptions(modifiedInitialOptions);
+    }, [initialOptions]);
 
     const handleLocalReset = () => {
           handleTextChange(getContentOfActiveTab(), true);
@@ -722,6 +732,10 @@ const DropdownWithPopup = (
         backgroundColor: isDarkMode ? '#1f1f1e' : '#c4c2c2',
         color: isDarkMode ? 'white' : 'black'
     }
+    const dropdownXAxisButtonStyle = {
+        backgroundColor: isDarkMode ? '#242323' : '#c4c2c2',
+        color: isDarkMode ? 'white' : 'black'
+    }
 
     const handleSlideButtonClick = () => {
         setShowSplitView(!showSplitView); // Toggle the split view on button click
@@ -754,16 +768,14 @@ const DropdownWithPopup = (
                             />
                                 <button className={"simulate-style"}
                                     style={{
-                                    color: isDarkMode ? "white" : "black"
-                                }}
-                                onClick={handleSimulateButtonClick}>Simulate</button>
-                                <button className={"reset-style"}
-                                    onClick={handleLocalReset}
-                                    style={{
-                                        backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                                         color: isDarkMode ? "white" : "black"
                                     }}
-                                >Reset</button>
+                                onClick={handleSimulateButtonClick}>Simulate</button>
+                                <button className={"simulate-style"}
+                                    style={{
+                                        color: isDarkMode ? "white" : "black"
+                                    }}
+                                onClick={handleLocalReset}>Reset</button>
                                 <button onClick={handleSlideButtonClick}>Slide</button>
                             </div>
                             <div className="text-checkbox-input">
@@ -794,20 +806,23 @@ const DropdownWithPopup = (
                                         border: isDarkMode ? "1px solid gray" : "1px solid black"
                                     }}
                                     onClick={() => {
-                                        setOptions(initialOptions.initialOptions);
                                         setShowXDropdown(!showXDropdown);
                                         setShowXDropdownButtons(!showXDropdownButtons)}}
                                 > Time </button>
                                 {showXDropdown && ( // This dropdown will show for both X and Y axis buttons
-                                    <DropdownContainers
-                                        updateOptions={updateSelectedOptions}
-                                        className={"dropdown-container"}
-                                        isDarkMode={isDarkMode}
-                                        withCheckboxes={true}
-                                        options={options}
-                                        dropdownStyle={dropdownStyle}
-                                    />
-                                )}
+                                        <DropdownContainers
+                                            key={JSON.stringify(options)}
+                                            className={"dropdown-container"}
+                                            onXOptionSelected={handleXOptionSelected}
+                                            isDarkMode={isDarkMode}
+                                            options={options}
+                                            xAxis={true}
+                                            withCheckboxes={false}
+                                            dropdownStyle={dropdownStyle}
+                                            dropdownToolbarButtonsStyle={dropdownXAxisButtonStyle}
+                                            dropdown_toolbar_buttons_style={"dropdown-toolbar-button-xAxis"}
+                                        />
+                                    )}
                                 {showXDropdownButtons && (
                                     <div>
                                         <button
@@ -854,12 +869,12 @@ const DropdownWithPopup = (
                                         border: isDarkMode ? "1px solid gray" : "1px solid black"
                                     }}
                                     onClick={() => {
-                                        setOptions(initialOptions.initialOptions);
                                         setShowDropdown(!showDropdown);
                                         setShowDropdownButtons(!showDropdownButtons)}} // Reuse showDropdown for Y-axis
                                 > Select Y </button>
                                 {showDropdown && ( // This dropdown will show for both X and Y axis buttons
                                     <DropdownContainers
+                                        key={JSON.stringify(options)}
                                         updateOptions={updateSelectedOptions}
                                         className={"dropdown-container"}
                                         isDarkMode={isDarkMode}
@@ -971,6 +986,7 @@ const DropdownWithPopup = (
                                     <PlotGraph
                                         ref={plotGraphRef}
                                         selectedOptions={selectedOptions}
+                                        xAxis_selected_option={xAxis_selected_option}
                                         data={data}
                                         rightPanelWidth={rightPanelWidth}
                                         rightPanelHeight={window.innerHeight}
@@ -1065,7 +1081,9 @@ const DropdownWithPopup = (
                                     options={fileItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
+                                    xAxis={false}
                                     dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
+                                    setShowDropdownToolbar={setShowDropdownToolbar}
                                 />
                             )}
                         </div>
@@ -1082,6 +1100,7 @@ const DropdownWithPopup = (
                                     options={analysisItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
+                                    xAxis={false}
                                     dropdown_toolbar_buttons_style={"dropdown-toolbar-button-analysis"}
                                 />
                             )}
@@ -1099,6 +1118,7 @@ const DropdownWithPopup = (
                                     options={optionsItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
+                                    xAxis={false}
                                     dropdown_toolbar_buttons_style={"dropdown-toolbar-button-options"}
                                 />
                             )}
@@ -1116,6 +1136,7 @@ const DropdownWithPopup = (
                                     options={examplesItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
+                                    xAxis={false}
                                     dropdown_toolbar_buttons_style={"dropdown-toolbar-button-examples"}
                                 />
                             )}
@@ -1133,6 +1154,7 @@ const DropdownWithPopup = (
                                     options={helpItems}
                                     dropdownStyle={dropdownStyle}
                                     withCheckboxes={false}
+                                    xAxis={false}
                                     dropdown_toolbar_buttons_style={"dropdown-toolbar-button-help"}
                                 />
                             )}

@@ -6,21 +6,12 @@ class DropdownContainers extends Component {
         super(props);
         this.state = {
             options: this.props.options,
-            sliderValues: {},
             showExportModal: false, // Whether to show the export modal
             customFilename: 'exported_model.xml',
+            selectedOption: 'Time',
         };
         this.fileInputRef = React.createRef();
         this.handleButtonClick = this.handleButtonClick.bind(this);
-        this.handleSliderChange = this.handleSliderChange.bind(this);
-    }
-    componentDidMount() {
-        // Initialize slider values
-        const sliderValues = {};
-        Object.keys(this.props.options).forEach(option => {
-            sliderValues[option] = 0; // Initialize sliders at 0, adjust as needed
-        });
-        this.setState({ sliderValues });
     }
 
     toggleOptionSpecific = (optionValue) => {
@@ -33,15 +24,6 @@ class DropdownContainers extends Component {
             this.props.updateOptions(this.state.options);
         });
     };
-
-    handleSliderChange(option, value) {
-        this.setState(prevState => ({
-            sliderValues: {
-                ...prevState.sliderValues,
-                [option]: value
-            }
-        }));
-    }
 
     handleFileSelect = (event) => {
         const file = event.target.files[0];
@@ -69,6 +51,7 @@ class DropdownContainers extends Component {
                 }
             };
             reader.readAsText(file);
+            this.props.setShowDropdownToolbar(false);
         }
     };
     exportSBMLFile = () => {
@@ -95,71 +78,77 @@ class DropdownContainers extends Component {
         document.body.removeChild(link);
     };
 
-    handleButtonClick = (item) => {
-        if (item === "Open...") {
-            this.fileInputRef.current.click();
-        } else if (item === "Import SBML...") {
-            this.fileInputRef.current.click();
-        } else if (item === "New Window") {
-            window.open('https://sys-bio.github.io/SimBioUI/', '_blank');
-        } else if (item === "Export SBML...") {
-            this.props.onExportSBMLSelected();
-        } else if (item === "Save Graph as PDF") {
-             this.props.onDownloadPDF();
+    handleButtonClick = (item, isXAxis) => {
+        if (isXAxis) {
+            this.setState({ selectedOption: item });
+            this.props.onXOptionSelected(item);
         } else {
-            if (typeof this.props.func === 'function') {
-                this.props.func(item);
+            if (item === "Open...") {
+                this.fileInputRef.current.click();
+            } else if (item === "Import SBML...") {
+                this.fileInputRef.current.click();
+            } else if (item === "New Window") {
+                window.open('https://sys-bio.github.io/SimBioUI/', '_blank');
+            } else if (item === "Export SBML...") {
+                this.props.onExportSBMLSelected();
+            } else if (item === "Save Graph as PDF") {
+                 this.props.onDownloadPDF();
+            } else {
+                if (typeof this.props.func === 'function') {
+                    this.props.func(item);
+                }
             }
         }
     };
 
     render() {
-        const { className, dropdownToolbarStyle, dropdownToolbarButtonsStyle, isDarkMode, dropdownStyle, withCheckboxes, dropdown_toolbar_buttons_style } = this.props;
-        const { options, sl } = this.state;
+        const { className, dropdownToolbarStyle, dropdownToolbarButtonsStyle, isDarkMode, dropdownStyle, xAxis, withCheckboxes, dropdown_toolbar_buttons_style } = this.props;
+        const { options } = this.state;
         return (
-            <div className={className}>
-                            <div style={{
-                                ...dropdownStyle,
-                                display: 'block',
-                                maxHeight: '200px',
-                                overflowY: 'scroll',
-                                backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
-                            }} className="dropdown-list">
-                                {withCheckboxes ? (
-                                    Object.keys(options).map((option) => (
-                                        <div key={option} className="dropdown-checkbox-item">
-                                            <input
-                                                type="checkbox"
-                                                id={`checkbox-${option}`}
-                                                checked={options[option]}
-                                                onChange={() => this.toggleOptionSpecific(option)}
-                                            />
-                                            <label htmlFor={`checkbox-${option}`} style={{ color: isDarkMode ? "white" : "black" }}>
-                                                {option}
-                                            </label>
-                                            {/* Slider input next to each checkbox */}
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="100" // Adjust max as needed
-                                                value={sliderValues[option] || 0}
-                                                onChange={(e) => this.handleSliderChange(option, e.target.value)}
-                                                style={{ marginLeft: '10px' }}
-                                            />
-                                        </div>
-                                    ))
-                                )  : (
-                        <div className={className}>
-                            <div
-                                style={dropdownToolbarStyle}
-                                className="dropdown-list-toolbar"
-                            >
+            <div className={className} style={{
+                ...dropdownStyle,
+                display: 'block',
+                maxHeight: '200px',
+                backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+            }}>
+                {withCheckboxes ? (
+                    Object.keys(options).map((option) => (
+                        <div key={option} className="dropdown-checkbox-item" style={{scroll: 'auto'}}>
+                            <input
+                                type="checkbox"
+                                id={`checkbox-${option}`}
+                                checked={options[option]}
+                                onChange={() => this.toggleOptionSpecific(option)}
+                            />
+                            <label htmlFor={`checkbox-${option}`} style={{ color: isDarkMode ? "white" : "black", fontSize: '12px'}}>
+                                {option}
+                            </label>
+                        </div>
+                    ))
+                ) : (
+                    <div>
+                        {xAxis ? (
+                            Object.keys(options).map((option, index) => (
+                                <div key={option} >
+                                    <button
+                                        style={dropdownToolbarButtonsStyle}
+                                        className={dropdown_toolbar_buttons_style}
+                                        onClick={() => this.handleButtonClick(option, true)}
+                                    >
+                                        {option}
+                                        {this.state.selectedOption === option && <span style={{position: 'absolute', fontSize: '20px', marginTop: '3px', right: '30px', color: isDarkMode ? 'white' : 'black', transform: 'translateY(-50%)'}}>✓</span>}
+                                    </button>
+                                </div>
+                            ))
+
+                        ) : (
+                            <div style={dropdownToolbarStyle} className="dropdown-list-toolbar">
                                 {options.map((item, index) => (
                                     <button
                                         key={index}
                                         style={dropdownToolbarButtonsStyle}
                                         className={dropdown_toolbar_buttons_style}
-                                        onClick={() => this.handleButtonClick(item.label)}
+                                        onClick={() => this.handleButtonClick(item.label, false)}
                                     >
                                         {item.label}
                                     </button>
@@ -170,13 +159,17 @@ class DropdownContainers extends Component {
                                     style={{ display: 'none' }}
                                     onChange={this.handleFileSelect}
                                 />
+
                             </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
             </div>
         );
     }
+
+
 }
 
 export default DropdownContainers;
+
