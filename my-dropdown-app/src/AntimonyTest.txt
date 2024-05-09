@@ -7,3 +7,30 @@
         S3 = 3   #The initial concentration of S3
         k1 = 0.1 #The value of the kinetic parameter from J0.
         end
+   package simpledb;
+
+    public Page getPage(TransactionId tid, PageId pid, Permissions perm)
+            throws TransactionAbortedException, DbException {
+        Page page;
+
+        // Try to acquire the lock for this transaction.
+        if (perm == Permissions.READ_ONLY) {
+            lockManager.acquireLock(tid, pid, true);
+        } else {
+            lockManager.acquireLock(tid, pid, false);
+        }
+
+        page = pages.get(pid);
+
+        if (page != null) {
+            return page;
+        }
+
+        page = Database.getCatalog().getDatabaseFile(pid.getTableId()).readPage(pid);
+        while (pages.size() >= maxNumPages) {
+            evictPage();
+        }
+        pages.put(pid, page);
+
+        return page;
+    }

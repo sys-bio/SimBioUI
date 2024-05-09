@@ -29,8 +29,13 @@ const DropdownWithPopup = (
         handleTextChange,
         handleResetInApp,
         handleSBMLfile,
+        handleKValuesChanges,
+        handleLocalReset,
         additionalElements = [],
-        data}) => {
+        data,
+        kOptions,
+        kValues,
+        kCurrentValues}) => {
      useEffect(() => {
         const handleResize = () => {
             // Update the state based on the resized window dimensions
@@ -122,6 +127,9 @@ const DropdownWithPopup = (
     const plotGraphRef = useRef(null);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [xAxis_selected_option, set_xAxis_selected_option] = useState(null);
+    const [kOptions_for_sliders, set_kOptions_for_sliders] = useState({});
+    const [sliderValues, setSliderValues] = useState({});
+    const [minMaxValues, setMinMaxValues] = useState({});
 
     const handleXOptionSelected = (option) => {
         set_xAxis_selected_option(option);
@@ -145,6 +153,15 @@ const DropdownWithPopup = (
             closeTab(tabId);
         }
     };
+    const handleSimulateButtonClick = () => {
+        const currentContent = getContentOfActiveTab();
+        if (currentContent !== previousContent) {
+            handleTextChange(currentContent, false);
+        } else {
+            onCheckboxChange(isChecked);
+        }
+        setPreviousContent(currentContent);
+    };
 
     const renderTabs = () => (
         <div className="tabs">
@@ -160,88 +177,111 @@ const DropdownWithPopup = (
             <button className={"plus-button"} onClick={addNewTab}>+</button>
         </div>
     );
-    const kOptions = ['K1', 'K2', 'K3'];
-    const [kOptions_for_sliders, set_kOptions_for_sliders] = useState({
-        K1: true,
-        K2: true,
-        K3: true
-    });
+    const createInitialState = (keys, defaultValue) => {
+        return keys.reduce((acc, key) => {
+            acc[key] = defaultValue;
+            return acc;
+        }, {});
+    };
 
-    const [sliderValues, setSliderValues] = useState({
-        K1: 50,
-        K2: 50,
-        K3: 50
-    });
+    const createInitialSliderValues = (keys, kValues) => {
+        return keys.reduce((acc, key, index) => {
+            const value = kValues[index] || 100;
+            acc[key] = value;
+            return acc;
+        }, {});
+    };
 
-    const [minMaxValues, setMinMaxValues] = useState({
-        K1: { min: 0, max: 100 },
-        K2: { min: 0, max: 100 },
-        K3: { min: 0, max: 100 }
-    });
+    const createInitialMinMaxValues = (keys, kValues) => {
+        return keys.reduce((acc, key, index) => {
+            const value = kValues[index] || 100;
+            const minValue = (value * 0.1).toFixed(2);
+            const maxValue = (value * 5).toFixed(2);
+            acc[key] = { min: minValue, max: maxValue };
+            return acc;
+        }, {});
+    };
 
-    const [tempMinMaxValues, setTempMinMaxValues] = useState({});
+    useEffect(() => {
+        if (kOptions.length > 0 && kValues.length > 0) {
+            const newStateForSliders = createInitialState(kOptions, true);
+            const newSliderValues = createInitialSliderValues(kOptions, kValues); // Example default slider value of 50
+
+            const newMinMaxValues = createInitialMinMaxValues(kOptions, kValues);
+
+            set_kOptions_for_sliders(newStateForSliders);
+            setSliderValues(newSliderValues);
+            setMinMaxValues(newMinMaxValues);
+        }
+    }, [kOptions, kValues]);
 
     const [selectedParameter, setSelectedParameter] = useState(null);
 
     const handleCheckboxChange = (option) => {
-        setKOptionsForSliders(prev => ({ ...prev, [option]: !prev[option] }));
+        set_kOptions_for_sliders(prev => ({ ...prev, [option]: !prev[option] }));
     };
 
     const handleSliderChange = (option, value) => {
-        setSliderValues(prev => ({ ...prev, [option]: value }));
+        const roundedValue = Number(value).toFixed(2);
+        setSliderValues(prev => ({ ...prev, [option]: roundedValue }));
+        handleKValuesChanges(option, roundedValue);
     };
 
     const handleLabelClick = (parameter) => {
         setSelectedParameter(parameter);
     };
 
-    const handleMinValueChange = (e) => {
-        const parameter = selectedParameter;
-        const newMin = parseInt(e.target.value);
-        setTempMinMaxValues(prev => ({
-            ...prev,
-            [parameter]: {
-                ...prev[parameter],
-                min: newMin
-            }
-        }));
-    };
-
     const handleMaxValueChange = (e) => {
         const parameter = selectedParameter;
-        const newMax = parseInt(e.target.value);
-        setTempMinMaxValues(prev => ({
+        const newMax = e.target.value || ''; // Use parseFloat to allow decimal values
+        const newMin = minMaxValues[parameter].min;
+        setMinMaxValues(prev => ({
             ...prev,
             [parameter]: {
                 ...prev[parameter],
                 max: newMax
             }
         }));
+        let newValue;
+        if (newMin < newMax) {
+            newValue = ((Number(newMin) + Number(newMax)) / 2).toFixed(2);
+        } else {
+            newValue = Number(newMin);
+        }
+        setSliderValues(prev => ({
+            ...prev,
+            [parameter]: newValue
+        }));
+        handleKValuesChanges(parameter, newValue);
     };
 
-    const handleEnterClick = () => {
-        if (selectedParameter) {
-            const parameter = selectedParameter;
-            const newMin = tempMinMaxValues[parameter].min;
-            const newMax = tempMinMaxValues[parameter].max;
-            const newValue = Math.floor((newMin + newMax) / 2);
-
-            setSliderValues(prev => ({
-                ...prev,
-                [parameter]: newValue
-            }));
-            setMinMaxValues(prev => ({
-                ...prev,
-                [parameter]: {
-                    min: newMin,
-                    max: newMax
-                }
-            }));
+    const handleMinValueChange = (e) => {
+        const parameter = selectedParameter;
+        const newMin = e.target.value || '';
+        const newMax = minMaxValues[parameter].max;
+        setMinMaxValues(prev => ({
+            ...prev,
+            [parameter]: {
+                ...prev[parameter],
+                min: newMin
+            }
+        }));
+        let newValue;
+        if (newMin < newMax) {
+           newValue = ((Number(newMin) + Number(newMax)) / 2).toFixed(2);
+        } else {
+            newValue = Number(newMin);
         }
+        setSliderValues(prev => ({
+            ...prev,
+            [parameter]: newValue
+        }));
+        handleKValuesChanges(parameter, newValue);
     };
 
     const renderActiveTabContent = () => {
         const activeTab = tabs.find(tab => tab.id === activeTabId);
+
         if (!activeTab) return null;
         if (showSplitView) {
             // When split view is active, display text input on top and a blue box on bottom
@@ -268,40 +308,44 @@ const DropdownWithPopup = (
                         />
                     </div>
                     <div style={{
-                        height: `${(centerSubPanelHeight - 104) / 2}px`,
-                        width: `${centerPanelWidth - 22}px`,
-                        backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2', // Set the background color to blue for the bottom half
-                        border: isDarkMode ? '1px solid white' : '1px solid black',
-                        color: 'white', // Set the text color to white if needed
-                        marginLeft: '10px',
-                        marginTop: '10px',
-                        display: 'flex', // Use flexbox to layout children side by side
-                        flexDirection: 'row', // Align children horizontally
-                        alignItems: 'flex-start', // Align items at the start of the flex container
-                    }}>
+                            height: `${(centerSubPanelHeight - 104) / 2}px`,
+                            width: `${centerPanelWidth - 22}px`,
+                            backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2', // Set the background color to blue for the bottom half
+                            border: isDarkMode ? '1px solid white' : '1px solid black',
+                            color: 'white', // Set the text color to white if needed
+                            marginLeft: '10px',
+                            marginTop: '10px',
+                            display: 'flex', // Use flexbox to layout children side by side
+                            flexDirection: 'row', // Align children horizontally
+                            alignItems: 'flex-start', // Align items at the start of the flex container
+                        }}>
                         {/* Container for checkboxes */}
                         <div style={{
                             height: '90%', // Set to 90% of the parent div's height
-                            width: '40%', // Adjusted width to make space for sliders
+                            width: '20%', // Adjusted width to make space for sliders
                             marginTop: '15px',
                             backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2',
                             display: 'flex', // Further nest flexbox for internal layout
                             flexDirection: 'column', // Stack children vertically
+                            overflowY: 'auto', // Add overflow-y property to enable vertical scrolling
+                            boxSizing: 'border-box', // Include border width in the total width calculation
                         }}>
+
                             <p style={{
                                 fontSize: '12px',
                                 marginLeft: '25px',
-                                color: isDarkMode ? 'white' : 'black' // Ensure text is white for visibility on dark backgrounds
+                                color: isDarkMode ? 'white' : 'black', // Ensure text is white for visibility on dark backgrounds
+                                marginTop:'20px'
                             }}>
                                 Add slider
                             </p>
                             <div style={{
-                                height: '50%', // Height of the checkbox container
-                                width: '50%', // Adjust width to fill parent
+                                height: '70%', // Set height to fit content
+                                width: '70%', // Adjust width to fill parent
                                 backgroundColor: isDarkMode ? 'black' : '#c4c2c2', // Set the background color to blue for the bottom half
-                                border: isDarkMode ? '1px solid #2273f5' : '1px solid black',
+                                border: isDarkMode ? '1px solid gray' : '1px solid black',
                                 marginLeft: '25px',
-                                padding: '5px' // Padding around content
+                                overflowY: 'auto', // Add overflow-y property to enable vertical scrolling
                             }}>
                                 {kOptions.map((option) => (
                                     <div key={option} style={{ color: isDarkMode ? 'white' : 'black', padding: '5px', fontSize: '12px' }}>
@@ -319,64 +363,95 @@ const DropdownWithPopup = (
                         </div>
 
                         <div style={{
-                            height: '70%', // Set to 90% of the parent div's height
-                            width: '90%', // Set to 50% to fit next to checkboxes
+                            height: '100%', // Set to 90% of the parent div's height
+                            width: '80%', // Set to 50% to fit next to checkboxes
                             backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2',
                             display: 'flex', // Use flexbox to layout sliders
                             flexDirection: 'column', // Stack sliders vertically
                             justifyContent: 'center', // Center sliders vertically within the container
-                            padding: '10px', // Padding around sliders
-                            marginLeft: '-30px',
-                            marginRight: '10px'
+                            padding: '40px', // Padding around sliders
+                            boxSizing: 'border-box', // Include border width in the total width calculation
                         }}>
-                        {selectedParameter && (
-                            <div>
-                                <span>Change {selectedParameter}</span>
-                                <div className="minMaxInputContainer">
-                                    <label>Min Value:</label>
-                                    <input
-                                        type="number"
-                                        value={tempMinMaxValues[selectedParameter] ? tempMinMaxValues[selectedParameter].min : minMaxValues[selectedParameter].min}
-                                        onChange={handleMinValueChange}
-                                    />
-                                </div>
-                                <div className="minMaxInputContainer">
-                                    <label>Max Value:</label>
-                                    <input
-                                        type="number"
-                                        value={tempMinMaxValues[selectedParameter] ? tempMinMaxValues[selectedParameter].max : minMaxValues[selectedParameter].max}
-                                        onChange={handleMaxValueChange}
-                                    />
-                                </div>
-                                <button style={{fontSize: '12px', backgroundColor: 'black', color: 'white'}} onClick={handleEnterClick}>Apply</button>
-                            </div>
-                        )}
-                            {kOptions.map((option) => (
-                                kOptions_for_sliders[option] && (
-                                    <div key={option + '-slider'} className="slidecontainer" style={{ width: '100%', margin: '10px 0', display: 'flex', alignItems: 'center' }}>
-                                        {/* Slider input */}
-                                        <div style={{ flex: 1 }}>
+
+                        <div style={{
+                                height: '15%', // Set to 20% of the parent div's height
+                                width: '100%',
+                                display: 'flex', // Use flexbox to layout controls horizontally
+                                flexDirection: 'row', // Align controls horizontally
+                                justifyContent: 'space-between', // Space controls evenly within the subpanel
+                                alignItems: 'center', // Align controls vertically at the center
+                                marginTop: '-45px'
+                            }}>
+                                {selectedParameter && (
+                                    <div>
+                                        <span style={{ fontSize: '12px', marginRight: '10px' }}>{selectedParameter}</span>
+                                        <div className="minMaxInputContainer">
+                                            <label>Min Value:</label>
                                             <input
-                                                type="range"
-                                                min={minMaxValues[option].min}
-                                                max={minMaxValues[option].max}
-                                                value={sliderValues[option]}
-                                                onChange={(e) => handleSliderChange(option, e.target.value)}
-                                                style={{
-                                                    width: '100%',
-                                                    background: `linear-gradient(to right, #2273f5 0%, blue ${(sliderValues[option] / (minMaxValues[option].max + minMaxValues[option].min) * 100)}%, #d3d3d3 ${(sliderValues[option] / (minMaxValues[option].max + minMaxValues[option].min) * 100)}%, #d3d3d3 100%, transparent 100%)`
-                                                }}
-                                                className="slider"
+                                                type="number"
+                                                value={minMaxValues[selectedParameter] ? minMaxValues[selectedParameter].min : 0}
+                                                onChange={handleMinValueChange}
                                             />
                                         </div>
-                                        <div className="labelContainer">
-                                            <label className="sliderLabel" style={{ marginLeft: '15px', fontSize:'12px', marginTop: '7px' }} onClick={() => handleLabelClick(option)}>
-                                                <span>{option} [{minMaxValues[option]?.min || 0}, {minMaxValues[option]?.max || 100}]</span>
-                                            </label>
+                                        <div className="minMaxInputContainer">
+                                            <label>Max Value:</label>
+                                            <input
+                                                type="number"
+                                                value={minMaxValues[selectedParameter].max}
+                                                onChange={handleMaxValueChange}
+                                            />
                                         </div>
                                     </div>
-                                )
-                            ))}
+                                )}
+                            </div>
+                            <div style={{
+                                    height: '85%', // Set to 80% of the parent div's height
+                                    width: '100%',
+                                    backgroundColor: isDarkMode ? '#2e2d2d' : '#c4c2c2',
+                                    display: 'flex', // Use flexbox to layout sliders
+                                    flexDirection: 'column', // Stack sliders vertically
+                                    justifyContent: 'center', // Center sliders vertically within the subpanel
+                                    padding: '20px', // Padding around sliders
+                                    boxSizing: 'border-box', // Include padding in the total width calculation
+                                    marginTop: '10px',
+                                    overflowY: 'auto', // Add scrollbar when content overflows vertically
+                                }}>
+                                {kOptions.map((option) => {
+                                        if (kOptions_for_sliders[option]) {
+                                            const range = minMaxValues[option].max - minMaxValues[option].min;
+                                            const stepSize = range < 10 ? 0.1 : range / 100;
+                                            const currentVal = sliderValues[option] === minMaxValues[option].min ? 0 : sliderValues[option];
+
+                                            return (
+                                                <div key={option + '-slider'} className="slidecontainer" style={{ position: 'relative', width: '100%', margin: '10px 0', display: 'flex', alignItems: 'center' }}>
+                                                    <div style={{ flex: 1, position: 'relative'}}>
+                                                        <input
+                                                            type="range"
+                                                            min={minMaxValues[option].min}
+                                                            max={minMaxValues[option].max}
+                                                            value={sliderValues[option]}
+                                                            step={stepSize} // Use the computed stepSize here
+                                                            onChange={(e) => handleSliderChange(option, e.target.value)}
+                                                            style={{
+                                                                width: '100%',
+                                                                background: `linear-gradient(to right, #2273f5 0%, blue ${((sliderValues[option] - minMaxValues[option].min) / (minMaxValues[option].max - minMaxValues[option].min) * 100)}%, #d3d3d3 ${((sliderValues[option] - minMaxValues[option].min) / (minMaxValues[option].max - minMaxValues[option].min) * 100)}%, #d3d3d3 100%, transparent 100%)`
+                                                            }}
+                                                            className="slider"
+                                                        />
+                                                        <div style={{ position: 'absolute', top: '-10px', left: '10px', transform: 'translateX(-50%)', fontSize: '12px' }}>
+                                                            {currentVal}
+                                                        </div>
+                                                    </div>
+                                                    <div className="labelContainer">
+                                                        <label className="sliderLabel" style={{ marginLeft: '15px', fontSize: '12px', marginTop: '7px' }} onClick={() => handleLabelClick(option)}>
+                                                            <span>{option} [{minMaxValues[option]?.min || 0}, {minMaxValues[option]?.max || 0}]</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                    })}
+                            </div>
                         </div>
                     </div>
                 </>
@@ -633,32 +708,7 @@ const DropdownWithPopup = (
         setShowDropdownToolbar(menu !== activeToolbarButton);
         setActiveToolbarButton(menu === activeToolbarButton ? '' : menu);
     };
-    // This should be part of your React functional component
-    const handleSimulateButtonClick = () => {
-        // Update options - Assuming this sets the options from predefined initial options
-        //const modifiedInitialOptions = { ...initialOptions.initialOptions };
 
-//        // Get all the keys from the modified initial options object
-//        const keys = Object.keys(modifiedInitialOptions);
-//
-//        // Set the first option to false, ensuring it is the first one by index order
-//        if (keys.length > 0) {
-//            modifiedInitialOptions[keys[0]] = false;
-//        }
-//
-//        // Update options with the modified initial options
-//        setOptions(modifiedInitialOptions);
-        // Check if content has changed
-        const currentContent = getContentOfActiveTab();
-        if (currentContent !== previousContent) {
-            // Content has changed, call handleTextChange
-            handleTextChange(currentContent, false);
-        } else {
-            // Call onCheckboxChange if the content hasn't changed
-            onCheckboxChange(isChecked);
-        }
-        setPreviousContent(currentContent);
-    };
     useEffect(() => {
         const modifiedInitialOptions = { ...initialOptions };
         const keys = Object.keys(modifiedInitialOptions);
@@ -668,10 +718,6 @@ const DropdownWithPopup = (
         setOptions(modifiedInitialOptions);
         setSelectedOptions(modifiedInitialOptions);
     }, [initialOptions]);
-
-    const handleLocalReset = () => {
-          handleTextChange(getContentOfActiveTab(), true);
-    };
 
     const resetInitialConditions = (e) => {
         setIsChecked(e.target.checked);
@@ -1013,9 +1059,7 @@ const DropdownWithPopup = (
                                                                     className={"checkbox-input"}
                                                                     type="checkbox"
                                                                     onChange={(e) => {
-                                                                        // Handle checkbox change here
                                                                         const isChecked = e.target.checked;
-                                                                        // You can use the checkbox state as needed
                                                                     }}
                                                                 />
                                                                 Autoscale X
@@ -1168,4 +1212,6 @@ const DropdownWithPopup = (
     );
 };
 export default DropdownWithPopup;
+
+
 
