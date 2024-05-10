@@ -85,6 +85,8 @@ class DropdownContainers extends Component {
         } else {
             if (item === "Open...") {
                 this.fileInputRef.current.click();
+            } else if (item === 'New') {
+                this.props.addNewTab();
             } else if (item === "Import SBML...") {
                 this.fileInputRef.current.click();
             } else if (item === "New Window") {

@@ -79,7 +79,7 @@ const DropdownWithPopup = (
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [deleteMessage, setDeleteMessage] = useState('');
     const fileItems = [
-        { label: 'New File'},
+        { label: 'New'},
         { label: 'New Window'},
         { label: 'Open...'},
         { label: 'Import SBML...'},
@@ -156,7 +156,7 @@ const DropdownWithPopup = (
     const handleSimulateButtonClick = () => {
         const currentContent = getContentOfActiveTab();
         if (currentContent !== previousContent) {
-            handleTextChange(currentContent, false);
+            handleTextChange(currentContent, isChecked);
         } else {
             onCheckboxChange(isChecked);
         }
@@ -721,7 +721,7 @@ const DropdownWithPopup = (
 
     const resetInitialConditions = (e) => {
         setIsChecked(e.target.checked);
-        handleTextChange(getContentOfActiveTab(), true);
+        handleTextChange(getContentOfActiveTab(), !isChecked);
     }
 
     // Example logic in DropdownWithPopup
@@ -812,17 +812,25 @@ const DropdownWithPopup = (
                                 onParametersChange={onParametersChange}
                                 simulationParam={simulationParam}
                             />
-                                <button className={"simulate-style"}
-                                    style={{
-                                        color: isDarkMode ? "white" : "black"
-                                    }}
-                                onClick={handleSimulateButtonClick}>Simulate</button>
-                                <button className={"simulate-style"}
-                                    style={{
-                                        color: isDarkMode ? "white" : "black"
-                                    }}
-                                onClick={handleLocalReset}>Reset</button>
-                                <button onClick={handleSlideButtonClick}>Slide</button>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between', // Distribute items evenly along the main axis
+                                    width: '100%', // Ensure full width of the container
+                                }}>
+                                    <button className={"simulate-style"}
+                                        style={{
+                                            color: isDarkMode ? "white" : "black"
+                                        }}
+                                        onClick={handleSimulateButtonClick}>Simulate</button>
+                                    <button className={"simulate-style"}
+                                        style={{
+                                            marginLeft:'-10px',
+                                            color: isDarkMode ? "white" : "black"
+                                        }}
+                                        onClick={handleLocalReset}>Reset</button>
+                                    <button onClick={handleSlideButtonClick}>Slider</button>
+                                </div>
+
                             </div>
                             <div className="text-checkbox-input">
                                 <label style={{
@@ -1128,6 +1136,7 @@ const DropdownWithPopup = (
                                     xAxis={false}
                                     dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
                                     setShowDropdownToolbar={setShowDropdownToolbar}
+                                    addNewTab={addNewTab}
                                 />
                             )}
                         </div>

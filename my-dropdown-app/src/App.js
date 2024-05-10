@@ -28,7 +28,6 @@ export class App extends React.Component  {
             },
             initialOptions: [],
             simulationParameterChanges: false,
-            oldNumPoints: 0,
             oldSBMLContent: "",
             kOptions: [],
             kValues: []
@@ -62,24 +61,76 @@ export class App extends React.Component  {
                 });
             }
             const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
-            const dist_old_with_current_NumPoints = numPoints - simResults.columns[0].length;
-
             this.setState({
                 data: {
                     columns: simResults.columns,
                     titles: simResults.titles
                 },
-                oldNumPoints: dist_old_with_current_NumPoints,
                 oldSBMLContent: this.state.sbmlCode,
                 initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
             });
+
         } catch (err) {
             console.error(`Error in loadCopasi: ${err.message}`);
         }
     };
+    handleTextChange = (content, reset) => {
+        if (!ant_wrap) {
+            this.loadAntimonyLib(() => this.processTextChange(content, reset));
+        } else {
+            this.processTextChange(content, reset);
+        }
+    }
+    processTextChange = (content, reset) => {
+        // If content hasn't changed and reset is false, do nothing
+        if (content === this.state.textareaContent && reset === false) {
+            return;
+        }
+        // If reset is true and content is the same as the current state
+        if (reset === true && content === this.state.textareaContent) {
+            this.setState(prevState => ({
+                textareaContent: content,
+                index: 1,
+                simulationParameters: {
+                    ...prevState.simulationParameters,
+                    timeStart: 0.0,
+                    timeEnd: 20.0
+                }
+            }), () => {
+                this.state.copasi.loadModel(this.state.sbmlCode);
+                this.loadCopasi();
+            });
+            return;
+        }
+
+        // If content has changed, handle the change
+        this.setState(prevState => ({
+            textareaContent: content,
+            index: 1,
+            simulationParameters: {
+                ...prevState.simulationParameters,
+                timeStart: 0.0,
+                timeEnd: 20.0
+            }
+        }), () => {
+            if (content.trim() !== "") {
+                const result = ant_wrap.convertAntimonyToSBML(content);
+                if (result.isSuccess()) {
+                    const sbml = result.getResult();
+                    this.setState({
+                        sbmlCode: sbml,
+                        convertedAnt: ""
+                    }, () => {
+                        this.loadCopasi();
+                    });
+                } else {
+                    alert('Antimony syntax is not valid.');
+                }
+            }
+        });
+    }
     handleLocalReset = () => {
           this.state.copasi.reset;
-          this.loadCopasi();
     };
 
     handleKValuesChanges = (option, value) => {
@@ -140,44 +191,6 @@ export class App extends React.Component  {
       } catch (err) {
         console.log('Load libantimony Error: ', err);
       }
-    }
-
-    handleTextChange = (content, reset) => {
-        if (!ant_wrap) {
-            this.loadAntimonyLib(() => this.processTextChange(content, reset));
-        } else {
-            this.processTextChange(content, reset);
-        }
-    }
-
-    processTextChange = (content, reset) => {
-        if (content === this.state.textareaContent && reset === false) {
-            return;
-        }
-        this.setState(prevState => ({
-            textareaContent: content,
-            index: 1,
-            simulationParameters: {
-                ...prevState.simulationParameters,
-                timeStart: 0.0,
-                timeEnd: 20.0
-            }
-        }), () => {
-            if (content.trim() !== "") {
-                const result = ant_wrap.convertAntimonyToSBML(content);
-                if(result.isSuccess()) {
-                    const sbml = result.getResult();
-                    this.setState({
-                        sbmlCode: sbml,
-                        convertedAnt: ""
-                    }, () => {
-                        this.loadCopasi();
-                    });
-                } else {
-                    alert('Antimony syntax is not valid.');
-                }
-            }
-        });
     }
 
     handleSBMLfile = (content) => {
