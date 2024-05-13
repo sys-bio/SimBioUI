@@ -52,6 +52,7 @@ const DropdownWithPopup = (
         // Remove event listener on cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+    const [selectedXOption, setSelectedXOption] = useState("Time")
     const [previousContent, setPreviousContent] = useState("");
     const [isChecked, setIsChecked] = useState(true);
 
@@ -156,7 +157,7 @@ const DropdownWithPopup = (
     const handleSimulateButtonClick = () => {
         const currentContent = getContentOfActiveTab();
         if (currentContent !== previousContent) {
-            handleTextChange(currentContent, isChecked);
+            handleTextChange(currentContent, isChecked, false);
         } else {
             onCheckboxChange(isChecked);
         }
@@ -721,7 +722,7 @@ const DropdownWithPopup = (
 
     const resetInitialConditions = (e) => {
         setIsChecked(e.target.checked);
-        handleTextChange(getContentOfActiveTab(), !isChecked);
+        handleTextChange(getContentOfActiveTab(), !isChecked, false);
     }
 
     // Example logic in DropdownWithPopup
@@ -827,7 +828,7 @@ const DropdownWithPopup = (
                                             marginLeft:'-10px',
                                             color: isDarkMode ? "white" : "black"
                                         }}
-                                        onClick={handleLocalReset}>Reset</button>
+                                        onClick={() => handleLocalReset(getContentOfActiveTab(), isChecked)}>Reset</button>
                                     <button onClick={handleSlideButtonClick}>Slider</button>
                                 </div>
 
@@ -862,7 +863,7 @@ const DropdownWithPopup = (
                                     onClick={() => {
                                         setShowXDropdown(!showXDropdown);
                                         setShowXDropdownButtons(!showXDropdownButtons)}}
-                                > Time </button>
+                                > {selectedXOption} </button>
                                 {showXDropdown && ( // This dropdown will show for both X and Y axis buttons
                                         <DropdownContainers
                                             key={JSON.stringify(options)}
@@ -875,6 +876,12 @@ const DropdownWithPopup = (
                                             dropdownStyle={dropdownStyle}
                                             dropdownToolbarButtonsStyle={dropdownXAxisButtonStyle}
                                             dropdown_toolbar_buttons_style={"dropdown-toolbar-button-xAxis"}
+                                            setShowXDropdown={setShowXDropdown}
+                                            showXDropdown={showXDropdown}
+                                            setShowXDropdownButtons={setShowXDropdownButtons}
+                                            showXDropdownButtons={showXDropdownButtons}
+                                            selectedXOption={selectedXOption}
+                                            setSelectedXOption={setSelectedXOption}
                                         />
                                     )}
                                 {showXDropdownButtons && (

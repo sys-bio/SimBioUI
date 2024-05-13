@@ -7,8 +7,7 @@ class DropdownContainers extends Component {
         this.state = {
             options: this.props.options,
             showExportModal: false, // Whether to show the export modal
-            customFilename: 'exported_model.xml',
-            selectedOption: 'Time',
+            customFilename: 'exported_model.xml'
         };
         this.fileInputRef = React.createRef();
         this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -80,8 +79,10 @@ class DropdownContainers extends Component {
 
     handleButtonClick = (item, isXAxis) => {
         if (isXAxis) {
-            this.setState({ selectedOption: item });
+            this.props.setSelectedXOption(item);
             this.props.onXOptionSelected(item);
+            this.props.setShowXDropdown(!this.props.showXDropdown);
+            this.props.setShowXDropdownButtons(!this.props.showXDropdownButtons);
         } else {
             if (item === "Open...") {
                 this.fileInputRef.current.click();
@@ -138,7 +139,7 @@ class DropdownContainers extends Component {
                                         onClick={() => this.handleButtonClick(option, true)}
                                     >
                                         {option}
-                                        {this.state.selectedOption === option && <span style={{position: 'absolute', fontSize: '20px', marginTop: '3px', right: '30px', color: isDarkMode ? 'white' : 'black', transform: 'translateY(-50%)'}}>✓</span>}
+                                        {this.props.selectedXOption === option && <span style={{position: 'absolute', fontSize: '20px', marginTop: '3px', right: '30px', color: isDarkMode ? 'white' : 'black', transform: 'translateY(-50%)'}}>✓</span>}
                                     </button>
                                 </div>
                             ))

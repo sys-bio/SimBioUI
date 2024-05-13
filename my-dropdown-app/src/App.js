@@ -60,6 +60,7 @@ export class App extends React.Component  {
                     kOptions: kOptions
                 });
             }
+            this.state.copasi.reset();
             const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
             this.setState({
                 data: {
@@ -74,20 +75,20 @@ export class App extends React.Component  {
             console.error(`Error in loadCopasi: ${err.message}`);
         }
     };
-    handleTextChange = (content, reset) => {
+    handleTextChange = (content, isChecked) => {
         if (!ant_wrap) {
-            this.loadAntimonyLib(() => this.processTextChange(content, reset));
+            this.loadAntimonyLib(() => this.processTextChange(content, isChecked));
         } else {
-            this.processTextChange(content, reset);
+            this.processTextChange(content, isChecked);
         }
     }
-    processTextChange = (content, reset) => {
-        // If content hasn't changed and reset is false, do nothing
-        if (content === this.state.textareaContent && reset === false) {
+    processTextChange = (content, isChecked) => {
+        // When "Always set back to initial" is off, and keep simulating
+        if (content === this.state.textareaContent && !isChecked) {
             return;
         }
-        // If reset is true and content is the same as the current state
-        if (reset === true && content === this.state.textareaContent) {
+        // If "Always set back to initial" is on and content is the same as the current state
+        if ((isChecked && content === this.state.textareaContent)) {
             this.setState(prevState => ({
                 textareaContent: content,
                 index: 1,
@@ -97,7 +98,7 @@ export class App extends React.Component  {
                     timeEnd: 20.0
                 }
             }), () => {
-                this.state.copasi.loadModel(this.state.sbmlCode);
+                this.state.copasi.reset();
                 this.loadCopasi();
             });
             return;
@@ -129,8 +130,8 @@ export class App extends React.Component  {
             }
         });
     }
-    handleLocalReset = () => {
-          this.state.copasi.reset;
+    handleLocalReset = (content, isChecked) => {
+        this.processTextChange(content, true);
     };
 
     handleKValuesChanges = (option, value) => {
