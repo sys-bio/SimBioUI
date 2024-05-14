@@ -80,9 +80,7 @@ class DropdownContainers extends Component {
             this.props.setShowXDropdownButtons(!this.props.showXDropdownButtons);
         } else {
             if (item === "Open...") {
-                this.setState({ fileInputAccept: '.txt,.ant' }, () => {
-                    this.fileInputRef.current.click();
-                });
+                this.fileInputRef.current.click();
             } else if (item === 'New') {
                 this.props.addNewTab();
             } else if (item === "Import SBML...") {
