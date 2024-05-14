@@ -67,8 +67,8 @@ export class App extends React.Component  {
                     columns: simResults.columns,
                     titles: simResults.titles
                 },
-                oldSBMLContent: this.state.sbmlCode,
                 initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
+                oldSBMLContent: this.state.sbmlCode
             });
 
         } catch (err) {
@@ -213,6 +213,7 @@ export class App extends React.Component  {
                 this.setState({ sbmlCode: content, convertedAnt: antCode });
             }
         }
+        this.handleResetInApp();
     }
 
     // In App.js
@@ -252,10 +253,8 @@ export class App extends React.Component  {
       };
 
 
-    handleResetInApp = (value) => {
-        if (value === true) {
-            this.setState({data: {columns: []}});
-        }
+    handleResetInApp = () => {
+        this.setState({data: {columns: []}});
     }
 
     render() {

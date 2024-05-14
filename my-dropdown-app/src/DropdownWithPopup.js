@@ -52,6 +52,8 @@ const DropdownWithPopup = (
         // Remove event listener on cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+    const [shouldUpdateSelectedOptions, setShouldUpdateSelectedOptions] = useState(false);
+
     const [selectedXOption, setSelectedXOption] = useState("Time")
     const [previousContent, setPreviousContent] = useState("");
     const [isChecked, setIsChecked] = useState(true);
@@ -118,7 +120,6 @@ const DropdownWithPopup = (
         showSettings: true, // Show settings for the first graph initially
         textContext: ""
     };
-    const [graph, setGraph] = useState(initialGraphState);
     const [activeToolbarButton, setActiveToolbarButton] = useState('');
 
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
@@ -157,8 +158,11 @@ const DropdownWithPopup = (
     const handleSimulateButtonClick = () => {
         const currentContent = getContentOfActiveTab();
         if (currentContent !== previousContent) {
+            setSelectedOptions([]);
             handleTextChange(currentContent, isChecked, false);
+            setShouldUpdateSelectedOptions(true);
         } else {
+            setShouldUpdateSelectedOptions(false);
             onCheckboxChange(isChecked);
         }
         setPreviousContent(currentContent);
@@ -494,7 +498,8 @@ const DropdownWithPopup = (
         updateActiveTabContent(content);
     };
     const handleContentSelect = (content) => {
-        updateActiveTabContent(content); // Update active tab's content
+        updateActiveTabContent(content);
+        handleResetInApp();
     };
     useEffect(() => {
         if (convertedAnt) {
@@ -716,8 +721,10 @@ const DropdownWithPopup = (
         if (keys.length > 0) {
             modifiedInitialOptions[keys[0]] = false;
         }
-        setOptions(modifiedInitialOptions);
-        setSelectedOptions(modifiedInitialOptions);
+        if (shouldUpdateSelectedOptions) {
+            setOptions(modifiedInitialOptions);
+            setSelectedOptions(modifiedInitialOptions);
+        }
     }, [initialOptions]);
 
     const resetInitialConditions = (e) => {
@@ -1052,16 +1059,16 @@ const DropdownWithPopup = (
                                         rightPanelWidth={rightPanelWidth}
                                         rightPanelHeight={window.innerHeight}
                                         isDarkMode={isDarkMode}/>
-                                    {graph.showSettings && (
+                                    {initialGraphState.showSettings && (
                                         <div>
                                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                                 <div style={{ marginRight: '10px' }}>
-                                                    <NumberInput label="X Minimum:" value={graph.xMin} onChange={(newValue) => updateGraphSetting(index, 'xMin', newValue)} />
-                                                    <NumberInput label="X Maximum:" value={graph.xMax} onChange={(newValue) => updateGraphSetting(index, 'xMax', newValue)} />
+                                                    <NumberInput label="X Minimum:" value={initialGraphState.xMin} onChange={(newValue) => updateGraphSetting(index, 'xMin', newValue)} />
+                                                    <NumberInput label="X Maximum:" value={initialGraphState.xMax} onChange={(newValue) => updateGraphSetting(index, 'xMax', newValue)} />
                                                 </div>
                                                 <div>
-                                                    <NumberInput label="Y Minimum:" value={graph.yMin} onChange={(newValue) => updateGraphSetting(index, 'yMin', newValue)} />
-                                                    <NumberInput label="Y Maximum:" value={graph.yMax} onChange={(newValue) => updateGraphSetting(index, 'yMax', newValue)} />
+                                                    <NumberInput label="Y Minimum:" value={initialGraphState.yMin} onChange={(newValue) => updateGraphSetting(index, 'yMin', newValue)} />
+                                                    <NumberInput label="Y Maximum:" value={initialGraphState.yMax} onChange={(newValue) => updateGraphSetting(index, 'yMax', newValue)} />
                                                 </div>
                                                 <div className="text-checkbox-input-autoscale" style={{ display: 'flex', justifyContent: 'space-between',
                                                     alignItems: 'flex-start', marginBottom: '10px' }}>

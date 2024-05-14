@@ -29,6 +29,7 @@ class PlotGraph extends Component {
     };
 
     render() {
+
         let indexOfX;
         let name_of_xAxis;
         if (this.props.xAxis_selected_option == null) {
@@ -46,17 +47,19 @@ class PlotGraph extends Component {
         // Generate plot data configurations dynamically, but filter based on selected options
         const plotData = [];
         const colors = ['black', 'light blue', 'green', 'red', 'purple', 'yellow', 'cyan', 'magenta'];
-        for (let i = 0; i <= plotsCount; i++) {
-            if (this.props.selectedOptions[this.props.data.titles[i]]) { // Check if the option for this series is true
-                plotData.push({
-                    x: xValues,
-                    y: this.props.data.columns[i],
-                    type: 'scatter',
-                    mode: 'lines',
-                    name: this.props.data.titles[i],
-                    marker: { color: colors[i % colors.length] }, // Alternate color for even series
-                    line: { width: 2 },
-                });
+        if (this.props.data.titles) {
+            for (let i = 0; i <= plotsCount; i++) {
+                if (this.props.selectedOptions[this.props.data.titles[i]]) { // Check if the option for this series is true
+                    plotData.push({
+                        x: xValues,
+                        y: this.props.data.columns[i],
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: this.props.data.titles[i],
+                        marker: { color: colors[i % colors.length] }, // Alternate color for even series
+                        line: { width: 2 },
+                    });
+                }
             }
         }
 
