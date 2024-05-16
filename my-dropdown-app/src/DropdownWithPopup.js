@@ -112,14 +112,15 @@ const DropdownWithPopup = (
     ];
 
     const initialGraphState = {
-        data: data,
         xMin: "0.00",
-        yMin: "10.00",
-        xMax: "0.00",
-        yMax: "10.00",
-        showSettings: true, // Show settings for the first graph initially
-        textContext: ""
+        yMin: "0.00",
+        xMax: "10.00",
+        yMax: "10.00"
     };
+    const [graphState, setGraphState] = useState(initialGraphState);
+    const [isXAutoscaleChecked, setIsXAutoscaleChecked] = useState(false);
+    const [isYAutoscaleChecked, setIsYAutoscaleChecked] = useState(false);
+
     const [activeToolbarButton, setActiveToolbarButton] = useState('');
 
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
@@ -756,7 +757,7 @@ const DropdownWithPopup = (
       };
     }, [showDropdownToolbar]); // Dependency on showDropdownToolbar to add/remove the listener appropriately
 
-    const NumberInput = ({ label, value, onChange }) => (
+    const NumberInput = ({ label, placeholder, disabled}) => (
         <div style={{ marginBottom: '10px' }}>
             <label style={{ color: isDarkMode ? "white" : "black", fontSize: 12, display: 'block' }}>
                 {label}
@@ -769,9 +770,9 @@ const DropdownWithPopup = (
                         width: '60px',
                         fontSize: 12
                     }}
-                    type="number"
-                    value={value}
-                    onChange={e => onChange(e.target.value)}
+                    type="text"
+                    placeholder={placeholder}
+                    disabled={disabled}
                 />
             </label>
         </div>
@@ -1058,17 +1059,48 @@ const DropdownWithPopup = (
                                         data={data}
                                         rightPanelWidth={rightPanelWidth}
                                         rightPanelHeight={window.innerHeight}
-                                        isDarkMode={isDarkMode}/>
-                                    {initialGraphState.showSettings && (
+                                        isDarkMode={isDarkMode}lotGrap
+                                        graphState={graphState}
+                                        isXAutoscaleChecked={isXAutoscaleChecked}
+                                        isYAutoscaleChecked={isYAutoscaleChecked}
+                                     />
                                         <div>
                                             <div style={{ display: 'flex', marginTop: '10px' }}>
-                                                <div style={{ marginRight: '10px' }}>
-                                                    <NumberInput label="X Minimum:" value={initialGraphState.xMin} onChange={(newValue) => updateGraphSetting(index, 'xMin', newValue)} />
-                                                    <NumberInput label="X Maximum:" value={initialGraphState.xMax} onChange={(newValue) => updateGraphSetting(index, 'xMax', newValue)} />
+                                                <div style={{ marginRight: '10px'}}>
+                                                    <NumberInput label="X Minimum:"
+                                                    placeholder="0.00"
+                                                    value={graphState.xMin}
+                                                    disabled={isXAutoscaleChecked}
+                                                    onChange={(e) => setGraphState(prevState => ({
+                                                        ...prevState,
+                                                        xMin: e.target.value
+                                                    }))}/>
+                                                    <NumberInput label="X Maximum:"
+                                                    placeholder="10.0"
+                                                    value={graphState.xMax}
+                                                    disabled={isXAutoscaleChecked}
+                                                    onChange={(e) => setGraphState(prevState => ({
+                                                        ...prevState,
+                                                        xMax: e.target.value
+                                                    }))}/>
                                                 </div>
                                                 <div>
-                                                    <NumberInput label="Y Minimum:" value={initialGraphState.yMin} onChange={(newValue) => updateGraphSetting(index, 'yMin', newValue)} />
-                                                    <NumberInput label="Y Maximum:" value={initialGraphState.yMax} onChange={(newValue) => updateGraphSetting(index, 'yMax', newValue)} />
+                                                    <NumberInput label="Y Minimum:"
+                                                    placeholder="0.00"
+                                                    value={graphState.yMin}
+                                                    disabled={isYAutoscaleChecked}
+                                                    onChange={(e) => setGraphState(prevState => ({
+                                                        ...prevState,
+                                                        xMin: e.target.value
+                                                    }))}/>
+                                                    <NumberInput label="Y Maximum:"
+                                                    placeholder="10.0"
+                                                    value={graphState.yMax}
+                                                    disabled={isYAutoscaleChecked}
+                                                    onChange={(e) => setGraphState(prevState => ({
+                                                        ...prevState,
+                                                        xMax: e.target.value
+                                                    }))}/>
                                                 </div>
                                                 <div className="text-checkbox-input-autoscale" style={{ display: 'flex', justifyContent: 'space-between',
                                                     alignItems: 'flex-start', marginBottom: '10px' }}>
@@ -1081,7 +1113,7 @@ const DropdownWithPopup = (
                                                                     className={"checkbox-input"}
                                                                     type="checkbox"
                                                                     onChange={(e) => {
-                                                                        const isChecked = e.target.checked;
+                                                                        setIsXAutoscaleChecked(e.target.checked);
                                                                     }}
                                                                 />
                                                                 Autoscale X
@@ -1095,9 +1127,7 @@ const DropdownWithPopup = (
                                                                     className="checkbox-input"
                                                                     type="checkbox"
                                                                     onChange={(e) => {
-                                                                        // Handle checkbox change here
-                                                                        const isChecked = e.target.checked;
-                                                                        // You can use the checkbox state as needed
+                                                                        setIsYAutoscaleChecked(e.target.checked);
                                                                     }}
                                                                 />
                                                                 Autoscale Y
@@ -1124,7 +1154,6 @@ const DropdownWithPopup = (
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
                         </div>
                     </div>
                 </div>

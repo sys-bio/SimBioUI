@@ -29,7 +29,6 @@ class PlotGraph extends Component {
     };
 
     render() {
-
         let indexOfX;
         let name_of_xAxis;
         if (this.props.xAxis_selected_option == null) {
@@ -39,11 +38,12 @@ class PlotGraph extends Component {
             indexOfX = this.props.data.titles.indexOf(this.props.xAxis_selected_option);
             name_of_xAxis = this.props.xAxis_selected_option;
         }
-        const { rightPanelWidth, rightPanelHeight, isDarkMode } = this.props;
+        const { rightPanelWidth, rightPanelHeight, isDarkMode, isXAutoscaleChecked, isYAutoscaleChecked } = this.props;
         const baseFontSize = 12;
         const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
         const xValues = this.props.data.columns[indexOfX];
         const plotsCount = this.props.data.columns.length;
+
         // Generate plot data configurations dynamically, but filter based on selected options
         const plotData = [];
         const colors = ['black', 'light blue', 'green', 'red', 'purple', 'yellow', 'cyan', 'magenta'];
@@ -63,6 +63,9 @@ class PlotGraph extends Component {
             }
         }
 
+        // Define x-axis range based on isXAutoscaleChecked state
+        const xaxisRange = isXAutoscaleChecked ? undefined : [parseFloat(this.props.graphState.xMin), parseFloat(this.props.graphState.xMax)];
+        const yaxisRange = isYAutoscaleChecked ? undefined : [parseFloat(this.props.graphState.yMin), parseFloat(this.props.graphState.yMax)];
         return (
             <div>
                 <Plot
@@ -70,7 +73,7 @@ class PlotGraph extends Component {
                     data={plotData}
                     layout={{
                         width: rightPanelWidth * 0.95,
-                        height: rightPanelHeight * 0.45,
+                        height: rightPanelHeight * 0.60,
                         title: {
                             text: 'Transition of substances in chemical reaction',
                             font: {
@@ -90,10 +93,12 @@ class PlotGraph extends Component {
                             },
                             tickfont: {
                                 color: isDarkMode ? 'black' : 'white',
-                                size: dynamicFontSize * 0.8, // Smaller font size for ticks
+                                size: dynamicFontSize * 0.8
                             },
-                            gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
+                            gridcolor: isDarkMode ? 'white' : '#c4c2c2', // Lighter gray for visibility on dark background
                             zerolinecolor: 'black',
+                            autorange: isXAutoscaleChecked,
+                            range: xaxisRange
                         },
                         yaxis: {
                             title: {
@@ -107,9 +112,10 @@ class PlotGraph extends Component {
                                 color: isDarkMode ? 'black' : 'white',
                                 size: dynamicFontSize * 0.8, // Smaller font size for ticks
                             },
-                            gridcolor: isDarkMode ? '#d4cfcf' : 'gray', // Lighter gray for visibility on dark background
+                            gridcolor: isDarkMode ? 'white' : '#c4c2c2', // Lighter gray for visibility on dark background
                             zerolinecolor: 'black', // Color for y=0 line, match gridcolor for consistency
-
+                            autorange: isYAutoscaleChecked,
+                            range: yaxisRange
                         },
                     }}
                 />
