@@ -1,0 +1,13 @@
+
+.top-menu {
+    display: flex;
+    justifyContent: space-around;
+    width: 20%;
+    position: fixed;
+    justify-content: flex-start;
+}
+.top-menu-button {
+    margin-right: 10px; /* Adjust according to your needs */
+    font-size: 14px;
+    margin-right: 10px;
+}

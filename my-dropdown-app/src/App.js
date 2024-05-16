@@ -86,55 +86,29 @@ export class App extends React.Component {
         }
         // If "Always set back to initial" is on and content is the same as the current state
         if (isChecked && content === this.state.textareaContent) {
-            this.setState(
-                (prevState) => ({
-                    textareaContent: content,
-                    index: 1,
-                    simulationParameters: {
-                        ...prevState.simulationParameters,
-                        timeStart: 0.0,
-                        timeEnd: 20.0,
-                    },
-                }),
-                () => {
-                    this.state.copasi.reset();
-                    this.loadCopasi();
-                },
-            );
+            this.state.copasi.reset();
+            this.loadCopasi();
             return;
         }
 
         // If content has changed, handle the change
-        this.setState(
-            (prevState) => ({
-                textareaContent: content,
-                index: 1,
-                simulationParameters: {
-                    ...prevState.simulationParameters,
-                    timeStart: 0.0,
-                    timeEnd: 20.0,
-                },
-            }),
-            () => {
-                if (content.trim() !== "") {
-                    const result = ant_wrap.convertAntimonyToSBML(content);
-                    if (result.isSuccess()) {
-                        const sbml = result.getResult();
-                        this.setState(
-                            {
-                                sbmlCode: sbml,
-                                convertedAnt: "",
-                            },
-                            () => {
-                                this.loadCopasi();
-                            },
-                        );
-                    } else {
-                        alert("Antimony syntax is not valid.");
-                    }
-                }
-            },
-        );
+        if (content.trim() !== "") {
+            const result = ant_wrap.convertAntimonyToSBML(content);
+            if (result.isSuccess()) {
+                const sbml = result.getResult();
+                this.setState(
+                    {
+                        sbmlCode: sbml,
+                        convertedAnt: "",
+                    },
+                    () => {
+                        this.loadCopasi();
+                    },
+                );
+            } else {
+                alert("Antimony syntax is not valid.");
+            }
+        }
     };
     handleLocalReset = (content, isChecked) => {
         this.processTextChange(content, true);
@@ -156,22 +130,14 @@ export class App extends React.Component {
         } else {
             this.setState({ isChecked }, () => {
                 if (!isChecked) {
-                    const updates = {};
-                    const { timeStart, timeEnd } = this.state.simulationParameters;
-                    let dist = timeEnd - timeStart;
-                    let newTimeStart = timeEnd; // Assuming sF should be the current timeEnd
-                    let newTimeEnd = newTimeStart + dist;
-                    this.setState((prevState) => ({
-                        index: prevState.index + 1,
-                    }));
-                    // Prepare updated simulation parameters
-                    updates.simulationParameters = {
-                        ...this.state.simulationParameters,
-                        timeStart: newTimeStart,
-                        timeEnd: newTimeEnd,
-                    };
-                    this.setState(updates, () => {
-                        this.loadCopasi();
+                    const simResults = JSON.parse(this.state.copasi.Module.simulate());
+                    this.setState({
+                        data: {
+                            columns: simResults.columns,
+                            titles: simResults.titles
+                        },
+                        initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
+                        oldSBMLContent: this.state.sbmlCode
                     });
                 }
             });

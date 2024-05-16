@@ -1,0 +1,62 @@
+.border-with-text {
+    position: relative;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 95%;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
+.text-on-border {
+    position: absolute;
+    top: -10px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+    color: #ffffff;
+    padding: 0 10px;
+    font-size: 12px; /* Adjust as needed */
+}
+
+.border-with-text-simulation {
+    position: relative;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 95%;
+    height: 150px;
+    margin-top: 30px;
+    margin-left: 10px;
+}
+
+.text-on-border-simulation {
+    position: absolute;
+    top: -10px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+    padding: 0 10px;
+    font-size: 12px; /* Adjust as needed */
+}
+
+.border-with-text-simulation-popup {
+    position: relative;
+    background-color: black;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 250px;
+    height: 150px;
+    margin-top: 40px;
+    margin-left: 10px;
+}
+.border-with-text-yaxis-popup {
+    background-color: black;
+    position: relative;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 10px;
+    top: 1%;
+}

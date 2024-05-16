@@ -1,0 +1,131 @@
+/* Adjust the width as necessary to accommodate the scrollbar */
+.dropdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-height: 200px;
+    overflow-y: hidden; /* Show the scrollbar only when needed */
+    width: 95%; /* Increase width to accommodate the scrollbar */
+    margin-left: 1px;
+    border-radius: 4px
+}
+
+.dropdown-list {
+    max-height: 200px;
+}
+.dropdown-list-toolbar,
+.dropdown-list{
+    width: 100%; /* Ensure the list takes the full width of the container */
+    box-sizing: border-box; /* Include padding and border in the element's dimensions */
+    overflow: hidden;
+}
+
+/* Make checkboxes smaller */
+.dropdown-list input[type="checkbox"] {
+    transform: scale(0.8); /* Adjust the scale factor as needed */
+    margin-right: 5px; /* Add spacing between checkbox and label */
+}
+
+/* Make labels smaller */
+.dropdown-list label {
+    color: white;
+    font-size: 12px; /* Adjust the font size as needed */
+}
+
+/* For WebKit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #2e2d2d;
+}
+
+/* For Firefox */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: gray #2e2d2d;
+}
+
+.delete-message {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 4px;
+    font-size: 10px;
+}
+.dropdown-file-container,
+.dropdown-analysis-container,
+.dropdown-options-container,
+.dropdown-examples-container,
+.dropdown-help-container{
+    position: absolute;
+    top: 90%; /* Adjust as necessary */
+    width: 200px;
+    border-radius: 6px;
+    z-index: 1000; /* Ensure it's above other content */
+}
+.dropdown-file-container {
+    left: 3px; /* Adjust as necessary */
+}
+.dropdown-analysis-container {
+    left: 32px; /* Adjust as necessary */
+}
+.dropdown-options-container {
+    left: 77px; /* Adjust as necessary */
+}
+.dropdown-examples-container {
+    left: 118px;
+}
+.dropdown-help-container {
+    left: 167px;
+}
+
+.dropdown-toolbar-button-file,
+.dropdown-toolbar-button-analysis,
+.dropdown-toolbar-button-options,
+.dropdown-toolbar-button-examples,
+.dropdown-toolbar-button-help {
+    width: 98%;
+    text-align: left;
+    font-size: 13px;
+}
+.dropdown-toolbar-button-file:nth-child(6)::after,
+.dropdown-toolbar-button-file:nth-child(8)::after{
+    content: '';
+    display: block;
+    background-color: gray;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+}
+.dropdown-toolbar-button-xAxis {
+    width: 98%;
+    text-align: left;
+    font-size: 12px
+}
+
+.dropdown-toolbar-button-analysis:nth-child(4)::after{
+    content: '';
+    display: block;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+    background-color: gray
+}
+.dropdown-toolbar-button-options:nth-child(2)::after{
+    content: '';
+    display: block;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+    background-color: gray;
+}
+.dropdown-toolbar-button-help:nth-child(2)::after{
+    content: '';
+    display: block;
+    height: 1px; /* Border thickness */
+    margin-top: 10px;
+    background-color: gray;
+}

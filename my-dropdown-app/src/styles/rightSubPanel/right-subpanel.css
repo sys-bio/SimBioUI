@@ -1,0 +1,48 @@
+.right-subpanel {
+    position: relative;
+    overflow: scroll;
+    padding: 1px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-right: 1px solid gray; /* Add a right border with a color of your choice */
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray; /* Add a bottom border */
+    flex-shrink: 0;
+}
+
+.plot-box{
+    width: 100%;
+    margin-top: 20px
+}
+.text-checkbox-input-autoscale {
+    margin-left: 25px;
+    color: white;
+    font-size: 12px;
+    margin-top: 10px;
+}
+.label-space {
+    margin-right: 25px;
+}
+.edit-export-buttons {
+    display: flex;
+    flex-direction: column;
+    margin-right:80px
+}
+.edit-export-style {
+    white-space: normal; /* Allows text to wrap */
+    width: 100px;
+    text-overflow: ellipsis; /* Adds an ellipsis if the text overflows (optional) */
+    word-wrap: break-word; /* Ensures words can be broken if needed to fit */
+    max-width: 100%; /* Ensures button doesn't exceed its container */
+    padding: 10px 5px; /* Adjust padding as needed */
+    line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */
+}
+.checkbox-container {
+    display: inline-flex; /* Treats the label and checkbox as an inline flex container */
+    align-items: center; /* Centers items vertically */
+    white-space: nowrap; /* Prevents the label text from wrapping */
+    margin-right: 10px; /* Optional: Adds some space between multiple checkbox containers */
+}
+.graphs-container{
+    margin-left: 10px;
+}

@@ -1,0 +1,7 @@
+.center-subpanel {
+    box-sizing: border-box;
+    overflow: hidden;
+    border-right: 1px solid gray; /* Add a right border with a color of your choice */
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray; /* Add a bottom border */
+}
