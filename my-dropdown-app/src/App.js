@@ -1,38 +1,36 @@
-import React, {Component} from 'react';
-import DropdownWithPopup from './DropdownWithPopup';
-import SimulationParameters from './SimulationParameters';
-import createCpsModule from './copasijs.js';
-import COPASI from './copasi.js';
-const libantimony = require('./libantimony.js'); // libantimony.js in local dir
-var antimonyWrapper = require('./antimony_wrap.js');
+import React from "react";
+import DropdownWithPopup from "./components/DropdownWithPopup";
+import createCpsModule from "./libs/copasijs.js";
+import COPASI from "./libs/copasi.js";
+const libantimony = require("./libs/libantimony.js"); // libantimony.js in local dir
+var antimonyWrapper = require("./libs/antimony_wrap.js");
 var ant_wrap;
 
-export class App extends React.Component  {
-
+export class App extends React.Component {
     constructor(props) {
         super(props);
         this.handleParametersChange = this.handleParametersChange.bind(this);
         this.state = {
-            copasi: {version: 'not loaded'},
-            data: { columns: [], titles: []},
+            copasi: { version: "not loaded" },
+            data: { columns: [], titles: [] },
             textareaContent: "",
             sbmlCode: "",
-            sbmlExport:"",
+            sbmlExport: "",
             convertedAnt: "",
             isChecked: false,
             changeValues: "",
             simulationParameters: {
                 timeStart: 0.0,
                 timeEnd: 20.0,
-                numPoints: 200
+                numPoints: 200,
             },
             initialOptions: [],
             simulationParameterChanges: false,
             oldSBMLContent: "",
             kOptions: [],
-            kValues: []
+            kValues: [],
         };
-    };
+    }
     componentDidMount() {
         this.loadCopasiAPI();
     }
@@ -41,8 +39,8 @@ export class App extends React.Component  {
             const cps = await createCpsModule();
             const instance = new COPASI(cps);
             this.setState({
-                copasi: instance
-            })
+                copasi: instance,
+            });
         } catch (err) {
             console.error(`Error in loadCopasiAPI: ${err.message}`);
         }
@@ -57,7 +55,7 @@ export class App extends React.Component  {
                 const kOptions = this.state.copasi.globalParameterNames;
                 this.setState({
                     kValues: kValues,
-                    kOptions: kOptions
+                    kOptions: kOptions,
                 });
             }
             this.state.copasi.reset();
@@ -65,12 +63,11 @@ export class App extends React.Component  {
             this.setState({
                 data: {
                     columns: simResults.columns,
-                    titles: simResults.titles
+                    titles: simResults.titles,
                 },
                 initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
-                oldSBMLContent: this.state.sbmlCode
+                oldSBMLContent: this.state.sbmlCode,
             });
-
         } catch (err) {
             console.error(`Error in loadCopasi: ${err.message}`);
         }
@@ -81,55 +78,64 @@ export class App extends React.Component  {
         } else {
             this.processTextChange(content, isChecked);
         }
-    }
+    };
     processTextChange = (content, isChecked) => {
         // When "Always set back to initial" is off, and keep simulating
         if (content === this.state.textareaContent && !isChecked) {
             return;
         }
         // If "Always set back to initial" is on and content is the same as the current state
-        if ((isChecked && content === this.state.textareaContent)) {
-            this.setState(prevState => ({
+        if (isChecked && content === this.state.textareaContent) {
+            this.setState(
+                (prevState) => ({
+                    textareaContent: content,
+                    index: 1,
+                    simulationParameters: {
+                        ...prevState.simulationParameters,
+                        timeStart: 0.0,
+                        timeEnd: 20.0,
+                    },
+                }),
+                () => {
+                    this.state.copasi.reset();
+                    this.loadCopasi();
+                },
+            );
+            return;
+        }
+
+        // If content has changed, handle the change
+        this.setState(
+            (prevState) => ({
                 textareaContent: content,
                 index: 1,
                 simulationParameters: {
                     ...prevState.simulationParameters,
                     timeStart: 0.0,
-                    timeEnd: 20.0
+                    timeEnd: 20.0,
+                },
+            }),
+            () => {
+                if (content.trim() !== "") {
+                    const result = ant_wrap.convertAntimonyToSBML(content);
+                    if (result.isSuccess()) {
+                        const sbml = result.getResult();
+                        this.setState(
+                            {
+                                sbmlCode: sbml,
+                                convertedAnt: "",
+                            },
+                            () => {
+                                this.loadCopasi();
+                            },
+                        );
+                    } else {
+                        alert("Antimony syntax is not valid.");
+                    }
                 }
-            }), () => {
-                this.state.copasi.reset();
-                this.loadCopasi();
-            });
-            return;
-        }
-
-        // If content has changed, handle the change
-        this.setState(prevState => ({
-            textareaContent: content,
-            index: 1,
-            simulationParameters: {
-                ...prevState.simulationParameters,
-                timeStart: 0.0,
-                timeEnd: 20.0
-            }
-        }), () => {
-            if (content.trim() !== "") {
-                const result = ant_wrap.convertAntimonyToSBML(content);
-                if (result.isSuccess()) {
-                    const sbml = result.getResult();
-                    this.setState({
-                        sbmlCode: sbml,
-                        convertedAnt: ""
-                    }, () => {
-                        this.loadCopasi();
-                    });
-                } else {
-                    alert('Antimony syntax is not valid.');
-                }
-            }
-        });
-    }
+            },
+        );
+    };
     handleLocalReset = (content, isChecked) => {
         this.processTextChange(content, true);
     };
@@ -146,21 +152,23 @@ export class App extends React.Component  {
     handleCheckboxChange = (isChecked) => {
         if (this.state.simulationParameterChanges) {
             this.loadCopasi();
-            this.setState({simulationParameterChanges: false});
+            this.setState({ simulationParameterChanges: false });
         } else {
             this.setState({ isChecked }, () => {
                 if (!isChecked) {
                     const updates = {};
                     const { timeStart, timeEnd } = this.state.simulationParameters;
                     let dist = timeEnd - timeStart;
-                    let newTimeStart = timeEnd;  // Assuming sF should be the current timeEnd
+                    let newTimeStart = timeEnd; // Assuming sF should be the current timeEnd
                     let newTimeEnd = newTimeStart + dist;
-                    this.setState(prevState => ({ index: prevState.index + 1 }));
+                    this.setState((prevState) => ({
+                        index: prevState.index + 1,
+                    }));
                     // Prepare updated simulation parameters
                     updates.simulationParameters = {
                         ...this.state.simulationParameters,
                         timeStart: newTimeStart,
-                        timeEnd: newTimeEnd
+                        timeEnd: newTimeEnd,
                     };
                     this.setState(updates, () => {
                         this.loadCopasi();
@@ -168,30 +176,30 @@ export class App extends React.Component  {
                 }
             });
         }
-    }
+    };
 
     handleParametersChange = (parameterName, value) => {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             simulationParameters: {
                 ...prevState.simulationParameters,
-                [parameterName]: parseFloat(value)
+                [parameterName]: parseFloat(value),
             },
-            simulationParameterChanges: true
+            simulationParameterChanges: true,
         }));
-    }
+    };
 
     loadAntimonyLib(callback) {
-      try {
-        libantimony().then((libantimony) => {
-          ant_wrap = new antimonyWrapper(libantimony);
-          console.log('libantimony loaded');
-          if (typeof callback === 'function') {
-            callback();  // This ensures that the next step only happens after libantimony is fully loaded and ant_wrap is initialized
-          }
-        });
-      } catch (err) {
-        console.log('Load libantimony Error: ', err);
-      }
+        try {
+            libantimony().then((libantimony) => {
+                ant_wrap = new antimonyWrapper(libantimony);
+                console.log("libantimony loaded");
+                if (typeof callback === "function") {
+                    callback(); // This ensures that the next step only happens after libantimony is fully loaded and ant_wrap is initialized
+                }
+            });
+        } catch (err) {
+            console.log("Load libantimony Error: ", err);
+        }
     }
 
     handleSBMLfile = (content) => {
@@ -201,7 +209,7 @@ export class App extends React.Component  {
         } else {
             this.processSBMLFile(content);
         }
-    }
+    };
 
     // Process the SBML content once the library is loaded
     processSBMLFile = (content) => {
@@ -214,53 +222,68 @@ export class App extends React.Component  {
             }
         }
         this.handleResetInApp();
-    }
+    };
 
     // In App.js
-      handleExportSBML = (antimonyContent) => {
+    handleExportSBML = (antimonyContent) => {
         if (antimonyContent.trim() !== "") {
-          const result = ant_wrap.convertAntimonyToSBML(antimonyContent);
-          if (result.isSuccess()) {
-            const sbml = result.getResult();
-            this.setState({ sbmlExport: sbml }, () => {
-              this.promptForFileNameAndDownload(sbml);
-            });
-          } else {
-            alert('Antimony syntax is not valid');
-          }
+            const result = ant_wrap.convertAntimonyToSBML(antimonyContent);
+            if (result.isSuccess()) {
+                const sbml = result.getResult();
+                this.setState({ sbmlExport: sbml }, () => {
+                    this.promptForFileNameAndDownload(sbml);
+                });
+            } else {
+                alert("Antimony syntax is not valid");
+            }
         } else {
-          alert('No content provided');
+            alert("No content provided");
         }
-      };
+    };
 
-      promptForFileNameAndDownload = (sbml) => {
+    promptForFileNameAndDownload = (sbml) => {
         const fileName = prompt("Please enter the name of the file to save:", "MyModel.xml");
         if (fileName) {
-          this.downloadFile(sbml, fileName);
+            this.downloadFile(sbml, fileName);
         }
-      };
+    };
 
-      downloadFile = (data, fileName) => {
-        const blob = new Blob([data], { type: 'application/xml' });
+    downloadFile = (data, fileName) => {
+        const blob = new Blob([data], { type: "application/xml" });
         const href = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = href;
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(href);  // Clean up
-      };
-
+        URL.revokeObjectURL(href); // Clean up
+    };
 
     handleResetInApp = () => {
-        this.setState({data: {columns: []}});
-    }
+        this.setState({ data: { columns: [] } });
+    };
 
     render() {
         const simulationParameters = this.state;
-        const additionalElements = ['[A]', '[B]', '[C]', 'S[2]', 'S[4]', 'S[6]', 'S[8]', 'S[10]', 'S[12]', 'S[14]',
-            'J_0', 'J_1', 'J_2', 'J_3', 'J_4', 'J_5'];
+        const additionalElements = [
+            "[A]",
+            "[B]",
+            "[C]",
+            "S[2]",
+            "S[4]",
+            "S[6]",
+            "S[8]",
+            "S[10]",
+            "S[12]",
+            "S[14]",
+            "J_0",
+            "J_1",
+            "J_2",
+            "J_3",
+            "J_4",
+            "J_5",
+        ];
         return (
             <div className="App">
                 <DropdownWithPopup
@@ -271,8 +294,8 @@ export class App extends React.Component  {
                     simulationParam={simulationParameters}
                     SBMLContent={this.state.sbmlExport}
                     handleLocalReset={this.handleLocalReset}
-                    handleTextChange = {this.handleTextChange}
-                    handleResetInApp = {this.handleResetInApp}
+                    handleTextChange={this.handleTextChange}
+                    handleResetInApp={this.handleResetInApp}
                     handleKValuesChanges={this.handleKValuesChanges}
                     additionalElements={additionalElements}
                     data={this.state.data}
