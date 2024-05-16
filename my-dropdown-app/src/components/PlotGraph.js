@@ -27,6 +27,14 @@ class PlotGraph extends Component {
             pdf.save('plot.pdf');
         });
     };
+    generateColors = (numColors) => {
+        const colors = [];
+        for (let i = 0; i < numColors; i++) {
+            const hue = i * (360 / numColors);
+            colors.push(`hsl(${hue}, 100%, 50%)`);
+        }
+        return colors;
+    };
 
     render() {
         const { rightPanelWidth, rightPanelHeight, isDarkMode, isXAutoscaleChecked, isYAutoscaleChecked, graphState } = this.props;
@@ -45,10 +53,10 @@ class PlotGraph extends Component {
         const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
         const xValues = this.props.data.columns[indexOfX];
         const plotsCount = this.props.data.columns.length;
+        const colors = this.generateColors(plotsCount);
 
         // Generate plot data configurations dynamically, but filter based on selected options
         const plotData = [];
-        const colors = ['black', 'light blue', 'green', 'red', 'purple', 'yellow', 'cyan', 'magenta'];
         if (this.props.data.titles) {
             for (let i = 0; i < plotsCount; i++) {
                 if (this.props.selectedOptions[this.props.data.titles[i]]) { // Check if the option for this series is true
@@ -58,7 +66,7 @@ class PlotGraph extends Component {
                         type: 'scatter',
                         mode: 'lines',
                         name: this.props.data.titles[i],
-                        marker: { color: colors[i % colors.length] }, // Alternate color for even series
+                        marker: { color: colors[i] }, // Alternate color for even series
                         line: { width: 2 },
                     });
                 }
@@ -79,8 +87,6 @@ class PlotGraph extends Component {
             yaxisRange = [parseFloat(graphState.yMin), parseFloat(graphState.yMax)];
         }
 
-        console.log(graphState.xMin);
-        console.log(graphState.xMax);
         return (
             <div>
                 <Plot

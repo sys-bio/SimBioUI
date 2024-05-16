@@ -173,7 +173,8 @@ const DropdownWithPopup = ({
     );
 
     const createInitialState = (keys, defaultValue) => {
-        return keys.reduce((acc, key) => {
+        const top10Keys = keys.slice(0, 10); // Extract the first 10 keys
+        return top10Keys.reduce((acc, key) => {
             acc[key] = defaultValue;
             return acc;
         }, {});
@@ -657,6 +658,7 @@ const DropdownWithPopup = ({
                     rightSubpanelStyle={rightSubpanelStyle}
                     layoutVertical={layoutVertical}
                     setRightPanelWidth={setRightPanelWidth}
+                    setCenterPanelWidth={setCenterPanelWidth}
                     isDarkMode={isDarkMode}
                     ref={plotGraphRef}
                     rightPanelWidth={rightPanelWidth}

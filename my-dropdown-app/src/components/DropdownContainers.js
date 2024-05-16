@@ -124,11 +124,12 @@ class DropdownContainers extends Component {
                     display: "block",
                     maxHeight: "200px",
                     backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+                    overflowY: "auto"
                 }}
             >
                 {withCheckboxes ? (
                     Object.keys(options).map((option) => (
-                        <div key={option} className="dropdown-checkbox-item" style={{ scroll: "auto" }}>
+                        <div key={option}>
                             <input
                                 type="checkbox"
                                 id={`checkbox-${option}`}

@@ -9,6 +9,7 @@ const RightPanel = (props, ref) => {
         rightSubpanelStyle,
         layoutVertical,
         setRightPanelWidth,
+        setCenterPanelWidth,
         isDarkMode,
         rightPanelWidth,
         data,
