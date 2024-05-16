@@ -221,7 +221,7 @@ const LeftPanel = (props) => {
                                         marginLeft: "-10px",
                                         color: isDarkMode ? "white" : "black",
                                     }}
-                                    onClick={() => handleLocalReset(getContentOfActiveTab(), isChecked)}
+                                    onClick={handleLocalReset}
                                 >
                                     Reset
                                 </button>

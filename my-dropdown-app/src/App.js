@@ -110,8 +110,8 @@ export class App extends React.Component {
             }
         }
     };
-    handleLocalReset = (content, isChecked) => {
-        this.processTextChange(content, true);
+    handleLocalReset = () => {
+        this.state.copasi.reset();
     };
 
     handleKValuesChanges = (option, value) => {

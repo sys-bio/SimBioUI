@@ -128,7 +128,7 @@ class PlotGraph extends Component {
                                 color: isDarkMode ? 'black' : 'white',
                                 size: dynamicFontSize * 0.8, // Smaller font size for ticks
                             },
-                            gridcolor: isDarkMode ? 'black' : '#c4c2c2',
+                            gridcolor: isDarkMode ? 'white' : '#c4c2c2',
                             range: yaxisRange,
                             zeroline: false,
                             autorange: isYAutoscaleChecked,
