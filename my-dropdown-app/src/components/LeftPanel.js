@@ -35,7 +35,6 @@ const LeftPanel = (props) => {
     const [showDropdownButtons, setShowDropdownButtons] = useState(false);
     const [showXDropdownButtons, setShowXDropdownButtons] = useState(false);
     const [shouldUpdateSelectedOptions, setShouldUpdateSelectedOptions] = useState(false);
-    const [deleteMessage, setDeleteMessage] = useState("");
     const [selectedElements, setSelectedElements] = useState([]);
     const [showMoreOptions, setShowMoreOptions] = useState(false);
 
@@ -85,31 +84,6 @@ const LeftPanel = (props) => {
     const resetInitialConditions = (e) => {
         setIsChecked(e.target.checked);
         handleTextChange(getContentOfActiveTab(), !isChecked, false);
-    };
-
-    const deleteOptions = () => {
-        const updatedOptions = {};
-        let nonDefaultOptionFound = false;
-
-        Object.keys(options).forEach((option) => {
-            if (DEFAULT_OPTIONS.includes(option) || !options[option]) {
-                updatedOptions[option] = options[option];
-            } else {
-                nonDefaultOptionFound = true;
-            }
-        });
-
-        setOptions(updatedOptions);
-
-        if (!nonDefaultOptionFound && Object.keys(updatedOptions).every((option) => DEFAULT_OPTIONS.includes(option))) {
-            setDeleteMessage("Y-axis list is in default mode. No additional options to delete.");
-            // Clear the message after 3 seconds
-            setTimeout(() => {
-                setDeleteMessage("");
-            }, 2000);
-        } else {
-            setDeleteMessage(""); // Immediately clear the message in other cases
-        }
     };
 
     const handleXOptionSelected = (option) => {
@@ -372,27 +346,6 @@ const LeftPanel = (props) => {
                                     >
                                         Unselect all
                                     </button>
-                                    <button
-                                        style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                            color: isDarkMode ? "white" : "black",
-                                        }}
-                                        onClick={deleteOptions}
-                                    >
-                                        Delete
-                                    </button>
-                                    <div>
-                                        {deleteMessage && (
-                                            <div
-                                                className="delete-message"
-                                                style={{
-                                                    color: isDarkMode ? "white" : "black",
-                                                }}
-                                            >
-                                                {deleteMessage}
-                                            </div>
-                                        )}
-                                    </div>
                                     <button
                                         style={{
                                             backgroundColor: isDarkMode ? "black" : "#c4c2c2",
