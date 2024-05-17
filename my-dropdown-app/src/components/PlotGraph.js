@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent, Component, forwardRef } from 'react';
 import Plot from 'react-plotly.js';
 import Plotly from 'plotly.js-basic-dist';
 import jsPDF from 'jspdf';
 
-class PlotGraph extends Component {
+class PlotGraph extends PureComponent {
     constructor(props) {
         super(props);
         this.plotRef = React.createRef();
@@ -31,22 +31,23 @@ class PlotGraph extends Component {
         const colors = [];
         for (let i = 0; i < numColors; i++) {
             const hue = i * (360 / numColors);
-            colors.push(`hsl(${hue}, 100%, 50%)`);
+            colors.push(`hsl(${hue}, 100%, 35%)`); // Adjust the lightness to 30% for darker colors
         }
         return colors;
     };
 
     render() {
         const { rightPanelWidth, rightPanelHeight, isDarkMode, isXAutoscaleChecked, isYAutoscaleChecked, graphState } = this.props;
-
         let indexOfX;
         let name_of_xAxis;
-        if (this.props.xAxis_selected_option == null) {
-            indexOfX = 0;
-            name_of_xAxis = "Time";
-        } else {
-            indexOfX = this.props.data.titles.indexOf(this.props.xAxis_selected_option);
-            name_of_xAxis = this.props.xAxis_selected_option;
+        if (this.props.data.titles !== undefined) {
+            if (this.props.xAxis_selected_option == null) {
+                indexOfX = 0;
+                name_of_xAxis = "Time";
+            } else {
+                indexOfX = this.props.data.titles.indexOf(this.props.xAxis_selected_option);
+                name_of_xAxis = this.props.xAxis_selected_option;
+            }
         }
 
         const baseFontSize = 12;
@@ -152,4 +153,4 @@ class PlotGraph extends Component {
     }
 }
 
-export default PlotGraph;
+export default forwardRef((props, ref) => <PlotGraph {...props} ref={ref} />);

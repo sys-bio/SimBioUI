@@ -47,7 +47,7 @@ class ToolbarDropdown extends Component {
     renderDropdownForButton = (button, items, containerClass, buttonStyle) => {
         const { activeToolbarButton, showDropdownToolbar } = this.state;
         const dropdownStyle = {
-            backgroundColor: "#242323",
+            backgroundColor: "#242323"
         };
 
         if (activeToolbarButton === button && showDropdownToolbar) {

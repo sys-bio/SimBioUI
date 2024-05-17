@@ -14,6 +14,8 @@ const MenuHeader = (props) => {
         handleSBMLfile,
         addNewTab,
         getContentOfActiveTab,
+        isNewFileUploaded,
+        setIsNewFileUploaded
     } = props;
 
     const fileDropdownRef = useRef(null);
@@ -25,7 +27,7 @@ const MenuHeader = (props) => {
         const dropdownToolbarStyle = {
             backgroundColor: isDarkMode ? "#1f1f1e" : "#c4c2c2",
             borderRadius: "6px",
-            border: "1px solid gray",
+            border: "1px solid gray"
         };
         const dropdownToolbarButtonsStyle = {
             backgroundColor: isDarkMode ? "#1f1f1e" : "#c4c2c2",
@@ -99,6 +101,8 @@ const MenuHeader = (props) => {
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
                         setShowDropdownToolbar={setShowDropdownToolbar}
                         addNewTab={addNewTab}
+                        isNewFileUploaded={isNewFileUploaded}
+                        setIsNewFileUploaded={setIsNewFileUploaded}
                     />
                 )}
             </div>

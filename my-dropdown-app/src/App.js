@@ -79,13 +79,9 @@ export class App extends React.Component {
             this.processTextChange(content, isChecked);
         }
     };
-    processTextChange = (content, isChecked) => {
-        // When "Always set back to initial" is off, and keep simulating
-        if (content === this.state.textareaContent && !isChecked) {
-            return;
-        }
+    processTextChange = (content, isChecked, isNewFileUploaded) => {
         // If "Always set back to initial" is on and content is the same as the current state
-        if (isChecked && content === this.state.textareaContent) {
+        if (isChecked && content === this.state.textareaContent && isNewFileUploaded === false) {
             this.state.copasi.reset();
             this.loadCopasi();
             return;

@@ -18,9 +18,12 @@ const LeftPanel = (props) => {
         handleTextChange,
         initialOptions,
         setSelectedOptions,
+        selectedOptions,
         set_xAxis_selected_option,
         onCheckboxChange,
         additionalElements,
+        isNewFileUploaded,
+        setIsNewFileUploaded
     } = props;
 
     const [options, setOptions] = useState(initialOptions);
@@ -65,11 +68,16 @@ const LeftPanel = (props) => {
         const currentContent = getContentOfActiveTab();
         if (currentContent !== previousContent) {
             setSelectedOptions([]);
-            handleTextChange(currentContent, isChecked, false);
+            handleTextChange(currentContent, isChecked, true);
             setShouldUpdateSelectedOptions(true);
         } else {
             setShouldUpdateSelectedOptions(false);
-            onCheckboxChange(isChecked);
+            if (isNewFileUploaded) {
+                handleTextChange(currentContent, isChecked, true);
+                setIsNewFileUploaded(false);
+            } else {
+                onCheckboxChange(isChecked);
+            }
         }
         setPreviousContent(currentContent);
     };
@@ -112,16 +120,28 @@ const LeftPanel = (props) => {
     };
 
     const selectAllOptions = () => {
-        setOptions(
+        setSelectedOptions(
             Object.keys(options).reduce((acc, key) => {
                 acc[key] = true;
                 console.log(`Selected option '${key}'`);
                 return acc;
             }, {}),
         );
+        setOptions(
+            Object.keys(options).reduce((acc, key) => {
+                acc[key] = true;
+                return acc;
+            }, {}),
+        );
     };
 
     const unselectAllOptions = () => {
+        setSelectedOptions(
+            Object.keys(options).reduce((acc, key) => {
+                acc[key] = false;
+                return acc;
+            }, {}),
+        );
         setOptions(
             Object.keys(options).reduce((acc, key) => {
                 acc[key] = false;
@@ -286,63 +306,9 @@ const LeftPanel = (props) => {
                                     dropdown_toolbar_buttons_style={"dropdown-toolbar-button-xAxis"}
                                     setShowXDropdown={setShowXDropdown}
                                     showXDropdown={showXDropdown}
-                                    setShowXDropdownButtons={setShowXDropdownButtons}
-                                    showXDropdownButtons={showXDropdownButtons}
                                     selectedXOption={selectedXOption}
                                     setSelectedXOption={setSelectedXOption}
                                 />
-                            )}
-                            {showXDropdownButtons && (
-                                <div>
-                                    <button
-                                        style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                            color: isDarkMode ? "white" : "black",
-                                        }}
-                                        onClick={selectAllOptions}
-                                    >
-                                        Select all
-                                    </button>
-                                    <button
-                                        style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                            color: isDarkMode ? "white" : "black",
-                                        }}
-                                        onClick={unselectAllOptions}
-                                    >
-                                        Unselect all
-                                    </button>
-                                    <button
-                                        style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                            color: isDarkMode ? "white" : "black",
-                                        }}
-                                        onClick={deleteOptions}
-                                    >
-                                        Delete
-                                    </button>
-                                    <div>
-                                        {deleteMessage && (
-                                            <div
-                                                className="delete-message"
-                                                style={{
-                                                    color: isDarkMode ? "white" : "black",
-                                                }}
-                                            >
-                                                {deleteMessage}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <button
-                                        style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
-                                            color: isDarkMode ? "white" : "black",
-                                        }}
-                                        onClick={() => setShowMoreOptions(true)}
-                                    >
-                                        More options
-                                    </button>
-                                </div>
                             )}
                         </div>
 
@@ -383,7 +349,7 @@ const LeftPanel = (props) => {
                                     className={"dropdown-container"}
                                     isDarkMode={isDarkMode}
                                     withCheckboxes={true}
-                                    options={options}
+                                    options={selectedOptions}
                                 />
                             )}
                             {showDropdownButtons && (

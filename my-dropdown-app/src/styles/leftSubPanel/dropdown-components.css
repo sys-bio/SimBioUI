@@ -4,20 +4,16 @@
     flex-direction: column;
     align-items: flex-start;
     max-height: 200px;
-    overflow-y: hidden; /* Show the scrollbar only when needed */
+    overflow-y: auto; /* Show the scrollbar only when needed */
     width: 95%; /* Increase width to accommodate the scrollbar */
     margin-left: 1px;
     border-radius: 4px
 }
 
-.dropdown-list {
-    max-height: 200px;
-}
-.dropdown-list-toolbar,
-.dropdown-list{
+.dropdown-list-toolbar{
     width: 100%; /* Ensure the list takes the full width of the container */
-    box-sizing: border-box; /* Include padding and border in the element's dimensions */
-    overflow: hidden;
+    box-sizing: border-box;
+    scrollbar: hidden
 }
 
 /* Make checkboxes smaller */

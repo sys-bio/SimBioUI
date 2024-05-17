@@ -80,14 +80,15 @@ class DropdownContainers extends Component {
             this.props.setSelectedXOption(item);
             this.props.onXOptionSelected(item);
             this.props.setShowXDropdown(!this.props.showXDropdown);
-            this.props.setShowXDropdownButtons(!this.props.showXDropdownButtons);
         } else {
             if (item === "Open...") {
+                this.props.setIsNewFileUploaded(true);
                 this.fileInputRef.current.click();
             } else if (item === "New") {
                 this.props.addNewTab();
             } else if (item === "Import SBML...") {
                 this.setState({ fileInputAccept: ".xml" }, () => {
+                    this.props.setIsNewFileUploaded(true);
                     this.fileInputRef.current.click();
                 });
             } else if (item === "New Window") {
@@ -123,13 +124,14 @@ class DropdownContainers extends Component {
                     ...dropdownStyle,
                     display: "block",
                     maxHeight: "200px",
-                    backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
-                    overflowY: "auto"
+                    backgroundColor: isDarkMode ? "#242323" : "#c4c2c2"
+
                 }}
             >
                 {withCheckboxes ? (
                     Object.keys(options).map((option) => (
                         <div key={option}>
+
                             <input
                                 type="checkbox"
                                 id={`checkbox-${option}`}

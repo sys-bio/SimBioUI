@@ -15,6 +15,7 @@ const RightPanel = (props, ref) => {
         data,
         selectedOptions,
         xAxis_selected_option,
+        leftPanelWidth
     } = props;
 
     const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
@@ -27,12 +28,12 @@ const RightPanel = (props, ref) => {
     const handleRightResize = (e) => {
         if (rightResizingRef.current && rightPanelRef.current) {
             let newRightPanelWidth = window.innerWidth - e.clientX;
-            const maxRightPanelWidth = window.innerWidth - LEFT_PANEL_FIXED_WIDTH;
+            const maxRightPanelWidth = window.innerWidth - leftPanelWidth;
             newRightPanelWidth = Math.max(Math.min(newRightPanelWidth, maxRightPanelWidth), 0);
 
             // Set the new width for the right panel.
             setRightPanelWidth(newRightPanelWidth);
-            const newCenterPanelWidth = window.innerWidth - LEFT_PANEL_FIXED_WIDTH - newRightPanelWidth;
+            const newCenterPanelWidth = window.innerWidth - leftPanelWidth - newRightPanelWidth;
             // Ensure center panel width does not go below the minimum width.
             const adjustedCenterPanelWidth = Math.max(newCenterPanelWidth, 0);
             setCenterPanelWidth(adjustedCenterPanelWidth);

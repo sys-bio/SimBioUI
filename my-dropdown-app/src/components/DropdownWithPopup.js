@@ -43,7 +43,8 @@ const DropdownWithPopup = ({
     const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(
         window.innerWidth <= BREAKPOINT_WIDTH ? (window.innerHeight - 100) / 2 : window.innerHeight - 100,
     );
-    const [showSplitView, setShowSplitView] = useState(false); // State to manage split view display
+    const [showSplitView, setShowSplitView] = useState(false);
+    const [isNewFileUploaded, setIsNewFileUploaded] = useState(false)
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [panelWidth, setPanelWidth] = useState(LEFT_PANEL_FIXED_WIDTH);
@@ -421,17 +422,16 @@ const DropdownWithPopup = ({
                             </div>
                             <div
                                 style={{
-                                    height: "85%", // Set to 80% of the parent div's height
-                                    width: "100%",
-                                    backgroundColor: isDarkMode ? "#2e2d2d" : "#c4c2c2",
-                                    display: "flex", // Use flexbox to layout sliders
-                                    flexDirection: "column", // Stack sliders vertically
-                                    justifyContent: "center", // Center sliders vertically within the subpanel
-                                    padding: "20px", // Padding around sliders
-                                    boxSizing: "border-box", // Include padding in the total width calculation
-                                    marginTop: "10px",
-                                    overflowY: "auto", // Add scrollbar when content overflows vertically
-                                }}
+                                        height: "85%", // Set to 85% of the parent div's height
+                                        width: "100%",
+                                        backgroundColor: isDarkMode ? "#2e2d2d" : "#c4c2c2",
+                                        display: "flex", // Use flexbox to layout sliders
+                                        flexDirection: "column", // Stack sliders vertically
+                                        justifyContent: "flex-start", // Align items at the start of the container
+                                        marginTop: "2%",
+                                        boxSizing: "border-box",
+                                        overflowY: "auto", // Add scrollbar when content overflows vertically
+                                    }}
                             >
                                 {kOptions.map((option) => {
                                     if (kOptions_for_sliders[option]) {
@@ -445,11 +445,9 @@ const DropdownWithPopup = ({
                                         return (
                                             <div
                                                 key={option + "-slider"}
-                                                className="slidecontainer"
                                                 style={{
-                                                    position: "relative",
                                                     width: "100%",
-                                                    margin: "10px 0",
+                                                    marginTop: "5%",
                                                     display: "flex",
                                                     alignItems: "center",
                                                 }}
@@ -602,9 +600,12 @@ const DropdownWithPopup = ({
                 handleTextChange={handleTextChange}
                 initialOptions={initialOptions}
                 setSelectedOptions={setSelectedOptions}
+                selectedOptions={selectedOptions}
                 set_xAxis_selected_option={set_xAxis_selected_option}
                 onCheckboxChange={onCheckboxChange}
                 additionalElements={additionalElements}
+                isNewFileUploaded={isNewFileUploaded}
+                setIsNewFileUploaded={setIsNewFileUploaded}
             />
 
             <div
@@ -659,6 +660,7 @@ const DropdownWithPopup = ({
                     layoutVertical={layoutVertical}
                     setRightPanelWidth={setRightPanelWidth}
                     setCenterPanelWidth={setCenterPanelWidth}
+                    leftPanelWidth={panelWidth}
                     isDarkMode={isDarkMode}
                     ref={plotGraphRef}
                     rightPanelWidth={rightPanelWidth}
@@ -678,6 +680,8 @@ const DropdownWithPopup = ({
                 handleExportSBML={handleExportSBML}
                 SBMLContent={SBMLContent}
                 handleSBMLfile={handleSBMLfile}
+                isNewFileUploaded={isNewFileUploaded}
+                setIsNewFileUploaded={setIsNewFileUploaded}
             />
         </div>
     );
