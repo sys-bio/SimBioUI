@@ -1,4 +1,4 @@
-# SimBioUI
+# Web Iridium
 Web systems biology simulator
 
 To see the simulator try the link:
