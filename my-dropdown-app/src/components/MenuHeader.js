@@ -15,7 +15,10 @@ const MenuHeader = (props) => {
         addNewTab,
         getContentOfActiveTab,
         isNewFileUploaded,
-        setIsNewFileUploaded
+        setIsNewFileUploaded,
+        refreshCurrentTab,
+        promptForFileNameAndDownload,
+        simulationParam
     } = props;
 
     const fileDropdownRef = useRef(null);
@@ -25,12 +28,12 @@ const MenuHeader = (props) => {
 
     const { dropdownToolbarStyle, dropdownToolbarButtonsStyle, modeIcon, modeTooltip } = useMemo(() => {
         const dropdownToolbarStyle = {
-            backgroundColor: isDarkMode ? "#1f1f1e" : "#c4c2c2",
-            borderRadius: "6px",
+            backgroundColor: isDarkMode ? "#1f1f1e" : "white",
+            borderRadius: "4px",
             border: "1px solid gray"
         };
         const dropdownToolbarButtonsStyle = {
-            backgroundColor: isDarkMode ? "#1f1f1e" : "#c4c2c2",
+            backgroundColor: isDarkMode ? "#1f1f1e" : "white",
             color: isDarkMode ? "white" : "black",
         };
 
@@ -51,6 +54,15 @@ const MenuHeader = (props) => {
         const antimonyContent = getContentOfActiveTab(); // You need to implement this
         handleExportSBML(antimonyContent);
     };
+
+    const onExportAntSelected = () => {
+        const content = getContentOfActiveTab();
+        const timeStart = simulationParam.simulationParameters.timeStart;
+        const timeEnd = simulationParam.simulationParameters.timeEnd;
+        const numPoints = simulationParam.simulationParameters.numPoints;
+        const res = content + '\n\n// Time Start: ' + timeStart + '\n// Time End: ' + timeEnd + '\n// Number of points: ' + numPoints;
+        promptForFileNameAndDownload(res, false)
+    }
 
     const onImportSBML = (content) => {
         handleSBMLfile(content);
@@ -89,6 +101,7 @@ const MenuHeader = (props) => {
                     <DropdownContainers
                         onDownloadPDF={handleDownloadPDF}
                         onExportSBMLSelected={onExportSBMLSelected}
+                        onExportAntSelected={onExportAntSelected}
                         SBMLContent={SBMLContent}
                         onImportSBML={onImportSBML}
                         onContentSelect={handleContentSelect}
@@ -100,7 +113,7 @@ const MenuHeader = (props) => {
                         xAxis={false}
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
                         setShowDropdownToolbar={setShowDropdownToolbar}
-                        addNewTab={addNewTab}
+                        refreshCurrentTab={refreshCurrentTab}
                         isNewFileUploaded={isNewFileUploaded}
                         setIsNewFileUploaded={setIsNewFileUploaded}
                     />

@@ -97,11 +97,17 @@ button:hover {
 .parameter-input-box {
   padding: 10px; /* Add padding for spacing */
   font-size: 12px;
-  width: 25px;
+  width: 50px;
   height: 2px; /* Adjust the height as needed */
   position: absolute;
   right: 10px;
   border-radius: 5px;
+}
+
+.parameter-input-box[type="number"]::-webkit-inner-spin-button,
+.parameter-input-box[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+    left: 10px;
 }
 
 .simulate-style {
@@ -118,19 +124,13 @@ button:hover {
   line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */
 }
 
-.reset-style {
-  margin-left: 10px;
-  margin-top: 15px;
-  font-size: 12px;
-  white-space: normal; /* Allows text to wrap */
-  overflow: hidden; /* Prevents text from overflowing the button */
-  text-overflow: ellipsis; /* Adds an ellipsis if the text overflows (optional) */
-  word-wrap: break-word; /* Ensures words can be broken if needed to fit */
+.selectAndUnselectAll-style {
+  background-color: royalblue;
+  font-size: 10px;
+  overflow: hidden;
   width: auto; /* Adjusts width to content up to max width */
-  max-width: 100%; /* Ensures button doesn't exceed its container */
-  padding: 8px 20px; /* Adjust padding as needed */
-  line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */
 }
+
 .text-checkbox-input {
   color: white;
   font-size: 12px;

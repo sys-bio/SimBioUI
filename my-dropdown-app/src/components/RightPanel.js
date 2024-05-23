@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useState } from "react";
+import React, { forwardRef, useRef, useState, useEffect } from "react";
 import ResizingHandle from "./ResizingHandle";
 import PlotGraph from "./PlotGraph";
 import NumberInput from "./NumberInput";
@@ -15,15 +15,30 @@ const RightPanel = (props, ref) => {
         data,
         selectedOptions,
         xAxis_selected_option,
-        leftPanelWidth
+        leftPanelWidth,
+        isNewTabCreated
     } = props;
 
     const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
+
     const [isXAutoscaleChecked, setIsXAutoscaleChecked] = useState(false);
     const [isYAutoscaleChecked, setIsYAutoscaleChecked] = useState(false);
+    const [isShowLegendChecked, setIsShowLegendChecked] = useState(true);
 
     const rightPanelRef = useRef(null);
     const rightResizingRef = useRef(false);
+
+    useEffect(() => {
+        if (isNewTabCreated) {
+            setIsXAutoscaleChecked(false);
+            setIsYAutoscaleChecked(false);
+            setIsShowLegendChecked(true);
+            setGraphState({xMin: "0.00",
+                           yMin: "0.00",
+                           xMax: "10.00",
+                           yMax: "10.00",})
+        }
+    }, [isNewTabCreated]);
 
     const handleRightResize = (e) => {
         if (rightResizingRef.current && rightPanelRef.current) {
@@ -63,6 +78,7 @@ const RightPanel = (props, ref) => {
                     graphState={graphState}
                     isXAutoscaleChecked={isXAutoscaleChecked}
                     isYAutoscaleChecked={isYAutoscaleChecked}
+                    isShowLegendChecked={isShowLegendChecked}
                 />
                 <div>
                     <div
@@ -143,6 +159,7 @@ const RightPanel = (props, ref) => {
                                         <input
                                             className={"checkbox-input"}
                                             type="checkbox"
+                                            checked={isXAutoscaleChecked}
                                             onChange={(e) => {
                                                 setIsXAutoscaleChecked(e.target.checked);
                                             }}
@@ -159,11 +176,29 @@ const RightPanel = (props, ref) => {
                                         <input
                                             className="checkbox-input"
                                             type="checkbox"
+                                            checked={isYAutoscaleChecked}
                                             onChange={(e) => {
                                                 setIsYAutoscaleChecked(e.target.checked);
                                             }}
                                         />
                                         Autoscale Y
+                                    </label>
+                                </div>
+                                <div className="checkbox-container">
+                                    <label
+                                        style={{
+                                            color: isDarkMode ? "white" : "black",
+                                        }}
+                                    >
+                                        <input
+                                            className="checkbox-input"
+                                            type="checkbox"
+                                            checked={isShowLegendChecked}
+                                            onChange={(e) => {
+                                                setIsShowLegendChecked(e.target.checked);
+                                            }}
+                                        />
+                                        Show Legends
                                     </label>
                                 </div>
                             </div>
@@ -177,9 +212,9 @@ const RightPanel = (props, ref) => {
                                 }}
                             >
                                 <button
+                                    className={"edit-export-style"}
                                     style={{
                                         marginBottom: "10px",
-                                        backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                                         color: isDarkMode ? "white" : "black",
                                     }}
                                 >
@@ -188,7 +223,6 @@ const RightPanel = (props, ref) => {
                                 <button
                                     className={"edit-export-style"}
                                     style={{
-                                        backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                                         color: isDarkMode ? "white" : "black",
                                     }}
                                 >

@@ -9,10 +9,10 @@ export const getPanelStyles = ({ layoutVertical, panelWidth, isDarkMode, centerP
                 backgroundColor: isDarkMode
                     ? panelWidth > MIN_PANEL_WIDTH
                         ? "#2e2d2d"
-                        : "#000000"
+                        : "black"
                     : panelWidth > MIN_PANEL_WIDTH
                     ? "white"
-                    : "#c4c2c2", // Adjust colors for dark/bright mode
+                    : "black", // Adjust colors for dark/bright mode
                 border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d",
             },
             centerSubPanelStyle: {
@@ -41,9 +41,7 @@ export const getPanelStyles = ({ layoutVertical, panelWidth, isDarkMode, centerP
                     ? panelWidth > MIN_PANEL_WIDTH
                         ? "#2e2d2d"
                         : "#000000"
-                    : panelWidth > MIN_PANEL_WIDTH
-                    ? "white"
-                    : "#c4c2c2", // Adjust colors for dark/bright mode
+                    : "white", // Adjust colors for dark/bright mode
                 border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d",
             },
             centerSubPanelStyle: {

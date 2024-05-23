@@ -193,7 +193,7 @@ export class App extends React.Component {
             if (result.isSuccess()) {
                 const sbml = result.getResult();
                 this.setState({ sbmlExport: sbml }, () => {
-                    this.promptForFileNameAndDownload(sbml);
+                    this.promptForFileNameAndDownload(sbml, true);
                 });
             } else {
                 alert("Antimony syntax is not valid");
@@ -203,15 +203,21 @@ export class App extends React.Component {
         }
     };
 
-    promptForFileNameAndDownload = (sbml) => {
-        const fileName = prompt("Please enter the name of the file to save:", "MyModel.xml");
+    promptForFileNameAndDownload = (content, isSBML) => {
+        let fileName;
+        if (isSBML) {
+            fileName = prompt("Please enter the name of the file to save:", "MyModel.xml");
+        } else {
+            fileName = prompt("Please enter the name of the file to save:", "MyModel.txt");
+        }
         if (fileName) {
-            this.downloadFile(sbml, fileName);
+            this.downloadFile(content, fileName, isSBML);
         }
     };
 
-    downloadFile = (data, fileName) => {
-        const blob = new Blob([data], { type: "application/xml" });
+    downloadFile = (data, fileName, isSBML) => {
+        const mimeType = isSBML ? "application/xml" : "text/plain";
+        const blob = new Blob([data], { type: mimeType });
         const href = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = href;
@@ -226,6 +232,33 @@ export class App extends React.Component {
         this.setState({ data: { columns: [] } });
     };
 
+    handleResetParameters = () => {
+        this.setState({
+        sbmlCode: "",
+        sbmlExport: "",
+        convertedAnt: "",
+        isChecked: false,
+        changeValues: "",
+        simulationParameters: {
+           timeStart: 0.0,
+           timeEnd: 20.0,
+           numPoints: 200,
+        },
+        initialOptions: [],
+        simulationParameterChanges: false,
+        oldSBMLContent: "",
+        kOptions: [],
+        kValues: [],})
+    }
+    handleParametersChange = (parameterName, value) => {
+            this.setState((prevState) => ({
+                simulationParameters: {
+                    ...prevState.simulationParameters,
+                    [parameterName]: parseFloat(value),
+                },
+                simulationParameterChanges: true,
+            }));
+        };
     render() {
         const simulationParameters = this.state;
         const additionalElements = [
@@ -266,6 +299,8 @@ export class App extends React.Component {
                     convertedAnt={this.state.convertedAnt}
                     kOptions={this.state.kOptions}
                     kValues={this.state.kValues}
+                    handleResetParameters={this.handleResetParameters}
+                    promptForFileNameAndDownload={this.promptForFileNameAndDownload}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>

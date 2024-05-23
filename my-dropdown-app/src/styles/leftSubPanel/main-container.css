@@ -32,7 +32,7 @@
   height: 10px;
   border-radius: 50%;
   cursor: pointer;
-  background: #ffffff; /* Adjust thumb color as needed */
+  background: #9b9a9c;
 }
 .minMaxInputContainer {
     display: inline-block;
@@ -45,7 +45,7 @@
 }
 
 .minMaxInputContainer input {
-    width: 40px; /* Adjust width as needed */
+    width: 50px; /* Adjust width as needed */
     height: 20px; /* Adjust height as needed */
     margin-left: 5px;
     border: 1px solid gray;
@@ -63,11 +63,10 @@
 .sliderLabel {
     font-size: 12px;
     margin-right: 10px;
-    cursor: pointer;
 }
 
 .sliderLabel:hover {
-    color: blue; /* Change color to blue on hover */
+    color: gray; /* Change color to blue on hover */
     text-decoration: underline; /* Add underline on hover */
 }
 

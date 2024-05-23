@@ -94,7 +94,6 @@ html {
 .dropdown-toolbar-button-file:nth-child(8)::after{
     content: '';
     display: block;
-    background-color: gray;
     height: 1px; /* Border thickness */
     margin-top: 10px;
 }
@@ -109,19 +108,16 @@ html {
     display: block;
     height: 1px; /* Border thickness */
     margin-top: 10px;
-    background-color: gray
 }
 .dropdown-toolbar-button-options:nth-child(2)::after{
     content: '';
     display: block;
     height: 1px; /* Border thickness */
     margin-top: 10px;
-    background-color: gray;
 }
 .dropdown-toolbar-button-help:nth-child(2)::after{
     content: '';
     display: block;
     height: 1px; /* Border thickness */
     margin-top: 10px;
-    background-color: gray;
 }

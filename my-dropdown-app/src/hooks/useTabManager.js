@@ -1,16 +1,16 @@
 import { useState } from "react";
 
-export function useTabManager(initialTabData) {
+export function useTabManager(initialTabData, resetContent) {
     const [tabs, setTabs] = useState([{ ...initialTabData, id: 1 }]);
     const [activeTabId, setActiveTabId] = useState(1);
 
     const addNewTab = () => {
         // Handle case when all tabs are closed and `tabs` array is empty
         const newId = tabs.length > 0 ? tabs[tabs.length - 1].id + 1 : 1;
-
         const newTab = { ...initialTabData, id: newId };
         setTabs([...tabs, newTab]);
         setActiveTabId(newId);
+        resetContent(); // Reset the content when a new tab is added
     };
 
     const switchTab = (id) => {
@@ -41,6 +41,14 @@ export function useTabManager(initialTabData) {
         return activeTab ? activeTab.textContent : "";
     };
 
+    const refreshCurrentTab = () => {
+        const currentTab = tabs.find((tab) => tab.id === activeTabId);
+        if (currentTab) {
+            updateActiveTabContent("");
+            resetContent();
+        }
+    };
+
     return {
         tabs,
         addNewTab,
@@ -49,5 +57,6 @@ export function useTabManager(initialTabData) {
         closeTab,
         activeTabId,
         getContentOfActiveTab,
+        refreshCurrentTab
     };
 }

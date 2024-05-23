@@ -26,8 +26,10 @@ const DropdownWithPopup = ({
     simulationParam,
     SBMLContent,
     handleExportSBML,
+    promptForFileNameAndDownload,
     handleTextChange,
     handleResetInApp,
+    handleResetParameters,
     handleSBMLfile,
     handleKValuesChanges,
     handleLocalReset,
@@ -36,8 +38,25 @@ const DropdownWithPopup = ({
     kOptions,
     kValues,
 }) => {
-    const initialTabData = { textContent: "", data: data };
+    const initialTabData = {
+        textContent: `// Load a model from disk, type in a model,
+// or pick one of the example models from
+// the Examples menu
 
+// Note: // is used to indicate a comment
+
+// e.g.
+
+A -> B; k1*A
+B -> C; k2*B
+k1 = 0.35; k2 = 0.2
+B = 0; C = 0
+A = 10
+
+// If you're not sure what to do, just
+// click the simulate button to the left`,
+        data: data
+    };
     const plotGraphRef = useRef(null);
 
     const [centerSubPanelHeight, setCenterSubPanelHeight] = useState(
@@ -59,10 +78,22 @@ const DropdownWithPopup = ({
     const [minMaxValues, setMinMaxValues] = useState({});
     const [selectedParameter, setSelectedParameter] = useState(null);
     const [layoutVertical, setLayoutVertical] = useState(window.innerWidth <= BREAKPOINT_WIDTH);
+    const [isNewTabCreated, setIsNewTabCreated] = useState(false);
+
+    const resetContent = () => {
+        setSelectedOptions([]);
+        set_xAxis_selected_option(null);
+        set_kOptions_for_sliders({});
+        setSliderValues({});
+        setMinMaxValues({});
+        handleResetInApp();
+        handleResetParameters();
+        setIsNewTabCreated(true);
+    };
 
     // Use the custom hook for tab management
-    const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab, getContentOfActiveTab } =
-        useTabManager(initialTabData);
+    const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab, getContentOfActiveTab, refreshCurrentTab } =
+        useTabManager(initialTabData, resetContent);
 
     useEffect(() => {
         const handleResize = () => {
@@ -147,7 +178,7 @@ const DropdownWithPopup = ({
             {tabs.map((tab) => (
                 <button
                     style={{
-                        backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                        backgroundColor: isDarkMode ? "black" : "white",
                         color: isDarkMode ? "white" : "black",
                         border: isDarkMode ? "1px solid white" : "1px solid black",
                     }}
@@ -299,7 +330,7 @@ const DropdownWithPopup = ({
                         style={{
                             height: `${(centerSubPanelHeight - 104) / 2}px`,
                             width: `${centerPanelWidth - 22}px`,
-                            backgroundColor: isDarkMode ? "#2e2d2d" : "#c4c2c2", // Set the background color to blue for the bottom half
+                            backgroundColor: isDarkMode ? "#2e2d2d" : "white", // Set the background color to blue for the bottom half
                             border: isDarkMode ? "1px solid white" : "1px solid black",
                             color: "white", // Set the text color to white if needed
                             marginLeft: "10px",
@@ -309,13 +340,13 @@ const DropdownWithPopup = ({
                             alignItems: "flex-start", // Align items at the start of the flex container
                         }}
                     >
-                        {/* Container for checkboxes */}
+
                         <div
                             style={{
                                 height: "90%", // Set to 90% of the parent div's height
                                 width: "20%", // Adjusted width to make space for sliders
                                 marginTop: "15px",
-                                backgroundColor: isDarkMode ? "#2e2d2d" : "#c4c2c2",
+                                backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                                 display: "flex", // Further nest flexbox for internal layout
                                 flexDirection: "column", // Stack children vertically
                                 overflowY: "auto", // Add overflow-y property to enable vertical scrolling
@@ -336,7 +367,7 @@ const DropdownWithPopup = ({
                                 style={{
                                     height: "70%", // Set height to fit content
                                     width: "70%", // Adjust width to fill parent
-                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2", // Set the background color to blue for the bottom half
+                                    backgroundColor: isDarkMode ? "black" : "white", // Set the background color to blue for the bottom half
                                     border: isDarkMode ? "1px solid gray" : "1px solid black",
                                     marginLeft: "25px",
                                     overflowY: "auto", // Add overflow-y property to enable vertical scrolling
@@ -368,7 +399,7 @@ const DropdownWithPopup = ({
                             style={{
                                 height: "100%", // Set to 90% of the parent div's height
                                 width: "80%", // Set to 50% to fit next to checkboxes
-                                backgroundColor: isDarkMode ? "#2e2d2d" : "#c4c2c2",
+                                backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                                 display: "flex", // Use flexbox to layout sliders
                                 flexDirection: "column", // Stack sliders vertically
                                 justifyContent: "center", // Center sliders vertically within the container
@@ -376,6 +407,16 @@ const DropdownWithPopup = ({
                                 boxSizing: "border-box", // Include border width in the total width calculation
                             }}
                         >
+                             <MdClose
+                                onClick={() => setShowSplitView(!showSplitView)}
+                                style={{
+                                    cursor: "pointer",
+                                    marginLeft: "100%",
+                                    marginTop: "-40px",
+                                    fontSize: "20px",
+                                    color: isDarkMode ? "white" : "black",
+                                }}
+                            />
                             <div
                                 style={{
                                     height: "15%", // Set to 20% of the parent div's height
@@ -384,7 +425,7 @@ const DropdownWithPopup = ({
                                     flexDirection: "row", // Align controls horizontally
                                     justifyContent: "space-between", // Space controls evenly within the subpanel
                                     alignItems: "center", // Align controls vertically at the center
-                                    marginTop: "-45px",
+                                    marginTop: "-10px",
                                 }}
                             >
                                 {selectedParameter && (
@@ -393,13 +434,15 @@ const DropdownWithPopup = ({
                                             style={{
                                                 fontSize: "12px",
                                                 marginRight: "10px",
+                                                color: isDarkMode ? 'white' : 'black'
                                             }}
                                         >
                                             {selectedParameter}
                                         </span>
                                         <div className="minMaxInputContainer">
-                                            <label>Min Value:</label>
+                                            <label style={{color: isDarkMode ? 'white' : 'black'}}>Min Value:</label>
                                             <input
+                                                style={{backgroundColor: isDarkMode ? 'black' : 'white', color: isDarkMode ? 'white' : 'black'}}
                                                 type="number"
                                                 value={
                                                     minMaxValues[selectedParameter]
@@ -410,8 +453,9 @@ const DropdownWithPopup = ({
                                             />
                                         </div>
                                         <div className="minMaxInputContainer">
-                                            <label>Max Value:</label>
+                                            <label style={{color: isDarkMode ? 'white' : 'black'}}>Max Value:</label>
                                             <input
+                                                style={{backgroundColor: isDarkMode ? 'black' : 'white', color: isDarkMode ? 'white' : 'black'}}
                                                 type="number"
                                                 value={minMaxValues[selectedParameter].max}
                                                 onChange={handleMaxValueChange}
@@ -424,7 +468,7 @@ const DropdownWithPopup = ({
                                 style={{
                                         height: "85%", // Set to 85% of the parent div's height
                                         width: "100%",
-                                        backgroundColor: isDarkMode ? "#2e2d2d" : "#c4c2c2",
+                                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                                         display: "flex", // Use flexbox to layout sliders
                                         flexDirection: "column", // Stack sliders vertically
                                         justifyContent: "flex-start", // Align items at the start of the container
@@ -436,7 +480,7 @@ const DropdownWithPopup = ({
                                 {kOptions.map((option) => {
                                     if (kOptions_for_sliders[option]) {
                                         const range = minMaxValues[option].max - minMaxValues[option].min;
-                                        const stepSize = range < 10 ? 0.1 : range / 100;
+                                        const stepSize = range / 100;
                                         const currentVal =
                                             sliderValues[option] === minMaxValues[option].min
                                                 ? 0
@@ -469,25 +513,25 @@ const DropdownWithPopup = ({
                                                             width: "100%",
                                                             background: `linear-gradient(to right, #2273f5 0%, blue ${
                                                                 ((sliderValues[option] - minMaxValues[option].min) /
-                                                                    (minMaxValues[option].max -
-                                                                        minMaxValues[option].min)) *
+                                                                    (minMaxValues[option].max - minMaxValues[option].min)) *
                                                                 100
-                                                            }%, #d3d3d3 ${
+                                                            }%, ${"#9b9a9c"} ${
                                                                 ((sliderValues[option] - minMaxValues[option].min) /
-                                                                    (minMaxValues[option].max -
-                                                                        minMaxValues[option].min)) *
+                                                                    (minMaxValues[option].max - minMaxValues[option].min)) *
                                                                 100
-                                                            }%, #d3d3d3 100%, transparent 100%)`,
+                                                            }%, ${"#9b9a9c"} 100%, transparent 100%)`,
                                                         }}
+
                                                         className="slider"
                                                     />
                                                     <div
                                                         style={{
                                                             position: "absolute",
                                                             top: "-10px",
-                                                            left: "10px",
+                                                            left: "20px",
                                                             transform: "translateX(-50%)",
                                                             fontSize: "12px",
+                                                            color: isDarkMode ? 'white' : 'black'
                                                         }}
                                                     >
                                                         {currentVal}
@@ -500,10 +544,11 @@ const DropdownWithPopup = ({
                                                             marginLeft: "15px",
                                                             fontSize: "12px",
                                                             marginTop: "7px",
+                                                            cursor: 'pointer',
                                                         }}
                                                         onClick={() => handleLabelClick(option)}
                                                     >
-                                                        <span>
+                                                        <span style={{color: isDarkMode ? 'white' : 'black'}}>
                                                             {option} [{minMaxValues[option]?.min || 0},{" "}
                                                             {minMaxValues[option]?.max || 0}]
                                                         </span>
@@ -606,6 +651,7 @@ const DropdownWithPopup = ({
                 additionalElements={additionalElements}
                 isNewFileUploaded={isNewFileUploaded}
                 setIsNewFileUploaded={setIsNewFileUploaded}
+                isNewTabCreated={isNewTabCreated}
             />
 
             <div
@@ -667,6 +713,7 @@ const DropdownWithPopup = ({
                     data={data}
                     selectedOptions={selectedOptions}
                     xAxis_selected_option={xAxis_selected_option}
+                    isNewTabCreated={isNewTabCreated}
                 />
             </div>
 
@@ -682,6 +729,9 @@ const DropdownWithPopup = ({
                 handleSBMLfile={handleSBMLfile}
                 isNewFileUploaded={isNewFileUploaded}
                 setIsNewFileUploaded={setIsNewFileUploaded}
+                promptForFileNameAndDownload={promptForFileNameAndDownload}
+                refreshCurrentTab={refreshCurrentTab}
+                simulationParam={simulationParam}
             />
         </div>
     );

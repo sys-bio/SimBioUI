@@ -85,7 +85,8 @@ class DropdownContainers extends Component {
                 this.props.setIsNewFileUploaded(true);
                 this.fileInputRef.current.click();
             } else if (item === "New") {
-                this.props.addNewTab();
+                this.props.refreshCurrentTab();
+                this.props.setShowDropdownToolbar(false);
             } else if (item === "Import SBML...") {
                 this.setState({ fileInputAccept: ".xml" }, () => {
                     this.props.setIsNewFileUploaded(true);
@@ -95,6 +96,10 @@ class DropdownContainers extends Component {
                 window.open("https://sys-bio.github.io/SimBioUI/", "_blank");
             } else if (item === "Export SBML...") {
                 this.props.onExportSBMLSelected();
+                this.props.setShowDropdownToolbar(false);
+            } else if (item === "Save...") {
+                this.props.onExportAntSelected();
+                this.props.setShowDropdownToolbar(false);
             } else if (item === "Save Graph as PDF") {
                 this.props.onDownloadPDF();
             } else {
@@ -124,13 +129,12 @@ class DropdownContainers extends Component {
                     ...dropdownStyle,
                     display: "block",
                     maxHeight: "200px",
-                    backgroundColor: isDarkMode ? "#242323" : "#c4c2c2"
-
+                    backgroundColor: isDarkMode ? "#242323" : "white",
                 }}
             >
                 {withCheckboxes ? (
                     Object.keys(options).map((option) => (
-                        <div key={option}>
+                        <div key={option} style={{marginTop: '12px'}}>
 
                             <input
                                 type="checkbox"
@@ -150,33 +154,35 @@ class DropdownContainers extends Component {
                         </div>
                     ))
                 ) : (
-                    <div>
+                    <div
+                    style={{backgroundColor: isDarkMode ? "#242323" : "white", borderRadius: '8px'}}>
                         {xAxis ? (
-                            Object.keys(options).map((option, index) => (
-                                <div key={option}>
-                                    <button
-                                        style={dropdownToolbarButtonsStyle}
-                                        className={dropdown_toolbar_buttons_style}
-                                        onClick={() => this.handleButtonClick(option, true)}
-                                    >
-                                        {option}
-                                        {this.props.selectedXOption === option && (
-                                            <span
-                                                style={{
-                                                    position: "absolute",
-                                                    fontSize: "20px",
-                                                    marginTop: "3px",
-                                                    right: "30px",
-                                                    color: isDarkMode ? "white" : "black",
-                                                    transform: "translateY(-50%)",
-                                                }}
-                                            >
-                                                ✓
-                                            </span>
-                                        )}
-                                    </button>
-                                </div>
-                            ))
+                          Object.keys(options).map((option, index) => (
+                            <div key={option}>
+                              <button
+                                style={{
+                                  ...dropdownToolbarButtonsStyle,
+                                  display: 'flex',
+                                  justifyContent: 'space-between',  // Space between text and checkmark
+                                  paddingRight: '10px',  // Right padding to reserve space for the checkmark
+                                }}
+                                className={dropdown_toolbar_buttons_style}
+                                onClick={() => this.handleButtonClick(option, true)}
+                              >
+                                {option}
+                                {this.props.selectedXOption === option && (
+                                  <span
+                                    style={{
+                                      fontSize: "15px",
+                                      color: isDarkMode ? "white" : "black",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
+                                )}
+                              </button>
+                            </div>
+                          ))
                         ) : (
                             <div style={dropdownToolbarStyle} className="dropdown-list-toolbar">
                                 {options.map((item, index) => (

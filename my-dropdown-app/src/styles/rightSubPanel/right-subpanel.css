@@ -29,6 +29,7 @@
     margin-right:80px
 }
 .edit-export-style {
+    background-color: royalblue;
     white-space: normal; /* Allows text to wrap */
     width: 100px;
     text-overflow: ellipsis; /* Adds an ellipsis if the text overflows (optional) */
@@ -45,4 +46,12 @@
 }
 .graphs-container{
     margin-left: 10px;
+}
+.legends-container {
+    position: absolute;
+    cursor: move;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 10;
 }

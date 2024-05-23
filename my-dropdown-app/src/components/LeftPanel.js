@@ -23,7 +23,8 @@ const LeftPanel = (props) => {
         onCheckboxChange,
         additionalElements,
         isNewFileUploaded,
-        setIsNewFileUploaded
+        setIsNewFileUploaded,
+        isNewTabCreated
     } = props;
 
     const [options, setOptions] = useState(initialOptions);
@@ -39,6 +40,12 @@ const LeftPanel = (props) => {
     const [showMoreOptions, setShowMoreOptions] = useState(false);
 
     useEffect(() => {
+        if (isNewTabCreated) {
+            setIsChecked(true);
+        }
+    }, [isNewTabCreated]);
+
+    useEffect(() => {
         const modifiedInitialOptions = { ...initialOptions };
         const keys = Object.keys(modifiedInitialOptions);
         if (keys.length > 0) {
@@ -52,7 +59,7 @@ const LeftPanel = (props) => {
 
     const { dropdownXAxisButtonStyle } = useMemo(() => {
         const dropdownXAxisButtonStyle = {
-            backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+            backgroundColor: isDarkMode ? "#242323" : "white",
             color: isDarkMode ? "white" : "black",
         };
 
@@ -177,7 +184,7 @@ const LeftPanel = (props) => {
                             <button
                                 className={"config-button"}
                                 style={{
-                                    backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                                    backgroundColor: isDarkMode ? "black" : "white",
                                     color: isDarkMode ? "white" : "black",
                                     border: isDarkMode ? "1px solid gray" : "1px solid black",
                                 }}
@@ -203,6 +210,7 @@ const LeftPanel = (props) => {
                                 <button
                                     className={"simulate-style"}
                                     style={{
+                                        marginTop: '10px',
                                         color: isDarkMode ? "white" : "black",
                                     }}
                                     onClick={handleSimulateButtonClick}
@@ -213,13 +221,14 @@ const LeftPanel = (props) => {
                                     className={"simulate-style"}
                                     style={{
                                         marginLeft: "-10px",
+                                        marginTop: '10px',
                                         color: isDarkMode ? "white" : "black",
                                     }}
                                     onClick={handleLocalReset}
                                 >
                                     Reset
                                 </button>
-                                <button onClick={handleSlideButtonClick}>Slider</button>
+                                <button style={{marginTop: '10px'}} onClick={handleSlideButtonClick}>Slider</button>
                             </div>
                         </div>
                         <div className="text-checkbox-input">
@@ -255,7 +264,7 @@ const LeftPanel = (props) => {
                             <button
                                 className="button-style"
                                 style={{
-                                    backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+                                    backgroundColor: isDarkMode ? "#242323" : "white",
                                     color: isDarkMode ? "white" : "black",
                                     border: isDarkMode ? "1px solid gray" : "1px solid black",
                                 }}
@@ -304,7 +313,7 @@ const LeftPanel = (props) => {
                             <button
                                 className="button-style"
                                 style={{
-                                    backgroundColor: isDarkMode ? "#242323" : "#c4c2c2",
+                                    backgroundColor: isDarkMode ? "#242323" : "white",
                                     color: isDarkMode ? "white" : "black",
                                     border: isDarkMode ? "1px solid gray" : "1px solid black",
                                 }}
@@ -329,26 +338,26 @@ const LeftPanel = (props) => {
                             {showDropdownButtons && (
                                 <div>
                                     <button
+                                        className={'selectAndUnselectAll-style'}
                                         style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                                             color: isDarkMode ? "white" : "black",
                                         }}
                                         onClick={selectAllOptions}
                                     >
-                                        Select all
+                                        Select All
                                     </button>
                                     <button
+                                        className={'selectAndUnselectAll-style'}
                                         style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                                             color: isDarkMode ? "white" : "black",
                                         }}
                                         onClick={unselectAllOptions}
                                     >
-                                        Unselect all
+                                        Unselect All
                                     </button>
                                     <button
+                                        className={'selectAndUnselectAll-style'}
                                         style={{
-                                            backgroundColor: isDarkMode ? "black" : "#c4c2c2",
                                             color: isDarkMode ? "white" : "black",
                                         }}
                                         onClick={() => setShowMoreOptions(true)}
@@ -360,11 +369,11 @@ const LeftPanel = (props) => {
                         </div>
                     </>
                 ) : (
-                    <div className={"parameter-icon"}>
+                    <div>
                         <FaBars
                             className={"axis-icon"}
                             size="25"
-                            color="white"
+                            color={isDarkMode ? "white" : "black"}
                             onClick={() => handleIconClick("x-axis")}
                         />
                     </div>

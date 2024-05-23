@@ -6,9 +6,9 @@ export const FILE_ITEMS = [
     { label: "New Window" },
     { label: "Open..." },
     { label: "Import SBML..." },
+    { label: "Save..." },
     { label: "Export SBML..." },
-    { label: "Save Graph as PDF" },
-    { label: "Quit" },
+    { label: "Save Graph as PDF" }
 ];
 export const ANALYSIS_ITEM = [
     { label: "Time Course Simulation" },
@@ -31,5 +31,3 @@ export const INITIAL_GRAPH_STATE = {
     xMax: "10.00",
     yMax: "10.00",
 };
-
-export const DEFAULT_OPTIONS = ["[A]", "[B]", "[C]"];

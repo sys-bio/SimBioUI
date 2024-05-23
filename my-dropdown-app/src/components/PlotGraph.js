@@ -2,6 +2,7 @@ import React, { PureComponent, Component, forwardRef } from 'react';
 import Plot from 'react-plotly.js';
 import Plotly from 'plotly.js-basic-dist';
 import jsPDF from 'jspdf';
+import DraggableLegend from './DraggableLegend';
 
 class PlotGraph extends PureComponent {
     constructor(props) {
@@ -27,14 +28,6 @@ class PlotGraph extends PureComponent {
             pdf.save('plot.pdf');
         });
     };
-    generateColors = (numColors) => {
-        const colors = [];
-        for (let i = 0; i < numColors; i++) {
-            const hue = i * (360 / numColors);
-            colors.push(`hsl(${hue}, 100%, 35%)`); // Adjust the lightness to 30% for darker colors
-        }
-        return colors;
-    };
 
     render() {
         const { rightPanelWidth, rightPanelHeight, isDarkMode, isXAutoscaleChecked, isYAutoscaleChecked, graphState } = this.props;
@@ -54,20 +47,19 @@ class PlotGraph extends PureComponent {
         const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
         const xValues = this.props.data.columns[indexOfX];
         const plotsCount = this.props.data.columns.length;
-        const colors = this.generateColors(plotsCount);
+        const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
         // Generate plot data configurations dynamically, but filter based on selected options
         const plotData = [];
         if (this.props.data.titles) {
             for (let i = 0; i < plotsCount; i++) {
-                if (this.props.selectedOptions[this.props.data.titles[i]]) { // Check if the option for this series is true
+                if (this.props.selectedOptions[this.props.data.titles[i]]) {
                     plotData.push({
                         x: xValues,
                         y: this.props.data.columns[i],
                         type: 'scatter',
                         mode: 'lines',
-                        name: this.props.data.titles[i],
-                        marker: { color: colors[i] }, // Alternate color for even series
+                        marker: { color: colors[i % colors.length] },
                         line: { width: 2 },
                     });
                 }
@@ -99,25 +91,25 @@ class PlotGraph extends PureComponent {
                         title: {
                             text: 'Transition of substances in chemical reaction',
                             font: {
-                                color: isDarkMode ? 'black' : 'white',
-                                size: dynamicFontSize, // Apply dynamic font size
+                                color: 'black',
+                                size: dynamicFontSize,
                             },
                         },
-                        paper_bgcolor: isDarkMode ? 'white' : '#c4c2c2', // Dark background color
-                        plot_bgcolor: isDarkMode ? 'white' : '#c4c2c2', // Dark background color
+                        paper_bgcolor: 'white',
+                        plot_bgcolor: '#f4edfa',
                         xaxis: {
                             title: {
                                 text: name_of_xAxis,
                                 font: {
-                                    color: isDarkMode ? 'black' : 'white',
-                                    size: dynamicFontSize, // Apply dynamic font size
+                                    color: 'black',
+                                    size: dynamicFontSize,
                                 },
                             },
                             tickfont: {
-                                color: isDarkMode ? 'black' : 'white',
+                                color: 'black',
                                 size: dynamicFontSize * 0.8
                             },
-                            gridcolor: isDarkMode ? 'white' : '#c4c2c2',
+                            gridcolor: '#f4edfa',
                             zeroline: false,
                             range: xaxisRange,
                             autorange: isXAutoscaleChecked,
@@ -127,27 +119,28 @@ class PlotGraph extends PureComponent {
                             title: {
                                 text: 'Entities',
                                 font: {
-                                    color: isDarkMode ? 'black' : 'white',
-                                    size: dynamicFontSize, // Apply dynamic font size
+                                    color: 'black',
+                                    size: dynamicFontSize,
                                 },
                             },
                             tickfont: {
-                                color: isDarkMode ? 'black' : 'white',
-                                size: dynamicFontSize * 0.8, // Smaller font size for ticks
+                                color: 'black',
+                                size: dynamicFontSize * 0.8,
                             },
-                            gridcolor: isDarkMode ? 'white' : '#c4c2c2',
+                            gridcolor: '#f4edfa',
                             range: yaxisRange,
                             zeroline: false,
                             autorange: isYAutoscaleChecked,
                             showline: true,
                             linecolor: 'black'
                         },
+                        showlegend: false
                     }}
                     config={{
-                        staticPlot: true, // Disable all interactions
-                        displayModeBar: false, // Hide the mode bar
+                        displayModeBar: false,
                     }}
                 />
+                {this.props.isShowLegendChecked && <DraggableLegend data={this.props.data} selectedOptions={this.props.selectedOptions} colors={colors}/>}
             </div>
         );
     }

@@ -21,7 +21,7 @@ const NumberInput = (props) => {
                 {label}
                 <input
                     style={{
-                        backgroundColor: isDarkMode ? "black" : "#c4c2c2",
+                        backgroundColor: isDarkMode ? "black" : "white",
                         color: isDarkMode ? "white" : "black",
                         border: isDarkMode ? "1px solid gray" : "1px solid black",
                         borderRadius: "4px",
