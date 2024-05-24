@@ -1,0 +1,59 @@
+.popup-edit-graph {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 50%;
+    z-index: 1;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.popup-top-edit-graph {
+    height: 10%;
+    width: 100%;
+}
+.popup-center-edit-graph {
+    height: 77%;
+    width: 100%;
+    margin-top: -48%
+}
+.popup-bottom-edit-graph {
+    height: 10%;
+    width: 100%;
+    margin-top: 43%
+}
+.edit-graph-popup-buttons {
+    margin-left: 1%;
+    width: 12%;
+    border-radius: 8px;
+    font-size: 12px;
+}
+.custom-checkbox:checked + span {
+  background-color: black; /* Background color when checked */
+}
+.custom-checkbox:checked + span::after {
+  content: ''; /* Required to show the pseudo-element */
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: solid #a37d36; /* Color of the checkmark */
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg); /* Rotate to form a checkmark */
+}
+.dropdown-for-main-title-color {
+    margin-left: 66%;
+    width: 200px;
+    border-radius: 6px;
+    z-index: 1000;
+    background-color: white
+}
+.buttons-style-in-main-title-color-dropdown {
+    width: 98%;
+    text-align: left;
+    font-size: 13px;
+}

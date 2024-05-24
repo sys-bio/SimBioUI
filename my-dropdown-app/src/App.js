@@ -184,6 +184,7 @@ export class App extends React.Component {
             }
         }
         this.handleResetInApp();
+        this.handleResetParameters();
     };
 
     // In App.js
@@ -234,9 +235,7 @@ export class App extends React.Component {
 
     handleResetParameters = () => {
         this.setState({
-        sbmlCode: "",
         sbmlExport: "",
-        convertedAnt: "",
         isChecked: false,
         changeValues: "",
         simulationParameters: {

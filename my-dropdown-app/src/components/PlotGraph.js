@@ -89,9 +89,9 @@ class PlotGraph extends PureComponent {
                         width: rightPanelWidth * 0.95,
                         height: rightPanelHeight * 0.60,
                         title: {
-                            text: 'Transition of substances in chemical reaction',
+                            text: this.props.titleVisible ? this.props.graphTitleName : "",
                             font: {
-                                color: 'black',
+                                color: this.props.selectedColor,
                                 size: dynamicFontSize,
                             },
                         },

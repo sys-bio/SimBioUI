@@ -32,8 +32,6 @@
     background-color: royalblue;
     white-space: normal; /* Allows text to wrap */
     width: 100px;
-    text-overflow: ellipsis; /* Adds an ellipsis if the text overflows (optional) */
-    word-wrap: break-word; /* Ensures words can be broken if needed to fit */
     max-width: 100%; /* Ensures button doesn't exceed its container */
     padding: 10px 5px; /* Adjust padding as needed */
     line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */

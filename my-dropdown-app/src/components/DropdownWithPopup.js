@@ -72,7 +72,7 @@ A = 10
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [xAxis_selected_option, set_xAxis_selected_option] = useState(null);
+    const [xAxis_selected_option, set_xAxis_selected_option] = useState([]);
     const [kOptions_for_sliders, set_kOptions_for_sliders] = useState({});
     const [sliderValues, setSliderValues] = useState({});
     const [minMaxValues, setMinMaxValues] = useState({});
@@ -82,10 +82,11 @@ A = 10
 
     const resetContent = () => {
         setSelectedOptions([]);
-        set_xAxis_selected_option(null);
+        set_xAxis_selected_option([]);
         set_kOptions_for_sliders({});
         setSliderValues({});
         setMinMaxValues({});
+
         handleResetInApp();
         handleResetParameters();
         setIsNewTabCreated(true);
@@ -603,6 +604,7 @@ A = 10
     const handleContentSelect = (content) => {
         updateActiveTabContent(content);
         handleResetInApp();
+        handleResetParameters();
     };
 
     const { leftSubpanelStyle, centerSubPanelStyle, rightSubpanelStyle } = getPanelStyles({
@@ -714,6 +716,7 @@ A = 10
                     selectedOptions={selectedOptions}
                     xAxis_selected_option={xAxis_selected_option}
                     isNewTabCreated={isNewTabCreated}
+                    handleDownloadPDF={handleDownloadPDF}
                 />
             </div>
 

@@ -29,7 +29,7 @@
 
 .popup-top {
     position: absolute;
-    top: 10px;
+    top: 10%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;

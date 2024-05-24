@@ -82,17 +82,22 @@ class DropdownContainers extends Component {
             this.props.setShowXDropdown(!this.props.showXDropdown);
         } else {
             if (item === "Open...") {
-                this.props.setIsNewFileUploaded(true);
-                this.fileInputRef.current.click();
+                const acceptedFileTypes = ".txt,.ant";
+                this.setState({ fileInputAccept: acceptedFileTypes }, () => {
+                    this.props.setIsNewFileUploaded(true);
+                    this.fileInputRef.current.click();
+                });
             } else if (item === "New") {
                 this.props.refreshCurrentTab();
                 this.props.setShowDropdownToolbar(false);
             } else if (item === "Import SBML...") {
+                // Set accepted file types for SBML (xml) files
                 this.setState({ fileInputAccept: ".xml" }, () => {
                     this.props.setIsNewFileUploaded(true);
                     this.fileInputRef.current.click();
                 });
-            } else if (item === "New Window") {
+            }
+             else if (item === "New Window") {
                 window.open("https://sys-bio.github.io/SimBioUI/", "_blank");
             } else if (item === "Export SBML...") {
                 this.props.onExportSBMLSelected();

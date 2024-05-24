@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 function DraggableLegend({ data, selectedOptions,colors }) {
-  // Initial position of the draggable legend
   const [position, setPosition] = useState({ x: 50, y: 50 });
   const [dragging, setDragging] = useState(false);
   const [relPos, setRelPos] = useState({ x: 0, y: 0 });
