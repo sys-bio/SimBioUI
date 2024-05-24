@@ -1,8 +1,8 @@
-import React, { PureComponent, Component, forwardRef } from 'react';
+import React, { PureComponent, forwardRef } from 'react';
 import Plot from 'react-plotly.js';
 import Plotly from 'plotly.js-basic-dist';
 import jsPDF from 'jspdf';
-import DraggableLegend from './DraggableLegend';
+import DraggableLegend from '../draggable/DraggableLegend';
 
 class PlotGraph extends PureComponent {
     constructor(props) {
@@ -30,7 +30,7 @@ class PlotGraph extends PureComponent {
     };
 
     render() {
-        const { rightPanelWidth, rightPanelHeight, isDarkMode, isXAutoscaleChecked, isYAutoscaleChecked, graphState } = this.props;
+        const { rightPanelWidth, rightPanelHeight, isXAutoscaleChecked, isYAutoscaleChecked, graphState } = this.props;
         let indexOfX;
         let name_of_xAxis;
         if (this.props.data.titles !== undefined) {
@@ -49,7 +49,6 @@ class PlotGraph extends PureComponent {
         const plotsCount = this.props.data.columns.length;
         const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
-        // Generate plot data configurations dynamically, but filter based on selected options
         const plotData = [];
         if (this.props.data.titles) {
             for (let i = 0; i < plotsCount; i++) {
@@ -67,14 +66,17 @@ class PlotGraph extends PureComponent {
         }
 
         let xaxisRange, yaxisRange;
-
-        if (isXAutoscaleChecked || parseFloat(graphState.xMin) >= parseFloat(graphState.xMax)) {
-            xaxisRange = undefined; // Keep the previous value or use autoscale
+        if (isXAutoscaleChecked) {
+            xaxisRange = [parseFloat(this.props.simulationParam.simulationParameters.timeStart), parseFloat(this.props.simulationParam.simulationParameters.timeEnd)];
         } else {
-            xaxisRange = [parseFloat(graphState.xMin), parseFloat(graphState.xMax)];
+            if (parseFloat(graphState.xMin) >= parseFloat(graphState.xMax)) {
+                xaxisRange = undefined; // Keep the previous value or use autoscale
+            } else {
+                xaxisRange = [parseFloat(graphState.xMin), parseFloat(graphState.xMax)];
+            }
         }
 
-        if (isYAutoscaleChecked || parseFloat(graphState.yMin) >= parseFloat(graphState.yMax)) {
+        if (parseFloat(graphState.yMin) >= parseFloat(graphState.yMax)) {
             yaxisRange = undefined; // Keep the previous value or use autoscale
         } else {
             yaxisRange = [parseFloat(graphState.yMin), parseFloat(graphState.yMax)];
@@ -113,7 +115,7 @@ class PlotGraph extends PureComponent {
                             zeroline: false,
                             range: xaxisRange,
                             autorange: isXAutoscaleChecked,
-                            showline: true
+                            showline: false
                         },
                         yaxis: {
                             title: {
@@ -131,10 +133,31 @@ class PlotGraph extends PureComponent {
                             range: yaxisRange,
                             zeroline: false,
                             autorange: isYAutoscaleChecked,
-                            showline: true,
+                            showline: false,
                             linecolor: 'black'
                         },
-                        showlegend: false
+                        showlegend: false,
+                        shapes: [
+                            {
+                                type: 'rect',
+                                xref: 'paper',
+                                yref: 'paper',
+                                x0: 0,
+                                y0: 0,
+                                x1: 1,
+                                y1: 1,
+                                line: {
+                                    color: this.props.selectedGraphBorderColor,
+                                    width: 0.5,
+                                },
+                            },
+                        ],
+                        margin: {
+                            l: 50,
+                            r: 50,
+                            b: 50,
+                            t: 50,
+                        }
                     }}
                     config={{
                         displayModeBar: false,

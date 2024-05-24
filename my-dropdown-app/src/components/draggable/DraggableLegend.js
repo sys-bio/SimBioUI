@@ -28,7 +28,7 @@ function DraggableLegend({ data, selectedOptions,colors }) {
   };
 
   // Generate legend items based on plot data
-  if (data.columns.length != 0) {
+  if (data.columns.length !== 0) {
       const legendItems = data.titles.map((title, index) => {
         if (selectedOptions[title]) {
           const color = colors[index % colors.length]

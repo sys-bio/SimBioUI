@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../styles/leftSubPanel/dropdown-components.css";
+import "../../styles/leftSubPanel/dropdown-components.css";
 
 class DropdownContainers extends Component {
     constructor(props) {

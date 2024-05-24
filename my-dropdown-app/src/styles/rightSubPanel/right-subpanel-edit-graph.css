@@ -5,31 +5,33 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 50%;
-    height: 50%;
+    width: 750px;
+    height: 450px;
     z-index: 1;
     padding: 10px;
     box-sizing: border-box;
 }
 .popup-top-edit-graph {
-    height: 10%;
+    height: 8%;
     width: 100%;
 }
 .popup-center-edit-graph {
-    height: 77%;
+    height: 75%;
     width: 100%;
-    margin-top: -48%
+    margin-top: 1%
 }
 .popup-bottom-edit-graph {
-    height: 10%;
+    height: 8%;
     width: 100%;
-    margin-top: 43%
+    margin-top: 4%
 }
 .edit-graph-popup-buttons {
-    margin-left: 1%;
+    margin-left: 0.5%;
     width: 12%;
+    height: 85%;
     border-radius: 8px;
     font-size: 12px;
+    margin-top: 0.40%
 }
 .custom-checkbox:checked + span {
   background-color: black; /* Background color when checked */
@@ -45,12 +47,10 @@
   border-width: 0 2px 2px 0;
   transform: rotate(45deg); /* Rotate to form a checkmark */
 }
-.dropdown-for-main-title-color {
-    margin-left: 66%;
+.dropdown-for-color {
     width: 200px;
     border-radius: 6px;
     z-index: 1000;
-    background-color: white
 }
 .buttons-style-in-main-title-color-dropdown {
     width: 98%;

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { MIN_PANEL_WIDTH } from "../constants/const";
+import { MIN_PANEL_WIDTH } from "../../constants/const";
 import SimulationParameters from "./SimulationParameters";
 import { FaBars } from "react-icons/fa";
 import DropdownContainers from "./DropdownContainers";
@@ -24,7 +24,9 @@ const LeftPanel = (props) => {
         additionalElements,
         isNewFileUploaded,
         setIsNewFileUploaded,
-        isNewTabCreated
+        isNewTabCreated,
+        setSelectedParameter,
+        kOptions
     } = props;
 
     const [options, setOptions] = useState(initialOptions);
@@ -55,7 +57,7 @@ const LeftPanel = (props) => {
             setOptions(modifiedInitialOptions);
             setSelectedOptions(modifiedInitialOptions);
         }
-    }, [initialOptions]);
+    }, [initialOptions]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const { dropdownXAxisButtonStyle } = useMemo(() => {
         const dropdownXAxisButtonStyle = {
@@ -76,9 +78,11 @@ const LeftPanel = (props) => {
             setSelectedOptions([]);
             handleTextChange(currentContent, isChecked, true);
             setShouldUpdateSelectedOptions(true);
+            setSelectedParameter(kOptions[0]);
         } else {
             setShouldUpdateSelectedOptions(false);
             if (isNewFileUploaded) {
+                setSelectedParameter(kOptions[0]);
                 handleTextChange(currentContent, isChecked, true);
                 setIsNewFileUploaded(false);
             } else {

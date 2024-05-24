@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 const SimulationParameters = ({ className, isDarkMode, onParametersChange, simulationParam }) => {
 //    const [timeStart, setTimeStart] = useState("0");
 //    const [timeEnd, setTimeEnd] = useState("20");

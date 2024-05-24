@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ANALYSIS_ITEM, EXAMPLE_ITEMS, FILE_ITEMS, HELP_ITEMS, OPTIONS_ITEMS } from "../constants/const";
+import { ANALYSIS_ITEM, EXAMPLE_ITEMS, FILE_ITEMS, HELP_ITEMS, OPTIONS_ITEMS } from "../../constants/const";
 import { FaMoon, FaSun } from "react-icons/fa";
 import DropdownContainers from "./DropdownContainers";
 
@@ -12,13 +12,13 @@ const MenuHeader = (props) => {
         handleExportSBML,
         SBMLContent,
         handleSBMLfile,
-        addNewTab,
         getContentOfActiveTab,
         isNewFileUploaded,
         setIsNewFileUploaded,
         refreshCurrentTab,
         promptForFileNameAndDownload,
-        simulationParam
+        simulationParam,
+        setSelectedParameter
     } = props;
 
     const fileDropdownRef = useRef(null);
@@ -66,6 +66,7 @@ const MenuHeader = (props) => {
 
     const onImportSBML = (content) => {
         handleSBMLfile(content);
+        setSelectedParameter(null);
     };
 
     useEffect(() => {

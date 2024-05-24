@@ -32,7 +32,7 @@ const ResizingHandle = ({ panelRef, resizingRef, handleResize, resizeStyle, isRi
             document.removeEventListener("mousemove", handleResize);
             document.removeEventListener("mouseup", stopResizingGlobal);
         };
-    }, [panelRef, resizingRef, handleResize]);
+    }, [panelRef, resizingRef, handleResize]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     return <div className={resizeStyle} onMouseDown={handleResize}></div>;
 };

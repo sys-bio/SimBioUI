@@ -1,21 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import "../styles/leftSubPanel/main-container.css";
-import "../styles/leftSubPanel/popup-components.css";
-import "../styles/leftSubPanel/dropdown-components.css";
-import "../styles/leftSubPanel/border-with-text.css";
-import "../styles/centerPanel/center-subpanel.css";
-import "../styles/centerPanel/centered-input.css";
-import "../styles/rightSubPanel/right-subpanel.css";
-import "../styles/leftTopCorner/left-top-corner.css";
+import "../../styles/leftSubPanel/main-container.css";
+import "../../styles/leftSubPanel/popup-components.css";
+import "../../styles/leftSubPanel/dropdown-components.css";
+import "../../styles/leftSubPanel/border-with-text.css";
+import "../../styles/centerPanel/center-subpanel.css";
+import "../../styles/centerPanel/centered-input.css";
+import "../../styles/rightSubPanel/right-subpanel.css";
+import "../../styles/leftTopCorner/left-top-corner.css";
 
-import { useTabManager } from "../hooks/useTabManager";
+import { useTabManager } from "../../hooks/useTabManager";
 
 import { MdClose } from "react-icons/md";
 import MenuHeader from "./MenuHeader";
 import LeftPanel from "./LeftPanel";
-import { getPanelStyles } from "../utils/common";
-import { MIN_PANEL_WIDTH, BREAKPOINT_WIDTH, LEFT_PANEL_FIXED_WIDTH } from "../constants/const";
+import { getPanelStyles } from "../../utils/common";
+import { MIN_PANEL_WIDTH, BREAKPOINT_WIDTH, LEFT_PANEL_FIXED_WIDTH } from "../../constants/const";
 import RightPanel from "./RightPanel";
 
 const DropdownWithPopup = ({
@@ -72,7 +72,7 @@ A = 10
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [xAxis_selected_option, set_xAxis_selected_option] = useState([]);
+    const [xAxis_selected_option, set_xAxis_selected_option] = useState(null);
     const [kOptions_for_sliders, set_kOptions_for_sliders] = useState({});
     const [sliderValues, setSliderValues] = useState({});
     const [minMaxValues, setMinMaxValues] = useState({});
@@ -82,10 +82,11 @@ A = 10
 
     const resetContent = () => {
         setSelectedOptions([]);
-        set_xAxis_selected_option([]);
+        set_xAxis_selected_option(null);
         set_kOptions_for_sliders({});
         setSliderValues({});
         setMinMaxValues({});
+        setSelectedParameter(null);
 
         handleResetInApp();
         handleResetParameters();
@@ -130,7 +131,7 @@ A = 10
         if (convertedAnt) {
             handleContentSelect(convertedAnt);
         }
-    }, [convertedAnt]);
+    }, [convertedAnt]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         const handleResize = () => {
@@ -158,7 +159,7 @@ A = 10
 
         // Cleanup listener on component unmount
         return () => window.removeEventListener("resize", handleResize);
-    }, [windowWidth, panelWidth]);
+    }, [windowWidth, panelWidth]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const handleDownloadPDF = () => {
         if (plotGraphRef.current) {
@@ -557,6 +558,8 @@ A = 10
                                                 </div>
                                             </div>
                                         );
+                                    } else {
+                                        return;
                                     }
                                 })}
                             </div>
@@ -605,6 +608,7 @@ A = 10
         updateActiveTabContent(content);
         handleResetInApp();
         handleResetParameters();
+        setSelectedParameter(null);
     };
 
     const { leftSubpanelStyle, centerSubPanelStyle, rightSubpanelStyle } = getPanelStyles({
@@ -654,6 +658,8 @@ A = 10
                 isNewFileUploaded={isNewFileUploaded}
                 setIsNewFileUploaded={setIsNewFileUploaded}
                 isNewTabCreated={isNewTabCreated}
+                setSelectedParameter={setSelectedParameter}
+                kOptions={kOptions}
             />
 
             <div
@@ -717,6 +723,7 @@ A = 10
                     xAxis_selected_option={xAxis_selected_option}
                     isNewTabCreated={isNewTabCreated}
                     handleDownloadPDF={handleDownloadPDF}
+                    simulationParam={simulationParam}
                 />
             </div>
 
@@ -735,6 +742,7 @@ A = 10
                 promptForFileNameAndDownload={promptForFileNameAndDownload}
                 refreshCurrentTab={refreshCurrentTab}
                 simulationParam={simulationParam}
+                setSelectedParameter={setSelectedParameter}
             />
         </div>
     );

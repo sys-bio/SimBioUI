@@ -31,3 +31,7 @@ export const INITIAL_GRAPH_STATE = {
     xMax: "10.00",
     yMax: "10.00",
 };
+
+// Array of color options for the dropdown
+export const colorOptions = ["Aliceblue", "Antiquewhite", "Aqua", "Aquamarine", "Azure", "Beige","Bisque", "Black",
+"Blanchediamond", "Blue", "Blueviolet", "Brown", "Burlywood", "White", "Red", "Green", "Yellow", "Gray", "Pink", "Indigo", "Silver"];

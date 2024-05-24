@@ -1,5 +1,5 @@
 import React from "react";
-import DropdownWithPopup from "./components/DropdownWithPopup";
+import DropdownWithPopup from "./components/main/DropdownWithPopup";
 import createCpsModule from "./libs/copasijs.js";
 import COPASI from "./libs/copasi.js";
 const libantimony = require("./libs/libantimony.js"); // libantimony.js in local dir
@@ -249,15 +249,7 @@ export class App extends React.Component {
         kOptions: [],
         kValues: [],})
     }
-    handleParametersChange = (parameterName, value) => {
-            this.setState((prevState) => ({
-                simulationParameters: {
-                    ...prevState.simulationParameters,
-                    [parameterName]: parseFloat(value),
-                },
-                simulationParameterChanges: true,
-            }));
-        };
+
     render() {
         const simulationParameters = this.state;
         const additionalElements = [
