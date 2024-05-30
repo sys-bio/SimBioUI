@@ -38,6 +38,7 @@ const RightPanel = (props, ref) => {
 
     // Want to show title of graph or not
     const [titleVisible, setTitleVisible] = useState(true);
+    const [includeGraphBorder, setIncludeGraphBorder] = useState(true);
 
     // Auto scale both axes checkbox
     const [autoScaleBothAxes, setAutoScaleBothAxes] = useState(false);
@@ -46,13 +47,18 @@ const RightPanel = (props, ref) => {
 
     const [showMainTitleColorDropdown, setShowMainTitleColorDropdown] = useState(false);
     const [showGraphBorderColorDropdown, setShowGraphBorderColorDropdown] = useState(false);
+    const [showGraphDrawingAreaColorDropdown, setShowGraphDrawingAreaColorDropdown] = useState(false);
+    const [showGraphBackgroundColorDropdown, setShowGraphBackgroundColorDropdown] = useState(false);
 
     const rightPanelRef = useRef(null);
     const rightResizingRef = useRef(false);
 
     const [selectedMainTitleColor, setSelectedMainTitleColor] = useState("Black");
-    const [selectedGraphBorderColor, setSelectedGraphBorderColor] = useState("Black")
+    const [selectedGraphBorderColor, setSelectedGraphBorderColor] = useState("Black");
+    const [selectedGraphDrawingAreaColor, setSelectedGraphDrawingAreaColor] = useState("#f3e6f5");
+    const [selectedGraphBackgroundColor, setSelectedGraphBackgroundColor] = useState("white");
 
+    const [borderWidth, setBorderWidth] = useState("0.5");
     useEffect(() => {
         if (isNewTabCreated) {
             setIsXAutoscaleChecked(false);
@@ -113,18 +119,53 @@ const RightPanel = (props, ref) => {
         setIsYAutoscaleChecked(!isYAutoscaleChecked);
     }
 
+    const handleShowMainTitleColorDropdown = () => {
+        setShowGraphBorderColorDropdown(false);
+        setShowGraphDrawingAreaColorDropdown(false);
+        setShowGraphBackgroundColorDropdown(false);
+        setShowMainTitleColorDropdown(!showMainTitleColorDropdown);
+    }
+    const handleShowGraphDrawingAreaColorDropdown = () => {
+        setShowMainTitleColorDropdown(false);
+        setShowGraphBorderColorDropdown(false);
+        setShowGraphBackgroundColorDropdown(false);
+        setShowGraphDrawingAreaColorDropdown(!showGraphDrawingAreaColorDropdown);
+    }
+    const handleShowGraphBackgroundColorDropdown = () => {
+        setShowMainTitleColorDropdown(false);
+        setShowGraphDrawingAreaColorDropdown(false);
+        setShowGraphBorderColorDropdown(false);
+
+        setShowGraphBackgroundColorDropdown(!showGraphBackgroundColorDropdown);
+    }
     const handleShowGraphBorderColorDropdown = () => {
-        if (showMainTitleColorDropdown) {
-            setShowMainTitleColorDropdown(false);
-        }
+        setShowMainTitleColorDropdown(false);
+        setShowGraphDrawingAreaColorDropdown(false);
+        setShowGraphBackgroundColorDropdown(false);
+
         setShowGraphBorderColorDropdown(!showGraphBorderColorDropdown);
     }
-    const handleShowMainTitleColorDropdown = () => {
-        if (showGraphBorderColorDropdown) {
-            setShowGraphBorderColorDropdown(false);
-        }
-        setShowMainTitleColorDropdown(!showMainTitleColorDropdown);
 
+    const styleForNumberInputInXYMinimum = () => {
+        return {
+                backgroundColor: isDarkMode ? "black" : "white",
+                color: isDarkMode ? "white" : "black",
+                border: isDarkMode ? "1px solid gray" : "1px solid black",
+                borderRadius: "4px",
+                width: "60px",
+                fontSize: 12,
+        }
+    }
+    const styleForBorderWidthInEditGraph = () => {
+        return {
+            backgroundColor: isDarkMode ? "black" : "white",
+            color: isDarkMode ? "white" : "black",
+            width: "60px",
+            height: "26px",
+            border: isDarkMode ? "1px solid gray" : "1px solid black",
+            borderRadius: "15px",
+            marginLeft: "5px"
+        }
     }
     return (
         <div ref={rightPanelRef} className="right-subpanel" style={rightSubpanelStyle}>
@@ -154,7 +195,11 @@ const RightPanel = (props, ref) => {
                     titleVisible={titleVisible}
                     selectedMainTitleColor={selectedMainTitleColor}
                     selectedGraphBorderColor={selectedGraphBorderColor}
+                    selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
+                    selectedGraphBackgroundColor={selectedGraphBackgroundColor}
                     simulationParam={simulationParam}
+                    includeGraphBorder={includeGraphBorder}
+                    borderWidth={borderWidth}
                 />
                 <div>
                     <div
@@ -166,6 +211,7 @@ const RightPanel = (props, ref) => {
                         <div style={{ marginRight: "10px" }}>
                             <NumberInput
                                 label="X Minimum:"
+                                style={styleForNumberInputInXYMinimum()}
                                 value={graphState.xMin || ''}
                                 onChange={(e) =>
                                     setGraphState((prevState) => ({
@@ -178,6 +224,7 @@ const RightPanel = (props, ref) => {
                             />
                             <NumberInput
                                 label="X Maximum:"
+                                style={styleForNumberInputInXYMinimum()}
                                 value={graphState.xMax || ''}
                                 onChange={(e) =>
                                     setGraphState((prevState) => ({
@@ -192,6 +239,7 @@ const RightPanel = (props, ref) => {
                         <div>
                             <NumberInput
                                 label="Y Minimum:"
+                                style={styleForNumberInputInXYMinimum()}
                                 value={graphState.yMin || ''}
                                 onChange={(e) =>
                                     setGraphState((prevState) => ({
@@ -204,6 +252,7 @@ const RightPanel = (props, ref) => {
                             />
                             <NumberInput
                                 label="Y Maximum:"
+                                style={styleForNumberInputInXYMinimum()}
                                 value={graphState.yMax || ''}
                                 onChange={(e) =>
                                     setGraphState((prevState) => ({
@@ -377,7 +426,7 @@ const RightPanel = (props, ref) => {
                                     backgroundColor: isDarkMode ? "black" : "white",
                                     border: "1px solid grey",
                                     width: "200px",
-                                    height: "100px",
+                                    height: "180px",
                                     zIndex: 1000,
                                     borderRadius: "8px",
                                     marginLeft: "479px",
@@ -415,6 +464,7 @@ const RightPanel = (props, ref) => {
                                   </div>
                                 )}
                             </div>
+
                             <div style={{position: "absolute", marginTop: "85px", marginLeft: "8px"}}>
                                 <label style={{ display: "inline-block", position: "relative", cursor: "pointer", paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
                                     <input
@@ -464,6 +514,157 @@ const RightPanel = (props, ref) => {
                                       Log Both Axes
                                   </label>
                             </div>
+                            <div style={{ position: "absolute", marginTop: "230px", marginLeft: "10px" }}>
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <div style={{ marginRight: "10px" }}>
+                                        <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Background Color:</label>
+                                        <button
+                                            style={{
+                                                width: "200px",
+                                                backgroundColor: isDarkMode ? "black" : "white",
+                                                color: isDarkMode ? "white" : "black",
+                                                border: "1px solid grey",
+                                                fontSize: "12px"
+                                            }}
+                                            onClick={handleShowGraphBackgroundColorDropdown}
+                                        >
+                                            {selectedGraphBackgroundColor}
+                                        </button>
+                                        {showGraphBackgroundColorDropdown && (
+                                            <div className={"dropdown-for-color"} style={{
+                                                backgroundColor: isDarkMode ? "black" : "white",
+                                                border: "1px solid grey",
+                                                width: "200px",
+                                                height: "180px",
+                                                zIndex: 1000,
+                                                borderRadius: "8px",
+                                                overflowY: "auto",
+                                                marginLeft: "106px"
+                                            }}>
+                                                {colorOptions.map((color, index) => (
+                                                    <div
+                                                        key={index}
+                                                        style={{
+                                                            padding: "7px",
+                                                            cursor: "pointer",
+                                                            fontSize: "12px",
+                                                            display: "flex",
+                                                            justifyContent: "space-between",
+                                                            alignItems: "center",
+                                                            borderRadius: "8px",
+                                                            color: isDarkMode ? "white" : "black",
+                                                            backgroundColor: isDarkMode ? "black" : "white"
+                                                        }}
+                                                        onClick={() => {
+                                                            setSelectedGraphBackgroundColor(color); // Update the selected color
+                                                            setShowGraphBackgroundColorDropdown(false); // Close the dropdown
+                                                        }}
+                                                    >
+                                                        {color}
+                                                        <div style={{
+                                                            width: "14px",
+                                                            height: "14px",
+                                                            borderRadius: "4px",
+                                                            backgroundColor: color, // This sets the color of the small square
+                                                            border: '1px solid grey'
+                                                        }}></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <NumberInput
+                                            label="Border Width:"
+                                            style={styleForBorderWidthInEditGraph()}
+                                            value={borderWidth || ''}
+                                            onChange={(e) =>
+                                                setBorderWidth(e.target.value)
+                                            }
+                                            isDarkMode={isDarkMode}
+                                            disabled={isXAutoscaleChecked}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{position: "absolute", marginTop: "180px", marginLeft: "10px"}}>
+                                <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Graph Drawing Area Color:</label>
+                                <button
+                                style={{
+                                      width: "200px",
+                                      backgroundColor: isDarkMode ? "black" : "white",
+                                      color: isDarkMode ? "white" : "black",
+                                      border: "1px solid grey",
+                                      fontSize: "12px"
+                                 }}
+                                 onClick={handleShowGraphDrawingAreaColorDropdown}
+                                 >{selectedGraphDrawingAreaColor}</button>
+                                {showGraphDrawingAreaColorDropdown && (
+                                    <div className={"dropdown-for-color"} style={{
+                                      backgroundColor: isDarkMode ? "black" : "white",
+                                      border: "1px solid grey",
+                                      width: "200px",
+                                      height: "180px",
+                                      zIndex: 1000,
+                                      borderRadius: "8px",
+                                      overflowY: "auto",
+                                      marginLeft: "152px"
+                                    }}>
+                                      {colorOptions.map((color, index) => (
+                                        <div
+                                          key={index}
+                                          style={{
+                                            padding: "7px",
+                                            cursor: "pointer",
+                                            fontSize: "12px",
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            borderRadius: "8px",
+                                            color: isDarkMode ? "white" : "black",
+                                            backgroundColor: isDarkMode ? "black" : "white"
+                                          }}
+                                          onClick={() => {
+                                            setSelectedGraphDrawingAreaColor(color); // Update the selected color
+                                            setShowGraphDrawingAreaColorDropdown(false); // Close the dropdown
+                                          }}
+                                        >
+                                          {color}
+                                          <div style={{
+                                            width: "14px",
+                                            height: "14px",
+                                            borderRadius: "4px",
+                                            backgroundColor: color, // This sets the color of the small square
+                                            border: '1px solid grey'
+                                          }}></div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                  <label style={{ display: "inline-block", position: "relative", marginLeft: "30px", cursor: "pointer", paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
+                                      <input
+                                        className="custom-checkbox"
+                                        type="checkbox"
+                                        checked={includeGraphBorder}
+                                        style={{
+                                          display: "none", // Hide the original checkbox
+                                        }}
+                                        onClick={() => setIncludeGraphBorder(!includeGraphBorder)}
+                                      />
+                                      <span style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                        height: "20px",
+                                        width: "20px",
+                                        backgroundColor: isDarkMode ? "black" : "white", // Use condition for dark mode
+                                        border: "1px solid gray",
+                                        borderRadius: "4px",
+                                        marginTop: "-2px"
+                                      }}></span>
+                                      Include Graph Border
+                                  </label>
+                            </div>
                             <div style={{position: "absolute", marginTop: "120px", marginLeft: "10px"}}>
                             <label style={{color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Graph Border Color:</label>
                                 <button style={{
@@ -480,7 +681,7 @@ const RightPanel = (props, ref) => {
                                       backgroundColor: isDarkMode ? "black" : "white",
                                       border: "1px solid grey",
                                       width: "200px",
-                                      height: "100px",
+                                      height: "180px",
                                       zIndex: 1000,
                                       borderRadius: "8px",
                                       overflowY: "auto",

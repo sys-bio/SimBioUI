@@ -1,7 +1,7 @@
 import React from "react";
 
 const NumberInput = (props) => {
-    const { label, value, onChange, isDarkMode, disabled} = props;
+    const { label, value, onChange, isDarkMode, disabled, style} = props;
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             // Update the value when Enter key is pressed
@@ -20,14 +20,7 @@ const NumberInput = (props) => {
             >
                 {label}
                 <input
-                    style={{
-                        backgroundColor: isDarkMode ? "black" : "white",
-                        color: isDarkMode ? "white" : "black",
-                        border: isDarkMode ? "1px solid gray" : "1px solid black",
-                        borderRadius: "4px",
-                        width: "60px",
-                        fontSize: 12,
-                    }}
+                    style={{...style}}
                     type="text"
                     disabled={disabled}
                     onKeyDown={handleKeyDown}

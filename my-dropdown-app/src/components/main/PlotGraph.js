@@ -97,8 +97,8 @@ class PlotGraph extends PureComponent {
                                 size: dynamicFontSize,
                             },
                         },
-                        paper_bgcolor: 'white',
-                        plot_bgcolor: '#f4edfa',
+                        paper_bgcolor: this.props.selectedGraphBackgroundColor,
+                        plot_bgcolor: this.props.selectedGraphDrawingAreaColor,
                         xaxis: {
                             title: {
                                 text: name_of_xAxis,
@@ -111,7 +111,7 @@ class PlotGraph extends PureComponent {
                                 color: 'black',
                                 size: dynamicFontSize * 0.8
                             },
-                            gridcolor: '#f4edfa',
+                            gridcolor: this.props.selectedGraphDrawingAreaColor,
                             zeroline: false,
                             range: xaxisRange,
                             autorange: isXAutoscaleChecked,
@@ -129,7 +129,7 @@ class PlotGraph extends PureComponent {
                                 color: 'black',
                                 size: dynamicFontSize * 0.8,
                             },
-                            gridcolor: '#f4edfa',
+                            gridcolor: this.props.selectedGraphDrawingAreaColor,
                             range: yaxisRange,
                             zeroline: false,
                             autorange: isYAutoscaleChecked,
@@ -137,7 +137,7 @@ class PlotGraph extends PureComponent {
                             linecolor: 'black'
                         },
                         showlegend: false,
-                        shapes: [
+                        shapes: this.props.includeGraphBorder ? [
                             {
                                 type: 'rect',
                                 xref: 'paper',
@@ -148,10 +148,10 @@ class PlotGraph extends PureComponent {
                                 y1: 1,
                                 line: {
                                     color: this.props.selectedGraphBorderColor,
-                                    width: 0.5,
+                                    width: this.props.borderWidth == '' ? 0 : this.props.borderWidth,
                                 },
                             },
-                        ],
+                        ] : [],
                         margin: {
                             l: 50,
                             r: 50,
