@@ -128,7 +128,8 @@ const GraphEditFeatures = ({
                                   onClick={handleShowMainTitleColorDropdown}
                              >{selectedMainTitleColor}</button>
                           {showMainTitleColorDropdown && (
-                              <div className={"dropdown-for-color"} style={{
+                              <div className={"dropdown-for-color " + (isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode")}
+                               style={{
                                 position: 'absolute', // Absolutely position this dropdown
                                 top: '100%', // Position right below the button
                                 left: '0',
@@ -137,7 +138,7 @@ const GraphEditFeatures = ({
                                 width: "200px",
                                 height: "180px",
                                 zIndex: 1000, // Highest z-index to ensure it's on top
-                                borderRadius: "8px",
+                                borderRadius: "5px",
                                 overflowY: "auto",
                                 marginLeft: "129px"
                               }}>
@@ -151,7 +152,7 @@ const GraphEditFeatures = ({
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
-                                        borderRadius: "8px",
+                                        borderRadius: "5px",
                                         color: isDarkMode ? "white" : "black",
                                         backgroundColor: isDarkMode ? "black" : "white"
                                       }}
@@ -224,7 +225,8 @@ const GraphEditFeatures = ({
                                     {selectedGraphBackgroundColor}
                                 </button>
                                 {showGraphBackgroundColorDropdown && (
-                                    <div className={"dropdown-for-color"} style={{
+                                    <div className={"dropdown-for-color " + (isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode")}
+                                     style={{
                                         position: 'absolute', // Dropdown floats over other content, not pushing it
                                         top: '100%', // Align directly below the button
                                         left: '0',
@@ -233,7 +235,7 @@ const GraphEditFeatures = ({
                                         width: "200px",
                                         height: "180px",
                                         zIndex: 1000,
-                                        borderRadius: "8px",
+                                        borderRadius: "5px",
                                         overflowY: "auto",
                                         marginLeft: "114px"
                                     }}>
@@ -247,7 +249,7 @@ const GraphEditFeatures = ({
                                                     display: "flex",
                                                     justifyContent: "space-between",
                                                     alignItems: "center",
-                                                    borderRadius: "8px",
+                                                    borderRadius: "5px",
                                                     color: isDarkMode ? "white" : "black",
                                                     backgroundColor: isDarkMode ? "black" : "white"
                                                 }}
@@ -307,13 +309,14 @@ const GraphEditFeatures = ({
                         <div style={{ marginRight: '20px' }}> {/* Container for dropdown and its button */}
 
                             {showGraphDrawingAreaColorDropdown && (
-                                <div className={"dropdown-for-color"} style={{
+                                <div className={"dropdown-for-color " + (isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode")}
+                                 style={{
                                     backgroundColor: isDarkMode ? "black" : "white",
                                     border: "1px solid grey",
                                     width: "200px",
                                     height: "180px",
                                     zIndex: 1000,
-                                    borderRadius: "8px",
+                                    borderRadius: "5px",
                                     overflowY: "auto",
                                     position: 'absolute', // Dropdown floats over other content, not pushing it
                                     marginLeft: "152px",
@@ -329,7 +332,7 @@ const GraphEditFeatures = ({
                                                 display: "flex",
                                                 justifyContent: "space-between",
                                                 alignItems: "center",
-                                                borderRadius: "8px",
+                                                borderRadius: "5px",
                                                 color: isDarkMode ? "white" : "black",
                                                 backgroundColor: isDarkMode ? "black" : "white"
                                             }}
@@ -378,13 +381,14 @@ const GraphEditFeatures = ({
                      onClick={handleShowGraphBorderColorDropdown}
                      >{selectedGraphBorderColor}</button>
                     {showGraphBorderColorDropdown && (
-                        <div className={"dropdown-for-color"} style={{
+                        <div className={"dropdown-for-color " + (isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode")}
+                         style={{
                           backgroundColor: isDarkMode ? "black" : "white",
                           border: "1px solid grey",
                           width: "200px",
                           height: "180px",
                           zIndex: 1000,
-                          borderRadius: "8px",
+                          borderRadius: "5px",
                           overflowY: "auto",
                           marginLeft: "115px"
                         }}>
@@ -398,7 +402,7 @@ const GraphEditFeatures = ({
                                 display: "flex",
                                 justifyContent: "space-between",
                                 alignItems: "center",
-                                borderRadius: "8px",
+                                borderRadius: "5px",
                                 color: isDarkMode ? "white" : "black",
                                 backgroundColor: isDarkMode ? "black" : "white"
                               }}

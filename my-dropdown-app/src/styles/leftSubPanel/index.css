@@ -11,7 +11,7 @@
   padding: 10px;
   box-sizing: border-box;
   height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
-  overflow: hidden;
+  overflowY: auto;
   margin-top: 60px; /* Adjust the margin-top to move the sub-panel up */
   margin-bottom: 80px; /* Remove margin-bottom */
 }

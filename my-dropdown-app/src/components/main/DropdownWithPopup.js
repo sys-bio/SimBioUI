@@ -76,18 +76,10 @@ A = 10
     const [kOptions_for_sliders, set_kOptions_for_sliders] = useState({});
     const [sliderValues, setSliderValues] = useState({});
     const [minMaxValues, setMinMaxValues] = useState({});
-    const [selectedParameter, setSelectedParameter] = useState(null);
+    const [selectedParameter, setSelectedParameter] = useState("");
     const [layoutVertical, setLayoutVertical] = useState(window.innerWidth <= BREAKPOINT_WIDTH);
     const [isNewTabCreated, setIsNewTabCreated] = useState(false);
 
-    const getCustomStyle = (backgroundDarkColor, backgroundLightColor, textColorDarkColor, textColorLightColor, borderWidth, borderColorDarkColor, borderColorLightColor, radius) => {
-        return {
-            color: isDarkMode ? textColorDarkColor : textColorLightColor,
-            backgroundColor: isDarkMode ? backgroundDarkColor : backgroundLightColor,
-            border: `${borderWidth}px solid ${isDarkMode ? borderColorDarkColor : borderColorLightColor}`,
-            borderRadius: `${radius}px`,
-        };
-    }
     const resetContent = () => {
         setSelectedOptions([]);
         set_xAxis_selected_option(null);
@@ -132,6 +124,7 @@ A = 10
             set_kOptions_for_sliders(newStateForSliders);
             setSliderValues(newSliderValues);
             setMinMaxValues(newMinMaxValues);
+            setSelectedParameter(kOptions[0]);
         }
     }, [kOptions, kValues]);
 
@@ -187,10 +180,14 @@ A = 10
         <div className="tabs">
             {tabs.map((tab) => (
                 <button
+                    style={{
+                        backgroundColor: isDarkMode ? "black" : "white",
+                        color: isDarkMode ? "white" : "black",
+                        border: isDarkMode ? "1px solid white" : "1px solid black",
+                    }}
                     key={tab.id}
                     onClick={() => switchTab(tab.id)}
                     className={`tab-button ${tab.id === activeTabId ? "active" : ""}`}
-                    style={getCustomStyle("black", "white", "white", "black", 1, "white", "black", 0)}
                 >
                     Untitled {tab.id}
                     <MdClose
@@ -253,52 +250,72 @@ A = 10
         setSelectedParameter(parameter);
     };
 
-    const handleMaxValueChange = (e) => {
-        const parameter = selectedParameter;
-        const newMax = e.target.value || ""; // Use parseFloat to allow decimal values
-        const newMin = minMaxValues[parameter].min;
-        setMinMaxValues((prev) => ({
-            ...prev,
-            [parameter]: {
-                ...prev[parameter],
-                max: newMax,
-            },
-        }));
-        let newValue;
-        if (newMin < newMax) {
-            newValue = ((Number(newMin) + Number(newMax)) / 2).toFixed(2);
-        } else {
-            newValue = Number(newMin);
-        }
-        setSliderValues((prev) => ({
-            ...prev,
-            [parameter]: newValue,
-        }));
-        handleKValuesChanges(parameter, newValue);
-    };
-
     const handleMinValueChange = (e) => {
         const parameter = selectedParameter;
-        const newMin = e.target.value || "";
-        const newMax = minMaxValues[parameter].max;
-        setMinMaxValues((prev) => ({
-            ...prev,
-            [parameter]: {
-                ...prev[parameter],
-                min: newMin,
-            },
-        }));
-        let newValue;
-        if (newMin < newMax) {
-            newValue = ((Number(newMin) + Number(newMax)) / 2).toFixed(2);
+        const newMin = e.target.value || ""; // Always ensure a string value, never undefined
+        if (!minMaxValues[parameter]) {
+            setMinMaxValues((prev) => ({
+                ...prev,
+                [parameter]: {
+                    min: newMin,
+                    max: 100, // Default max if not set
+                },
+            }));
         } else {
-            newValue = Number(newMin);
+            const newMax = minMaxValues[parameter].max;
+            setMinMaxValues((prev) => ({
+                ...prev,
+                [parameter]: {
+                    ...prev[parameter],
+                    min: newMin,
+                },
+            }));
+            let newValue;
+            if (newMin < newMax) {
+                newValue = ((Number(newMin) + Number(newMax)) / 2).toFixed(2);
+            } else {
+                newValue = Number(newMin);
+            }
+            setSliderValues((prev) => ({
+                ...prev,
+                [parameter]: newValue,
+            }));
+            handleKValuesChanges(parameter, newValue);
         }
-        setSliderValues((prev) => ({
-            ...prev,
-            [parameter]: newValue,
-        }));
-        handleKValuesChanges(parameter, newValue);
+    };
+
+    const handleMaxValueChange = (e) => {
+        const parameter = selectedParameter;
+        const newMax = e.target.value || ""; // Always ensure a string value, never undefined
+        if (!minMaxValues[parameter]) {
+            setMinMaxValues((prev) => ({
+                ...prev,
+                [parameter]: {
+                    min: 0,
+                    max: newMax,
+                },
+            }));
+        } else {
+            const newMin = minMaxValues[parameter].min;
+            setMinMaxValues((prev) => ({
+                ...prev,
+                [parameter]: {
+                    ...prev[parameter],
+                    max: newMax,
+                },
+            }));
+            let newValue;
+            if (newMin < newMax) {
+                newValue = ((Number(newMin) + Number(newMax)) / 2).toFixed(2);
+            } else {
+                newValue = Number(newMax);
+            }
+            setSliderValues((prev) => ({
+                ...prev,
+                [parameter]: newValue,
+            }));
+            handleKValuesChanges(parameter, newValue);
+        }
     };
 
     const renderActiveTabContent = () => {
@@ -312,17 +329,20 @@ A = 10
                     <div
                         className={"centered-input-box"}
                         style={{
-                            ...getCustomStyle("black", "white", "undefined", "undefined", 1, "white", "black", 0),
                             height: `${(centerSubPanelHeight - 80) / 2}px`,
                             width: `${centerPanelWidth - 42}px`,
+                            backgroundColor: isDarkMode ? "black" : "white",
+                            border: isDarkMode ? "white" : "black",
                             outline: isDarkMode ? "1px solid white" : "1px solid black",
                             marginLeft: "10px",
                         }}
                     >
                         <textarea
+                            className={isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode"}
                             style={{
-                                ...getCustomStyle("black", "white", "white", "black", 0, "undefined", "undefined", 0),
                                 fontSize: `${sizeOfInput}px`,
+                                backgroundColor: isDarkMode ? "black" : "white",
+                                color: isDarkMode ? "white" : "black",
                                 height: "100%", // Make sure the textarea fills the container
                                 resize: "none", // Optional: disable resizing of the textarea
                             }}
@@ -348,7 +368,7 @@ A = 10
                         <div
                             style={{
                                 height: "90%", // Set to 90% of the parent div's height
-                                width: "20%", // Adjusted width to make space for sliders
+                                width: "150px", // Adjusted width to make space for sliders
                                 marginTop: "15px",
                                 backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                                 display: "flex", // Further nest flexbox for internal layout
@@ -367,7 +387,7 @@ A = 10
                             >
                                 Add slider
                             </p>
-                            <div
+                            <div className={isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode"}
                                 style={{
                                     height: "70%", // Set height to fit content
                                     width: "70%", // Adjust width to fill parent
@@ -450,7 +470,7 @@ A = 10
                                                 type="number"
                                                 value={
                                                     minMaxValues[selectedParameter]
-                                                        ? minMaxValues[selectedParameter].min
+                                                        ? minMaxValues[selectedParameter]?.min || 0
                                                         : 0
                                                 }
                                                 onChange={handleMinValueChange}
@@ -461,14 +481,14 @@ A = 10
                                             <input
                                                 style={{backgroundColor: isDarkMode ? 'black' : 'white', color: isDarkMode ? 'white' : 'black'}}
                                                 type="number"
-                                                value={minMaxValues[selectedParameter].max}
+                                                value={minMaxValues[selectedParameter]?.max || 100}
                                                 onChange={handleMaxValueChange}
                                             />
                                         </div>
                                     </div>
                                 )}
                             </div>
-                            <div
+                            <div className={isDarkMode ? "custom-scrollbar-sliders-dark-mode" : "custom-scrollbar-light-mode"}
                                 style={{
                                         height: "85%", // Set to 85% of the parent div's height
                                         width: "100%",

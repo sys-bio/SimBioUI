@@ -27,27 +27,6 @@
     color: white;
     font-size: 12px; /* Adjust the font size as needed */
 }
-
-/* For WebKit (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-    width: 2px;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: gray;
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #2e2d2d;
-}
-
-/* For Firefox */
-html {
-    scrollbar-width: thin;
-    scrollbar-color: gray #2e2d2d;
-}
-
 .delete-message {
     margin-top: 5px;
     margin-bottom: 5px;

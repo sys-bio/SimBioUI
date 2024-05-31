@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useTabManager(initialTabData, resetContent) {
+export function useTabManager(initialTabData, resetContent, setSelectedParameter) {
     const [tabs, setTabs] = useState([{ ...initialTabData, id: 1 }]);
     const [activeTabId, setActiveTabId] = useState(1);
 
@@ -10,7 +10,7 @@ export function useTabManager(initialTabData, resetContent) {
         const newTab = { ...initialTabData, id: newId };
         setTabs([...tabs, newTab]);
         setActiveTabId(newId);
-        resetContent(); // Reset the content when a new tab is added
+        resetContent();
     };
 
     const switchTab = (id) => {

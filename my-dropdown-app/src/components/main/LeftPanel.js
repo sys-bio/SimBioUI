@@ -78,11 +78,9 @@ const LeftPanel = (props) => {
             setSelectedOptions([]);
             handleTextChange(currentContent, isChecked, true);
             setShouldUpdateSelectedOptions(true);
-            setSelectedParameter(kOptions[0]);
         } else {
             setShouldUpdateSelectedOptions(false);
             if (isNewFileUploaded) {
-                setSelectedParameter(kOptions[0]);
                 handleTextChange(currentContent, isChecked, true);
                 setIsNewFileUploaded(false);
             } else {
@@ -169,7 +167,8 @@ const LeftPanel = (props) => {
 
     return (
         <>
-            <div className="left-subpanel" style={leftSubpanelStyle}>
+            <div className={`left-subpanel ${isDarkMode ? "custom-scrollbar-sliders-dark-mode" : "custom-scrollbar-light-mode"}`}
+             style={leftSubpanelStyle}>
                 {panelWidth > MIN_PANEL_WIDTH ? (
                     <>
                         <FaBars

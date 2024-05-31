@@ -129,7 +129,7 @@ class DropdownContainers extends Component {
         const { options, fileInputAccept } = this.state;
         return (
             <div
-                className={className}
+                className={`${className} ${isDarkMode ? "custom-scrollbar-xyaxis-dropdown-dark-mode" : "custom-scrollbar-light-mode"}`}
                 style={{
                     ...dropdownStyle,
                     display: "block",

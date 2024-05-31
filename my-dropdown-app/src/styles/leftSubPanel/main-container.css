@@ -70,4 +70,75 @@
     text-decoration: underline; /* Add underline on hover */
 }
 
+/* Styles the scrollbar itself (vertical) */
+.custom-scrollbar-dark-mode::-webkit-scrollbar {
+    width: 2px;
+}
+
+/* Styles the draggable part of the scrollbar */
+.custom-scrollbar-dark-mode::-webkit-scrollbar-thumb {
+    background-color: gray; /* color of the scroll thumb */
+    border-radius: 30px; /* roundness of the scroll thumb */
+    border: 2px solid gray; /* creates padding around the scroll thumb */
+}
+
+/* Styles the part of the scrollbar track where the thumb isn't */
+.custom-scrollbar-dark-mode::-webkit-scrollbar-track {
+    background: black; /* color of the track */
+    border-radius: 30px; /* roundness of the track */
+}
+
+.custom-scrollbar-light-mode::-webkit-scrollbar {
+    width: 2px;  /* width of the entire scrollbar */
+}
+
+/* Styles the draggable part of the scrollbar */
+.custom-scrollbar-light-mode::-webkit-scrollbar-thumb {
+    background-color: gray; /* color of the scroll thumb */
+    border-radius: 15px; /* roundness of the scroll thumb */
+    border: 2px solid gray; /* creates padding around the scroll thumb */
+}
+
+/* Styles the part of the scrollbar track where the thumb isn't */
+.custom-scrollbar-light-mode::-webkit-scrollbar-track {
+    background: white; /* color of the track */
+    border-radius: 15px; /* roundness of the track */
+}
+
+.custom-scrollbar-sliders-dark-mode::-webkit-scrollbar {
+    width: 2px;  /* width of the entire scrollbar */
+}
+
+/* Styles the draggable part of the scrollbar */
+.custom-scrollbar-sliders-dark-mode::-webkit-scrollbar-thumb {
+    background-color: gray; /* color of the scroll thumb */
+    border-radius: 15px; /* roundness of the scroll thumb */
+    border: 2px solid gray; /* creates padding around the scroll thumb */
+}
+
+/* Styles the part of the scrollbar track where the thumb isn't */
+.custom-scrollbar-sliders-dark-mode::-webkit-scrollbar-track {
+    background: #2e2d2d; /* color of the track */
+    border-radius: 15px; /* roundness of the track */
+}
+
+.custom-scrollbar-xyaxis-dropdown-dark-mode::-webkit-scrollbar {
+    width: 2px;  /* width of the entire scrollbar */
+}
+
+/* Styles the draggable part of the scrollbar */
+.custom-scrollbar-xyaxis-dropdown-dark-mode::-webkit-scrollbar-thumb {
+    background-color: gray; /* color of the scroll thumb */
+    border-radius: 15px; /* roundness of the scroll thumb */
+    border: 2px solid gray; /* creates padding around the scroll thumb */
+}
+
+/* Styles the part of the scrollbar track where the thumb isn't */
+.custom-scrollbar-xyaxis-dropdown-dark-mode::-webkit-scrollbar-track {
+    background: #242323; /* color of the track */
+    border-radius: 15px; /* roundness of the track */
+}
+
+
+
 
