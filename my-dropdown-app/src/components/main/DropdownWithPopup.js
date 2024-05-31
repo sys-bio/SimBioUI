@@ -80,6 +80,14 @@ A = 10
     const [layoutVertical, setLayoutVertical] = useState(window.innerWidth <= BREAKPOINT_WIDTH);
     const [isNewTabCreated, setIsNewTabCreated] = useState(false);
 
+    const getCustomStyle = (backgroundDarkColor, backgroundLightColor, textColorDarkColor, textColorLightColor, borderWidth, borderColorDarkColor, borderColorLightColor, radius) => {
+        return {
+            color: isDarkMode ? textColorDarkColor : textColorLightColor,
+            backgroundColor: isDarkMode ? backgroundDarkColor : backgroundLightColor,
+            border: `${borderWidth}px solid ${isDarkMode ? borderColorDarkColor : borderColorLightColor}`,
+            borderRadius: `${radius}px`,
+        };
+    }
     const resetContent = () => {
         setSelectedOptions([]);
         set_xAxis_selected_option(null);
@@ -179,14 +187,10 @@ A = 10
         <div className="tabs">
             {tabs.map((tab) => (
                 <button
-                    style={{
-                        backgroundColor: isDarkMode ? "black" : "white",
-                        color: isDarkMode ? "white" : "black",
-                        border: isDarkMode ? "1px solid white" : "1px solid black",
-                    }}
                     key={tab.id}
                     onClick={() => switchTab(tab.id)}
                     className={`tab-button ${tab.id === activeTabId ? "active" : ""}`}
+                    style={getCustomStyle("black", "white", "white", "black", 1, "white", "black", 0)}
                 >
                     Untitled {tab.id}
                     <MdClose
@@ -308,19 +312,17 @@ A = 10
                     <div
                         className={"centered-input-box"}
                         style={{
+                            ...getCustomStyle("black", "white", "undefined", "undefined", 1, "white", "black", 0),
                             height: `${(centerSubPanelHeight - 80) / 2}px`,
                             width: `${centerPanelWidth - 42}px`,
-                            backgroundColor: isDarkMode ? "black" : "white",
-                            border: isDarkMode ? "white" : "black",
                             outline: isDarkMode ? "1px solid white" : "1px solid black",
                             marginLeft: "10px",
                         }}
                     >
                         <textarea
                             style={{
+                                ...getCustomStyle("black", "white", "white", "black", 0, "undefined", "undefined", 0),
                                 fontSize: `${sizeOfInput}px`,
-                                backgroundColor: isDarkMode ? "black" : "white",
-                                color: isDarkMode ? "white" : "black",
                                 height: "100%", // Make sure the textarea fills the container
                                 resize: "none", // Optional: disable resizing of the textarea
                             }}

@@ -101,7 +101,7 @@ class PlotGraph extends PureComponent {
                         plot_bgcolor: this.props.selectedGraphDrawingAreaColor,
                         xaxis: {
                             title: {
-                                text: name_of_xAxis,
+                                text: this.props.xAxisTitleIsShown ? (this.props.nameOfXAxisUserInput !== '' ? this.props.nameOfXAxisUserInput : name_of_xAxis) : '',
                                 font: {
                                     color: 'black',
                                     size: dynamicFontSize,
@@ -148,7 +148,7 @@ class PlotGraph extends PureComponent {
                                 y1: 1,
                                 line: {
                                     color: this.props.selectedGraphBorderColor,
-                                    width: this.props.borderWidth == '' ? 0 : this.props.borderWidth,
+                                    width: this.props.borderWidth == '' ? 0.5 : this.props.borderWidth,
                                 },
                             },
                         ] : [],

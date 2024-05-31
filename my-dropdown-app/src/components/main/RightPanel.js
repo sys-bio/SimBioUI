@@ -2,6 +2,8 @@ import React, { forwardRef, useRef, useState, useEffect } from "react";
 import ResizingHandle from "./ResizingHandle";
 import PlotGraph from "./PlotGraph";
 import NumberInput from "./NumberInput";
+import GraphEditFeatures from "./edit-graph-popup/GraphEditFeatures";
+import AxesEditFeatures from "./edit-graph-popup/AxesEditFeatures";
 import { INITIAL_GRAPH_STATE, colorOptions } from "../../constants/const";
 import "../../styles/rightSubPanel/right-subpanel-edit-graph.css";
 
@@ -32,8 +34,14 @@ const RightPanel = (props, ref) => {
     // When click on Edit Graph, there is a popup shown up
     const [showEditGraphPopup, setShowEditGraphPopup] = useState(false);
 
+    // ALL ELEMENTS IN GRAPH BUTTON
+
     // Choose which button on for different feature
     const [showGraphButtonFeatures, setShowGraphButtonFeatures] = useState(true);
+    const [showAxesButtonFeatures, setShowAxesButtonFeatures] = useState(false);
+    const [showGridButtonFeatures, setShowGridButtonFeatures] = useState(false);
+    const [showSeriesButtonFeatures, setShowSeriesButtonFeatures] = useState(false);
+    const [showLegendButtonFeatures, setShowLegendButtonFeatures] = useState(false);
     const [graphTitleName, setGraphTitleName] = useState("Transition of substances in chemical reaction");
 
     // Want to show title of graph or not
@@ -42,23 +50,34 @@ const RightPanel = (props, ref) => {
 
     // Auto scale both axes checkbox
     const [autoScaleBothAxes, setAutoScaleBothAxes] = useState(false);
+
     // Log both axes
     const [logBothAxes, setLogBothAxes] = useState(false);
 
+    // Show dropdown of colors for each button in Graph
     const [showMainTitleColorDropdown, setShowMainTitleColorDropdown] = useState(false);
     const [showGraphBorderColorDropdown, setShowGraphBorderColorDropdown] = useState(false);
     const [showGraphDrawingAreaColorDropdown, setShowGraphDrawingAreaColorDropdown] = useState(false);
     const [showGraphBackgroundColorDropdown, setShowGraphBackgroundColorDropdown] = useState(false);
 
-    const rightPanelRef = useRef(null);
-    const rightResizingRef = useRef(false);
-
+    // Color picked for each element
     const [selectedMainTitleColor, setSelectedMainTitleColor] = useState("Black");
     const [selectedGraphBorderColor, setSelectedGraphBorderColor] = useState("Black");
     const [selectedGraphDrawingAreaColor, setSelectedGraphDrawingAreaColor] = useState("#f3e6f5");
     const [selectedGraphBackgroundColor, setSelectedGraphBackgroundColor] = useState("white");
 
     const [borderWidth, setBorderWidth] = useState("0.5");
+
+    // ALL ELEMENTS IN AXES BUTTON
+
+    // Change name of x axis
+    const [nameOfXAxisUserInput, setNameOfXAxisUserInput] = useState("");
+
+    // X Axis title checkbox state
+    const [xAxisTitleIsShown, setXAxisTitleIsShown] = useState(true);
+
+    const rightPanelRef = useRef(null);
+    const rightResizingRef = useRef(false);
     useEffect(() => {
         if (isNewTabCreated) {
             setIsXAutoscaleChecked(false);
@@ -91,16 +110,6 @@ const RightPanel = (props, ref) => {
         }
     };
 
-    const handleButtonClose = () => {
-        setShowEditGraphPopup(false);
-        setShowMainTitleColorDropdown(false);
-        setShowGraphBorderColorDropdown(false);
-    }
-
-    const handleAutoScaleBothAxes = () => {
-        setAutoScaleBothAxes(!autoScaleBothAxes);
-    }
-
     const handleAutoscaleX = () => {
         if (!isXAutoscaleChecked && isYAutoscaleChecked) {
             setAutoScaleBothAxes(true);
@@ -119,54 +128,48 @@ const RightPanel = (props, ref) => {
         setIsYAutoscaleChecked(!isYAutoscaleChecked);
     }
 
-    const handleShowMainTitleColorDropdown = () => {
-        setShowGraphBorderColorDropdown(false);
-        setShowGraphDrawingAreaColorDropdown(false);
-        setShowGraphBackgroundColorDropdown(false);
-        setShowMainTitleColorDropdown(!showMainTitleColorDropdown);
-    }
-    const handleShowGraphDrawingAreaColorDropdown = () => {
+    const handleButtonClose = () => {
+        setShowEditGraphPopup(false);
         setShowMainTitleColorDropdown(false);
         setShowGraphBorderColorDropdown(false);
-        setShowGraphBackgroundColorDropdown(false);
-        setShowGraphDrawingAreaColorDropdown(!showGraphDrawingAreaColorDropdown);
     }
-    const handleShowGraphBackgroundColorDropdown = () => {
-        setShowMainTitleColorDropdown(false);
-        setShowGraphDrawingAreaColorDropdown(false);
-        setShowGraphBorderColorDropdown(false);
 
-        setShowGraphBackgroundColorDropdown(!showGraphBackgroundColorDropdown);
-    }
-    const handleShowGraphBorderColorDropdown = () => {
-        setShowMainTitleColorDropdown(false);
-        setShowGraphDrawingAreaColorDropdown(false);
-        setShowGraphBackgroundColorDropdown(false);
-
-        setShowGraphBorderColorDropdown(!showGraphBorderColorDropdown);
+    // There are 5 buttons in Edit Graph: Graph, Axes, Grid, Series, Legend
+    // first func is true, rest is false to show which panel shoul
+    const handleShowButtonFeaturesInEditGraph = (setTrueFunc, setFalseFunc1, setFalseFunc2, setFalseFunc3, setFalseFunc4) => {
+        setTrueFunc(true);
+        setFalseFunc1(false);
+        setFalseFunc2(false);
+        setFalseFunc3(false);
+        setFalseFunc4(false);
     }
 
     const styleForNumberInputInXYMinimum = () => {
         return {
-                backgroundColor: isDarkMode ? "black" : "white",
-                color: isDarkMode ? "white" : "black",
-                border: isDarkMode ? "1px solid gray" : "1px solid black",
-                borderRadius: "4px",
-                width: "60px",
-                fontSize: 12,
-        }
-    }
-    const styleForBorderWidthInEditGraph = () => {
-        return {
             backgroundColor: isDarkMode ? "black" : "white",
             color: isDarkMode ? "white" : "black",
-            width: "60px",
-            height: "26px",
             border: isDarkMode ? "1px solid gray" : "1px solid black",
-            borderRadius: "15px",
-            marginLeft: "5px"
+            borderRadius: "4px",
+            width: "60px",
+            fontSize: 12,
         }
     }
+
+    // Customize checkbox
+    const styleForCheckboxCustomize = () => {
+        return {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "20px",
+            width: "20px",
+            backgroundColor: isDarkMode ? "black" : "white", // Use condition for dark mode
+            border: "1px solid gray",
+            borderRadius: "4px",
+            marginTop: "-2px"
+        }
+    }
+
     return (
         <div ref={rightPanelRef} className="right-subpanel" style={rightSubpanelStyle}>
             {!layoutVertical && (
@@ -200,6 +203,8 @@ const RightPanel = (props, ref) => {
                     simulationParam={simulationParam}
                     includeGraphBorder={includeGraphBorder}
                     borderWidth={borderWidth}
+                    nameOfXAxisUserInput={nameOfXAxisUserInput}
+                    xAxisTitleIsShown={xAxisTitleIsShown}
                 />
                 <div>
                     <div
@@ -360,366 +365,82 @@ const RightPanel = (props, ref) => {
             {showEditGraphPopup && (
                 <div className="popup-edit-graph" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", border: "1px solid grey", borderRadius: "8px"}}>
                     <div className="popup-top-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}>Graph</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}>Axes</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}>Grid</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}>Series</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}>Legend</button>
+                        <button
+                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                            onClick={() =>
+                                handleShowButtonFeaturesInEditGraph(setShowGraphButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                            }
+                        >Graph</button>
+                        <button
+                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                            onClick={() =>
+                                handleShowButtonFeaturesInEditGraph(setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                            }
+                            >Axes</button>
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                            onClick={() =>
+                                handleShowButtonFeaturesInEditGraph(setShowGridButtonFeatures, setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                            }
+                        >Grid</button>
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                        onClick={() =>
+                            handleShowButtonFeaturesInEditGraph(setShowSeriesButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowGraphButtonFeatures, setShowLegendButtonFeatures)
+                        }
+                        >Series</button>
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                        onClick={() =>
+                            handleShowButtonFeaturesInEditGraph(setShowLegendButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowGraphButtonFeatures)
+                        }
+                        >Legend</button>
                     </div>
                     {showGraphButtonFeatures && (
-                        <div className="popup-center-edit-graph" style={{ backgroundColor: isDarkMode ? "#2e2d2d" : "white", display: "flex", flexDirection: "column" }}>
-                            <div style={{ display: "flex", alignItems: "center", marginRight: "10px" }}>
-                                <span style={{ color: isDarkMode ? "white" : "black", fontSize: "12px", marginLeft: "10px"}}> Main Title: </span>
-                                <input
-                                    type="text"
-                                    value={graphTitleName}
-                                    onChange={(e) => setGraphTitleName(e.target.value)}
-                                    style={{
-                                        width: '80%',
-                                        height: '30px', // Adjust height to your preference
-                                        marginLeft: "1%",
-                                        backgroundColor: isDarkMode ? "black" : "white",
-                                        border: "1px solid #a37d36",
-                                        borderRadius: "8px",
-                                        fontSize: "12px",
-                                        color: "white"
-                                    }}
-                                />
-                            </div>
-                            <div style={{ marginLeft: "1%", marginTop: "10px" }}>
-                              <label style={{ display: "inline-block", position: "relative", cursor: "pointer", paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
-                                <input
-                                  className="custom-checkbox"
-                                  type="checkbox"
-                                  checked={titleVisible}
-                                  style={{
-                                    display: "none", // Hide the original checkbox
-                                  }}
-                                  onClick={() => setTitleVisible(!titleVisible)}
-                                />
-                                <span style={{
-                                  position: "absolute",
-                                  top: 0,
-                                  left: 0,
-                                  height: "20px",
-                                  width: "20px",
-                                  backgroundColor: isDarkMode ? "black" : "white", // Use condition for dark mode
-                                  border: "1px solid gray",
-                                  borderRadius: "4px",
-                                  marginTop: "-2px"
-                                }}></span>
-                                Main Title Visible
-                              </label>
-                              <label style={{marginLeft: "35%", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Main Title Color:</label>
-                              <button style={{
-                                    marginLeft: "12px",
-                                    width: "200px",
-                                    backgroundColor: isDarkMode ? "black" : "white",
-                                    color: isDarkMode ? "white" : "black",
-                                    border: "1px solid grey",
-                                    fontSize: "12px"
-                               }}
-                                    onClick={handleShowMainTitleColorDropdown}
-                               >{selectedMainTitleColor}</button>
-                              {showMainTitleColorDropdown && (
-                                  <div className={"dropdown-for-color"} style={{
-                                    backgroundColor: isDarkMode ? "black" : "white",
-                                    border: "1px solid grey",
-                                    width: "200px",
-                                    height: "180px",
-                                    zIndex: 1000,
-                                    borderRadius: "8px",
-                                    marginLeft: "479px",
-                                    overflowY: "auto"
-                                  }}>
-                                    {colorOptions.map((color, index) => (
-                                      <div
-                                        key={index}
-                                        style={{
-                                          padding: "7px",
-                                          cursor: "pointer",
-                                          fontSize: "12px",
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                          alignItems: "center",
-                                          borderRadius: "8px",
-                                          color: isDarkMode ? "white" : "black",
-                                          backgroundColor: isDarkMode ? "black" : "white"
-                                        }}
-                                        onClick={() => {
-                                          setSelectedMainTitleColor(color); // Update the selected color
-                                          setShowMainTitleColorDropdown(false); // Close the dropdown
-                                        }}
-                                      >
-                                        {color}
-                                        <div style={{
-                                          width: "14px",
-                                          height: "14px",
-                                          borderRadius: "4px",
-                                          backgroundColor: color, // This sets the color of the small square
-                                          border: '1px solid grey'
-                                        }}></div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                            </div>
-
-                            <div style={{position: "absolute", marginTop: "85px", marginLeft: "8px"}}>
-                                <label style={{ display: "inline-block", position: "relative", cursor: "pointer", paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
-                                    <input
-                                      className="custom-checkbox"
-                                      type="checkbox"
-                                      checked={autoScaleBothAxes}
-                                      style={{
-                                        display: "none", // Hide the original checkbox
-                                      }}
-                                      onClick={handleAutoScaleBothAxes}
-                                    />
-                                    <span style={{
-                                      position: "absolute",
-                                      top: 0,
-                                      left: 0,
-                                      height: "20px",
-                                      width: "20px",
-                                      backgroundColor: isDarkMode ? "black" : "white", // Use condition for dark mode
-                                      border: "1px solid gray",
-                                      borderRadius: "4px",
-                                      marginTop: "-2px"
-                                    }}></span>
-                                    Auto Scale Both Axes
-                                  </label>
-
-                                  <label style={{marginLeft: "10px", display: "inline-block", position: "relative", cursor: "pointer", paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
-                                      <input
-                                        className="custom-checkbox"
-                                        type="checkbox"
-                                        checked={logBothAxes}
-                                        style={{
-                                          display: "none", // Hide the original checkbox
-                                        }}
-                                        onClick={() => setLogBothAxes(!logBothAxes)}
-                                      />
-                                      <span style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        height: "20px",
-                                        width: "20px",
-                                        backgroundColor: isDarkMode ? "black" : "white", // Use condition for dark mode
-                                        border: "1px solid gray",
-                                        borderRadius: "4px",
-                                        marginTop: "-2px"
-                                      }}></span>
-                                      Log Both Axes
-                                  </label>
-                            </div>
-                            <div style={{ position: "absolute", marginTop: "230px", marginLeft: "10px" }}>
-                                <div style={{ display: "flex", alignItems: "center" }}>
-                                    <div style={{ marginRight: "10px" }}>
-                                        <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Background Color:</label>
-                                        <button
-                                            style={{
-                                                width: "200px",
-                                                backgroundColor: isDarkMode ? "black" : "white",
-                                                color: isDarkMode ? "white" : "black",
-                                                border: "1px solid grey",
-                                                fontSize: "12px"
-                                            }}
-                                            onClick={handleShowGraphBackgroundColorDropdown}
-                                        >
-                                            {selectedGraphBackgroundColor}
-                                        </button>
-                                        {showGraphBackgroundColorDropdown && (
-                                            <div className={"dropdown-for-color"} style={{
-                                                backgroundColor: isDarkMode ? "black" : "white",
-                                                border: "1px solid grey",
-                                                width: "200px",
-                                                height: "180px",
-                                                zIndex: 1000,
-                                                borderRadius: "8px",
-                                                overflowY: "auto",
-                                                marginLeft: "106px"
-                                            }}>
-                                                {colorOptions.map((color, index) => (
-                                                    <div
-                                                        key={index}
-                                                        style={{
-                                                            padding: "7px",
-                                                            cursor: "pointer",
-                                                            fontSize: "12px",
-                                                            display: "flex",
-                                                            justifyContent: "space-between",
-                                                            alignItems: "center",
-                                                            borderRadius: "8px",
-                                                            color: isDarkMode ? "white" : "black",
-                                                            backgroundColor: isDarkMode ? "black" : "white"
-                                                        }}
-                                                        onClick={() => {
-                                                            setSelectedGraphBackgroundColor(color); // Update the selected color
-                                                            setShowGraphBackgroundColorDropdown(false); // Close the dropdown
-                                                        }}
-                                                    >
-                                                        {color}
-                                                        <div style={{
-                                                            width: "14px",
-                                                            height: "14px",
-                                                            borderRadius: "4px",
-                                                            backgroundColor: color, // This sets the color of the small square
-                                                            border: '1px solid grey'
-                                                        }}></div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <NumberInput
-                                            label="Border Width:"
-                                            style={styleForBorderWidthInEditGraph()}
-                                            value={borderWidth || ''}
-                                            onChange={(e) =>
-                                                setBorderWidth(e.target.value)
-                                            }
-                                            isDarkMode={isDarkMode}
-                                            disabled={isXAutoscaleChecked}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div style={{position: "absolute", marginTop: "180px", marginLeft: "10px"}}>
-                                <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Graph Drawing Area Color:</label>
-                                <button
-                                style={{
-                                      width: "200px",
-                                      backgroundColor: isDarkMode ? "black" : "white",
-                                      color: isDarkMode ? "white" : "black",
-                                      border: "1px solid grey",
-                                      fontSize: "12px"
-                                 }}
-                                 onClick={handleShowGraphDrawingAreaColorDropdown}
-                                 >{selectedGraphDrawingAreaColor}</button>
-                                {showGraphDrawingAreaColorDropdown && (
-                                    <div className={"dropdown-for-color"} style={{
-                                      backgroundColor: isDarkMode ? "black" : "white",
-                                      border: "1px solid grey",
-                                      width: "200px",
-                                      height: "180px",
-                                      zIndex: 1000,
-                                      borderRadius: "8px",
-                                      overflowY: "auto",
-                                      marginLeft: "152px"
-                                    }}>
-                                      {colorOptions.map((color, index) => (
-                                        <div
-                                          key={index}
-                                          style={{
-                                            padding: "7px",
-                                            cursor: "pointer",
-                                            fontSize: "12px",
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                            borderRadius: "8px",
-                                            color: isDarkMode ? "white" : "black",
-                                            backgroundColor: isDarkMode ? "black" : "white"
-                                          }}
-                                          onClick={() => {
-                                            setSelectedGraphDrawingAreaColor(color); // Update the selected color
-                                            setShowGraphDrawingAreaColorDropdown(false); // Close the dropdown
-                                          }}
-                                        >
-                                          {color}
-                                          <div style={{
-                                            width: "14px",
-                                            height: "14px",
-                                            borderRadius: "4px",
-                                            backgroundColor: color, // This sets the color of the small square
-                                            border: '1px solid grey'
-                                          }}></div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                  <label style={{ display: "inline-block", position: "relative", marginLeft: "30px", cursor: "pointer", paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
-                                      <input
-                                        className="custom-checkbox"
-                                        type="checkbox"
-                                        checked={includeGraphBorder}
-                                        style={{
-                                          display: "none", // Hide the original checkbox
-                                        }}
-                                        onClick={() => setIncludeGraphBorder(!includeGraphBorder)}
-                                      />
-                                      <span style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        height: "20px",
-                                        width: "20px",
-                                        backgroundColor: isDarkMode ? "black" : "white", // Use condition for dark mode
-                                        border: "1px solid gray",
-                                        borderRadius: "4px",
-                                        marginTop: "-2px"
-                                      }}></span>
-                                      Include Graph Border
-                                  </label>
-                            </div>
-                            <div style={{position: "absolute", marginTop: "120px", marginLeft: "10px"}}>
-                            <label style={{color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Graph Border Color:</label>
-                                <button style={{
-                                      width: "200px",
-                                      backgroundColor: isDarkMode ? "black" : "white",
-                                      color: isDarkMode ? "white" : "black",
-                                      border: "1px solid grey",
-                                      fontSize: "12px"
-                                 }}
-                                 onClick={handleShowGraphBorderColorDropdown}
-                                 >{selectedGraphBorderColor}</button>
-                                {showGraphBorderColorDropdown && (
-                                    <div className={"dropdown-for-color"} style={{
-                                      backgroundColor: isDarkMode ? "black" : "white",
-                                      border: "1px solid grey",
-                                      width: "200px",
-                                      height: "180px",
-                                      zIndex: 1000,
-                                      borderRadius: "8px",
-                                      overflowY: "auto",
-                                      marginLeft: "115px"
-                                    }}>
-                                      {colorOptions.map((color, index) => (
-                                        <div
-                                          key={index}
-                                          style={{
-                                            padding: "7px",
-                                            cursor: "pointer",
-                                            fontSize: "12px",
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                            borderRadius: "8px",
-                                            color: isDarkMode ? "white" : "black",
-                                            backgroundColor: isDarkMode ? "black" : "white"
-                                          }}
-                                          onClick={() => {
-                                            setSelectedGraphBorderColor(color); // Update the selected color
-                                            setShowGraphBorderColorDropdown(false); // Close the dropdown
-                                          }}
-                                        >
-                                          {color}
-                                          <div style={{
-                                            width: "14px",
-                                            height: "14px",
-                                            borderRadius: "4px",
-                                            backgroundColor: color, // This sets the color of the small square
-                                            border: '1px solid grey'
-                                          }}></div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  )}
-                            </div>
-                        </div>
+                        <GraphEditFeatures
+                            isDarkMode={isDarkMode}
+                            graphTitleName={graphTitleName}
+                            setGraphTitleName={setGraphTitleName}
+                            titleVisible={titleVisible}
+                            setTitleVisible={setTitleVisible}
+                            selectedMainTitleColor={selectedMainTitleColor}
+                            setSelectedMainTitleColor={setSelectedMainTitleColor}
+                            setShowMainTitleColorDropdown={setShowMainTitleColorDropdown}
+                            showMainTitleColorDropdown={showMainTitleColorDropdown}
+                            autoScaleBothAxes={autoScaleBothAxes}
+                            logBothAxes={logBothAxes}
+                            setLogBothAxes={setLogBothAxes}
+                            selectedGraphBackgroundColor={selectedGraphBackgroundColor}
+                            setSelectedGraphBackgroundColor={setSelectedGraphBackgroundColor}
+                            setShowGraphBackgroundColorDropdown={setShowGraphBackgroundColorDropdown}
+                            showGraphBackgroundColorDropdown={showGraphBackgroundColorDropdown}
+                            borderWidth={borderWidth}
+                            setBorderWidth={setBorderWidth}
+                            selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
+                            setSelectedGraphDrawingAreaColor={setSelectedGraphDrawingAreaColor}
+                            setShowGraphDrawingAreaColorDropdown={setShowGraphDrawingAreaColorDropdown}
+                            showGraphDrawingAreaColorDropdown={showGraphDrawingAreaColorDropdown}
+                            includeGraphBorder={includeGraphBorder}
+                            setIncludeGraphBorder={setIncludeGraphBorder}
+                            selectedGraphBorderColor={selectedGraphBorderColor}
+                            setSelectedGraphBorderColor={setSelectedGraphBorderColor}
+                            setShowGraphBorderColorDropdown={setShowGraphBorderColorDropdown}
+                            showGraphBorderColorDropdown={showGraphBorderColorDropdown}
+                            isXAutoscaleChecked={isXAutoscaleChecked}
+                            setShowEditGraphPopup={setShowEditGraphPopup}
+                            styleForCheckboxCustomize={styleForCheckboxCustomize}
+                        />
+                    )}
+                    {showAxesButtonFeatures && (
+                        <AxesEditFeatures
+                            isDarkMode={isDarkMode}
+                            xAxis_selected_option={xAxis_selected_option}
+                            nameOfXAxisUserInput={nameOfXAxisUserInput}
+                            setNameOfXAxisUserInput={setNameOfXAxisUserInput}
+                            xAxisTitleIsShown={xAxisTitleIsShown}
+                            setXAxisTitleIsShown={setXAxisTitleIsShown}
+                            styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
+                            graphState={graphState}
+                            isXAutoscaleChecked={isXAutoscaleChecked}
+                            styleForCheckboxCustomize={styleForCheckboxCustomize}
+                        />
                     )}
                     <div className="popup-bottom-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
                            <button
@@ -730,6 +451,7 @@ const RightPanel = (props, ref) => {
                 </div>
             )}
         </div>
+
     );
 };
 

@@ -1,8 +1,4 @@
 const SimulationParameters = ({ className, isDarkMode, onParametersChange, simulationParam }) => {
-//    const [timeStart, setTimeStart] = useState("0");
-//    const [timeEnd, setTimeEnd] = useState("20");
-//    const [numPoints, setNumPoints] = useState("200");
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         let newValue = value;
@@ -11,17 +7,6 @@ const SimulationParameters = ({ className, isDarkMode, onParametersChange, simul
             newValue = 50000;
             alert("Number of points cannot exceed 50,000. Please enter a valid value.");
         }
-//        switch (name) {
-//            case "timeStart":
-//                setTimeStart(newValue);
-//                break;
-//            case "timeEnd":
-//                setTimeEnd(newValue);
-//                break;
-//            case "numPoints":
-//                setNumPoints(newValue);
-//                break;
-//        }
         onParametersChange(name, newValue);
     };
 
