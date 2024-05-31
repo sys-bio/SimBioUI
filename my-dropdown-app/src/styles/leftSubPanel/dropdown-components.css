@@ -44,20 +44,12 @@
     border-radius: 6px;
     z-index: 1000; /* Ensure it's above other content */
 }
-.dropdown-file-container {
-    left: 3px; /* Adjust as necessary */
-}
-.dropdown-analysis-container {
-    left: 32px; /* Adjust as necessary */
-}
-.dropdown-options-container {
-    left: 77px; /* Adjust as necessary */
-}
-.dropdown-examples-container {
-    left: 118px;
-}
+.dropdown-file-container,
+.dropdown-analysis-container,
+.dropdown-options-container,
+.dropdown-examples-container,
 .dropdown-help-container {
-    left: 167px;
+    margin-top: 3px; /* Adjust as necessary */
 }
 
 .dropdown-toolbar-button-file,

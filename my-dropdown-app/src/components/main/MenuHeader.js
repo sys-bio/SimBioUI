@@ -87,11 +87,11 @@ const MenuHeader = (props) => {
 
     return (
         <div className="top-menu">
-            <div ref={fileDropdownRef} className={"container-of-toolbar-and-dropdown"}>
+            <div ref={fileDropdownRef}>
                 <button
                     className="top-menu-button"
                     style={{
-                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                        backgroundColor: isDarkMode ? (activeToolbarButton === "File" ? "black" : "#2e2d2d") : "white",
                         color: isDarkMode ? "white" : "black",
                     }}
                     onClick={() => handleToolbarButtons("File")}
@@ -120,11 +120,11 @@ const MenuHeader = (props) => {
                     />
                 )}
             </div>
-            <div className={"container-of-toolbar-and-dropdown"}>
+            <div>
                 <button
                     className="top-menu-button"
                     style={{
-                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                        backgroundColor: isDarkMode ? (activeToolbarButton === "Analysis" ? "black" : "#2e2d2d") : "white",
                         color: isDarkMode ? "white" : "black",
                     }}
                     onClick={() => handleToolbarButtons("Analysis")}
@@ -143,11 +143,11 @@ const MenuHeader = (props) => {
                     />
                 )}
             </div>
-            <div className={"container-of-toolbar-and-dropdown"}>
+            <div>
                 <button
                     className="top-menu-button"
                     style={{
-                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                        backgroundColor: isDarkMode ? (activeToolbarButton === "Options" ? "black" : "#2e2d2d") : "white",
                         color: isDarkMode ? "white" : "black",
                     }}
                     onClick={() => handleToolbarButtons("Options")}
@@ -170,7 +170,7 @@ const MenuHeader = (props) => {
                 <button
                     className="top-menu-button"
                     style={{
-                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                        backgroundColor: isDarkMode ? (activeToolbarButton === "Examples" ? "black" : "#2e2d2d") : "white",
                         color: isDarkMode ? "white" : "black",
                     }}
                     onClick={() => handleToolbarButtons("Examples")}
@@ -193,7 +193,7 @@ const MenuHeader = (props) => {
                 <button
                     className="top-menu-button"
                     style={{
-                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                        backgroundColor: isDarkMode ? (activeToolbarButton === "Help" ? "black" : "#2e2d2d") : "white",
                         color: isDarkMode ? "white" : "black",
                     }}
                     onClick={() => handleToolbarButtons("Help")}

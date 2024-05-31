@@ -209,88 +209,85 @@ const GraphEditFeatures = ({
                 </div>
                 <div style={{ position: "absolute", marginTop: "230px", marginLeft: "10px" }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ marginRight: "10px" }}>
-                            <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Background Color:</label>
-                                <button
+                    <label style={{ color: isDarkMode ? 'white' : 'black', fontSize: '12px' }}>Background Color:</label>
+                    <div style={{ position: 'relative', marginRight: '10px' }}>
+                        <button
+                            style={{
+                                width: '200px',
+                                backgroundColor: isDarkMode ? 'black' : 'white',
+                                color: isDarkMode ? 'white' : 'black',
+                                border: '1px solid grey',
+                                fontSize: '12px',
+                            }}
+                            onClick={handleShowGraphBackgroundColorDropdown}
+                        >
+                            {selectedGraphBackgroundColor}
+                        </button>
+                            {showGraphBackgroundColorDropdown && (
+                                <div className={"dropdown-for-color " + (isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode")}
                                     style={{
-                                        width: "200px",
-                                        backgroundColor: isDarkMode ? "black" : "white",
-                                        color: isDarkMode ? "white" : "black",
-                                        border: "1px solid grey",
-                                        fontSize: "12px",
-                                        marginLeft: "10px",
-                                    }}
-                                    onClick={handleShowGraphBackgroundColorDropdown}
-                                >
-                                    {selectedGraphBackgroundColor}
-                                </button>
-                                {showGraphBackgroundColorDropdown && (
-                                    <div className={"dropdown-for-color " + (isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode")}
-                                     style={{
-                                        position: 'absolute', // Dropdown floats over other content, not pushing it
-                                        top: '100%', // Align directly below the button
-                                        left: '0',
-                                        backgroundColor: isDarkMode ? "black" : "white",
-                                        border: "1px solid grey",
-                                        width: "200px",
-                                        height: "180px",
+                                        position: 'absolute',
+                                        backgroundColor: isDarkMode ? 'black' : 'white',
+                                        border: '1px solid grey',
+                                        width: '200px',
+                                        height: '180px',
                                         zIndex: 1000,
-                                        borderRadius: "5px",
-                                        overflowY: "auto",
-                                        marginLeft: "114px"
-                                    }}>
-                                        {colorOptions.map((color, index) => (
-                                            <div
-                                                key={index}
-                                                style={{
-                                                    padding: "7px",
-                                                    cursor: "pointer",
-                                                    fontSize: "12px",
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "center",
-                                                    borderRadius: "5px",
-                                                    color: isDarkMode ? "white" : "black",
-                                                    backgroundColor: isDarkMode ? "black" : "white"
-                                                }}
-                                                onClick={() => {
-                                                    setSelectedGraphBackgroundColor(color); // Update the selected color
-                                                    setShowGraphBackgroundColorDropdown(false); // Close the dropdown
-                                                }}
-                                            >
-                                                {color}
-                                                <div style={{
-                                                    width: "14px",
-                                                    height: "14px",
-                                                    borderRadius: "4px",
-                                                    backgroundColor: color, // This sets the color of the small square
-                                                    border: '1px solid grey'
-                                                }}></div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div> {/* Container for border width */}
-                                <NumberInput
-                                    label="Border Width:"
-                                    style={{
-                                        backgroundColor: isDarkMode ? "black" : "white",
-                                        color: isDarkMode ? "white" : "black",
-                                        width: "60px",
-                                        height: "26px",
-                                        border: isDarkMode ? "1px solid gray" : "1px solid black",
-                                        borderRadius: "15px",
-                                        marginLeft: "5px"
+                                        borderRadius: '5px',
+                                        overflowY: 'auto'
                                     }}
-                                    value={borderWidth || ''}
-                                    onChange={(e) =>
-                                        setBorderWidth(e.target.value)
-                                    }
-                                    isDarkMode={isDarkMode}
-                                />
-                            </div>
+                                >
+                                    {colorOptions.map((color, index) => (
+                                        <div
+                                            key={index}
+                                            style={{
+                                                padding: '7px',
+                                                cursor: 'pointer',
+                                                fontSize: '12px',
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                borderRadius: '5px',
+                                                color: isDarkMode ? 'white' : 'black',
+                                                backgroundColor: isDarkMode ? 'black' : 'white'
+                                            }}
+                                            onClick={() => {
+                                                setSelectedGraphBackgroundColor(color);
+                                                setShowGraphBackgroundColorDropdown(false);
+                                            }}
+                                        >
+                                            {color}
+                                            <div style={{
+                                                width: '14px',
+                                                height: '14px',
+                                                borderRadius: '4px',
+                                                backgroundColor: color,
+                                                border: '1px solid grey'
+                                            }}></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
+                        <div> {/* Container for border width */}
+                            <NumberInput
+                                label="Border Width:"
+                                style={{
+                                    backgroundColor: isDarkMode ? "black" : "white",
+                                    color: isDarkMode ? "white" : "black",
+                                    width: "60px",
+                                    height: "26px",
+                                    border: isDarkMode ? "1px solid gray" : "1px solid black",
+                                    borderRadius: "15px",
+                                    marginLeft: "5px"
+                                }}
+                                value={borderWidth || ''}
+                                onChange={(e) =>
+                                    setBorderWidth(e.target.value)
+                                }
+                                isDarkMode={isDarkMode}
+                            />
+                        </div>
+                    </div>
                 </div>
                 <div style={{position: "absolute", marginTop: "180px", marginLeft: "10px"}}>
                     <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Graph Drawing Area Color:</label>

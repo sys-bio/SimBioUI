@@ -189,7 +189,7 @@ class DropdownContainers extends Component {
                             </div>
                           ))
                         ) : (
-                            <div style={dropdownToolbarStyle} className="dropdown-list-toolbar">
+                            <div style={dropdownToolbarStyle} >
                                 {options.map((item, index) => (
                                     <button
                                         key={index}

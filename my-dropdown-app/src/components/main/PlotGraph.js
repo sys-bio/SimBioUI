@@ -81,7 +81,6 @@ class PlotGraph extends PureComponent {
         } else {
             yaxisRange = [parseFloat(graphState.yMin), parseFloat(graphState.yMax)];
         }
-
         return (
             <div>
                 <Plot
@@ -115,8 +114,13 @@ class PlotGraph extends PureComponent {
                             zeroline: false,
                             range: xaxisRange,
                             autorange: isXAutoscaleChecked,
-                            showline: false
+                            showline: this.props.includeGraphBorder ? false : true,
+                            tickmode: 'auto', // or 'linear' depending on your preference
+                            showgrid: this.props.showMinorTicks, // Show minor ticks if isMinorTick is true
+                            showticklabels: this.props.showMajorTicks,
+                            color: this.props.includeGraphBorder ? this.props.selectedGraphBorderColor : this.props.colorForXAxis // Set the color of the x-axis line directly
                         },
+
                         yaxis: {
                             title: {
                                 text: 'Entities',
@@ -134,7 +138,10 @@ class PlotGraph extends PureComponent {
                             zeroline: false,
                             autorange: isYAutoscaleChecked,
                             showline: false,
-                            linecolor: 'black'
+                            linecolor: 'black',
+                            tickmode: 'auto', // or 'linear' depending on your preference
+                            showgrid: this.props.showMinorTicks, // Show minor ticks if isMinorTick is true
+                            showticklabels: this.props.showMajorTicks,
                         },
                         showlegend: false,
                         shapes: this.props.includeGraphBorder ? [

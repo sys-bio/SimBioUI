@@ -76,6 +76,14 @@ const RightPanel = (props, ref) => {
     // X Axis title checkbox state
     const [xAxisTitleIsShown, setXAxisTitleIsShown] = useState(true);
 
+    // Show major and minor ticks
+    const [showMajorTicks, setShowMajorTicks] = useState(true);
+    const [showMinorTicks, setShowMinorTicks] = useState(false);
+
+    // Color for x axis
+    const [colorForXAxis, setColorForXAxis] = useState("black");
+
+    // ALL ELEMENTS FOR RIGHT SUBPANEL
     const rightPanelRef = useRef(null);
     const rightResizingRef = useRef(false);
     useEffect(() => {
@@ -205,6 +213,9 @@ const RightPanel = (props, ref) => {
                     borderWidth={borderWidth}
                     nameOfXAxisUserInput={nameOfXAxisUserInput}
                     xAxisTitleIsShown={xAxisTitleIsShown}
+                    showMajorTicks={showMajorTicks}
+                    showMinorTicks={showMinorTicks}
+                    colorForXAxis={colorForXAxis}
                 />
                 <div>
                     <div
@@ -366,28 +377,28 @@ const RightPanel = (props, ref) => {
                 <div className="popup-edit-graph" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", border: "1px solid grey", borderRadius: "8px"}}>
                     <div className="popup-top-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
                         <button
-                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGraphButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
                             onClick={() =>
                                 handleShowButtonFeaturesInEditGraph(setShowGraphButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
                             }
                         >Graph</button>
                         <button
-                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showAxesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
                             onClick={() =>
                                 handleShowButtonFeaturesInEditGraph(setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
                             }
                             >Axes</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGridButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
                             onClick={() =>
                                 handleShowButtonFeaturesInEditGraph(setShowGridButtonFeatures, setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
                             }
                         >Grid</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showSeriesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
                         onClick={() =>
                             handleShowButtonFeaturesInEditGraph(setShowSeriesButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowGraphButtonFeatures, setShowLegendButtonFeatures)
                         }
                         >Series</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showLegendButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
                         onClick={() =>
                             handleShowButtonFeaturesInEditGraph(setShowLegendButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowGraphButtonFeatures)
                         }
@@ -440,6 +451,12 @@ const RightPanel = (props, ref) => {
                             graphState={graphState}
                             isXAutoscaleChecked={isXAutoscaleChecked}
                             styleForCheckboxCustomize={styleForCheckboxCustomize}
+                            showMajorTicks={showMajorTicks}
+                            setShowMajorTicks={setShowMajorTicks}
+                            showMinorTicks={showMinorTicks}
+                            setShowMinorTicks={setShowMinorTicks}
+                            colorForXAxis={colorForXAxis}
+                            setColorForXAxis={setColorForXAxis}
                         />
                     )}
                     <div className="popup-bottom-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
