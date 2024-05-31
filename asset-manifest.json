@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/SimBioUI/static/css/main.422f2bb1.css",
-    "main.js": "/SimBioUI/static/js/main.ecc3128a.js",
+    "main.css": "/SimBioUI/static/css/main.65b93f82.css",
+    "main.js": "/SimBioUI/static/js/main.0ce69532.js",
     "static/js/498.5621b405.chunk.js": "/SimBioUI/static/js/498.5621b405.chunk.js",
     "static/js/703.090f69e6.chunk.js": "/SimBioUI/static/js/703.090f69e6.chunk.js",
-    "static/js/379.e0016a11.chunk.js": "/SimBioUI/static/js/379.e0016a11.chunk.js",
+    "static/js/379.b24ea812.chunk.js": "/SimBioUI/static/js/379.b24ea812.chunk.js",
     "static/js/787.6c0c60ae.chunk.js": "/SimBioUI/static/js/787.6c0c60ae.chunk.js",
     "index.html": "/SimBioUI/index.html",
-    "main.422f2bb1.css.map": "/SimBioUI/static/css/main.422f2bb1.css.map",
-    "main.ecc3128a.js.map": "/SimBioUI/static/js/main.ecc3128a.js.map",
+    "main.65b93f82.css.map": "/SimBioUI/static/css/main.65b93f82.css.map",
+    "main.0ce69532.js.map": "/SimBioUI/static/js/main.0ce69532.js.map",
     "498.5621b405.chunk.js.map": "/SimBioUI/static/js/498.5621b405.chunk.js.map",
     "703.090f69e6.chunk.js.map": "/SimBioUI/static/js/703.090f69e6.chunk.js.map",
-    "379.e0016a11.chunk.js.map": "/SimBioUI/static/js/379.e0016a11.chunk.js.map",
+    "379.b24ea812.chunk.js.map": "/SimBioUI/static/js/379.b24ea812.chunk.js.map",
     "787.6c0c60ae.chunk.js.map": "/SimBioUI/static/js/787.6c0c60ae.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.422f2bb1.css",
-    "static/js/main.ecc3128a.js"
+    "static/css/main.65b93f82.css",
+    "static/js/main.0ce69532.js"
   ]
 }
