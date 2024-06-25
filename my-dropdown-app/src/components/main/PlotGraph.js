@@ -116,14 +116,14 @@ class PlotGraph extends PureComponent {
                             autorange: isXAutoscaleChecked,
                             showline: this.props.includeGraphBorder ? false : true,
                             tickmode: 'auto', // or 'linear' depending on your preference
-                            showgrid: this.props.showMinorTicks, // Show minor ticks if isMinorTick is true
-                            showticklabels: this.props.showMajorTicks,
+                            showgrid: this.props.showXMinorTicks, // Show minor ticks if isMinorTick is true
+                            showticklabels: this.props.showXMajorTicks,
                             color: this.props.includeGraphBorder ? this.props.selectedGraphBorderColor : this.props.colorForXAxis // Set the color of the x-axis line directly
                         },
 
                         yaxis: {
                             title: {
-                                text: 'Entities',
+                                text: this.props.yAxisTitleIsShown ? (this.props.nameOfYAxisUserInput !== '' ?  this.props.nameOfYAxisUserInput : 'Entities') : '',
                                 font: {
                                     color: 'black',
                                     size: dynamicFontSize,
@@ -137,11 +137,11 @@ class PlotGraph extends PureComponent {
                             range: yaxisRange,
                             zeroline: false,
                             autorange: isYAutoscaleChecked,
-                            showline: false,
-                            linecolor: 'black',
+                            showline: this.props.includeGraphBorder ? false : true,
                             tickmode: 'auto', // or 'linear' depending on your preference
-                            showgrid: this.props.showMinorTicks, // Show minor ticks if isMinorTick is true
-                            showticklabels: this.props.showMajorTicks,
+                            showgrid: this.props.showYMinorTicks, // Show minor ticks if isMinorTick is true
+                            showticklabels: this.props.showYMajorTicks,
+                            color: this.props.includeGraphBorder ? this.props.selectedGraphBorderColor : this.props.colorForYAxis
                         },
                         showlegend: false,
                         shapes: this.props.includeGraphBorder ? [

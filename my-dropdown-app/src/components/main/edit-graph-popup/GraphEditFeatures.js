@@ -32,7 +32,8 @@ const GraphEditFeatures = ({
     setShowGraphBorderColorDropdown,
     showGraphBorderColorDropdown,
     isXAutoscaleChecked,
-    styleForCheckboxCustomize
+    styleForCheckboxCustomize,
+    setAutoScaleBothAxes
 }) => {
 
     const handleAutoScaleBothAxes = () => {

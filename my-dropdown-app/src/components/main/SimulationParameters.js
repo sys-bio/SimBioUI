@@ -15,13 +15,14 @@ const SimulationParameters = ({ className, isDarkMode, onParametersChange, simul
             className={className}
             style={{
                 border: isDarkMode ? "1px solid white" : "1px solid black",
+                marginTop: "15px"
             }}
         >
             <span
                 className="text-on-border-simulation"
                 style={{
                     backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-                    color: isDarkMode ? "white" : "black",
+                    color: isDarkMode ? "white" : "black"
                 }}
             >
                 Simulation Parameters

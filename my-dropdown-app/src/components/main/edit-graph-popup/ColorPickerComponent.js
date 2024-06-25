@@ -16,8 +16,8 @@ const ColorPickerComponent = ({
                     <SketchPicker
                         color={color}
                         onChangeComplete={(color) => {
-                            setColor(color.hex);
-                        }}
+                        setColor(color.hex);
+                    }}
                         styles={{ default: { picker: { backgroundColor: isDarkMode ? "#2e2d2d" : "white", border: "1px solid #a37d36" } } }}
                     />
                 </div>

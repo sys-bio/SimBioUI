@@ -1,24 +1,37 @@
 import React, { useState } from 'react';
-import NumberInput from "../NumberInput";
-import ColorPickerComponent from './ColorPickerComponent';
+import AxisProperties from './AxisProperties';
 
-const GraphEditFeatures = ({
+const AxesEditFeatures = ({
     isDarkMode,
     nameOfXAxisUserInput,
+    nameOfYAxisUserInput,
     setNameOfXAxisUserInput,
+    setNameOfYAxisUserInput,
     xAxis_selected_option,
     xAxisTitleIsShown,
     setXAxisTitleIsShown,
+    yAxisTitleIsShown,
+    setYAxisTitleIsShown,
     styleForNumberInputInXYMinimum,
     graphState,
-    isXAutoscaleChecked,
+    setGraphState,
     styleForCheckboxCustomize,
-    showMajorTicks,
-    setShowMajorTicks,
-    showMinorTicks,
-    setShowMinorTicks,
+    showXMajorTicks,
+    setShowXMajorTicks,
+    showYMajorTicks,
+    setShowYMajorTicks,
+    showXMinorTicks,
+    setShowXMinorTicks,
+    showYMinorTicks,
+    setShowYMinorTicks,
     colorForXAxis,
-    setColorForXAxis
+    setColorForXAxis,
+    colorForYAxis,
+    setColorForYAxis,
+    setIsXAutoscaleChecked,
+    isXAutoscaleChecked,
+    setIsYAutoscaleChecked,
+    isYAutoscaleChecked
 }) => {
     // States of x, y buttons
     const [isXButtonOpen, setIsXButtonOpen] = useState(true);
@@ -35,11 +48,26 @@ const GraphEditFeatures = ({
     }
 
     // Handle show major and minor ticks changes
-    const handleShowMajorTicksChange = () => {
-        setShowMajorTicks(!showMajorTicks);
+    const handleShowXMajorTicksChange = () => {
+        setShowXMajorTicks(prev => !prev);
     }
-    const handleShowMinorTicksChange = () => {
-        setShowMinorTicks(!showMinorTicks);
+    const handleShowXMinorTicksChange = () => {
+        setShowXMinorTicks(prev => !prev);
+    }
+    const handleShowYMajorTicksChange = () => {
+        setShowYMajorTicks(prev => !prev);
+    }
+    const handleShowYMinorTicksChange = () => {
+        setShowYMinorTicks(prev => !prev);
+    }
+
+    // Handle autoscale X change
+    const handleAutoscaleXChange = () => {
+        setIsXAutoscaleChecked(!isXAutoscaleChecked);
+    }
+    // Handle autoscale Y change
+    const handleAutoscaleYChange = () => {
+        setIsYAutoscaleChecked(!isYAutoscaleChecked);
     }
 
     // Style for buttons
@@ -55,34 +83,6 @@ const GraphEditFeatures = ({
             marginTop: "-5px"
         }
     }
-
-    // Function for show ticks and input box for x, y minimum
-    const AxisPropertyInput = ({ label, checked, onChange, style, isDarkMode, value, onValueChange, disabled, labelForNumInput }) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-            <label style={{ display: "inline-block", position: "relative", cursor: "pointer",
-            paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px", marginRight: "80px"}}>
-                <input
-                    className="custom-checkbox"
-                    type="checkbox"
-                    checked={checked}
-                    style={{
-                        display: "none", // Hide the original checkbox
-                    }}
-                    onChange={onChange}
-                />
-                <span style={styleForCheckboxCustomize()}></span>
-                {label}
-            </label>
-            <NumberInput
-                label={labelForNumInput}
-                style={{...style, marginTop: "10px"}}
-                value={value || ''}
-                onChange={onValueChange}
-                isDarkMode={isDarkMode}
-                disabled={disabled}
-            />
-        </div>
-    );
 
     return (
         <div className="popup-center-edit-graph" style={{ backgroundColor: isDarkMode ? "#2e2d2d" : "white", display: "flex", flexDirection: "column"}}>
@@ -101,91 +101,52 @@ const GraphEditFeatures = ({
                 </button>
             </div>
             {isXButtonOpen && (
-                <>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <span style={{ color: isDarkMode ? "white" : "black", fontSize: "12px", marginLeft: "10px"}}> X Axis Title: </span>
-                            <input
-                                type="text"
-                                value={nameOfXAxisUserInput}
-                                placeholder={xAxis_selected_option === null ? "Time" : xAxis_selected_option}
-                                onChange={(e) => setNameOfXAxisUserInput(e.target.value)}
-                                style={{
-                                    width: '80%',
-                                    height: '30px', // Adjust height to your preference
-                                    marginLeft: "1%",
-                                    backgroundColor: isDarkMode ? "black" : "white",
-                                    border: "1px solid #a37d36",
-                                    borderRadius: "8px",
-                                    fontSize: "12px",
-                                    color: "white"
-                                }}
-                            />
-                    </div>
-                    <div style={{ marginLeft: "1%", marginTop: "10px"}}>
-                        <label style={{ display: "inline-block", position: "relative", cursor: "pointer", paddingLeft: "25px", color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
-                            <input
-                                className="custom-checkbox"
-                                type="checkbox"
-                                checked={xAxisTitleIsShown}
-                                style={{
-                                    display: "none", // Hide the original checkbox
-                                }}
-                                onChange={() => setXAxisTitleIsShown(!xAxisTitleIsShown)}
-                            />
-                            <span style={styleForCheckboxCustomize()}> </span>
-                            X Axis Title Visit
-                        </label>
-                    </div>
-                    <div className={"border-with-text-simulation"} style={{ border: isDarkMode ? "1px solid gray" : "1px solid black", width: "500px", height: "400px", marginLeft: "5px", marginTop: "30px"}}>
-                        <span className="text-on-border-simulation" style={{ backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}>
-                            Axes Properties
-                        </span>
-                        <AxisPropertyInput
-                            label="Show Major Tick"
-                            checked={showMajorTicks}
-                            onChange={handleShowMajorTicksChange}
-                            style={styleForNumberInputInXYMinimum()}
-                            isDarkMode={isDarkMode}
-                            value={graphState.xMin}
-                            onValueChange={(e) =>
-                                setGraphState((prevState) => ({
-                                    ...prevState,
-                                    xMin: e.target.value,
-                                }))
-                            }
-                            disabled={isXAutoscaleChecked}
-                            labelForNumInput="X Minimum: "
-                        />
-                        <AxisPropertyInput
-                            label="Show Minor Tick"
-                            checked={showMinorTicks}
-                            onChange={handleShowMinorTicksChange}
-                            style={styleForNumberInputInXYMinimum()}
-                            isDarkMode={isDarkMode}
-                            value={graphState.xMax}
-                            onValueChange={(e) =>
-                                setGraphState((prevState) => ({
-                                    ...prevState,
-                                    xMax: e.target.value,
-                                }))
-                            }
-                            disabled={isXAutoscaleChecked}
-                            labelForNumInput="X Maximum: "
-                        />
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <span style={{ marginLeft: '2px', color: isDarkMode ? "white" : "black", fontSize: "12px" }}>X Axis Color:  </span>
-                            <ColorPickerComponent
-                                color={colorForXAxis}
-                                setColor={setColorForXAxis}
-                                isDarkMode={isDarkMode}
-                            />
-                        </div>
-
-                    </div>
-                </>
+                <AxisProperties
+                    isDarkMode={isDarkMode}
+                    axisType="X"
+                    nameOfAxisUserInput={nameOfXAxisUserInput}
+                    setNameOfAxisUserInput={setNameOfXAxisUserInput}
+                    axis_selected_option={xAxis_selected_option}
+                    axisTitleIsShown={xAxisTitleIsShown}
+                    setAxisTitleIsShown={setXAxisTitleIsShown}
+                    styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
+                    graphState={graphState}
+                    setGraphState={setGraphState}
+                    styleForCheckboxCustomize={styleForCheckboxCustomize}
+                    showMajorTicks={showXMajorTicks}
+                    handleShowMajorTicksChange={handleShowXMajorTicksChange}
+                    showMinorTicks={showXMinorTicks}
+                    handleShowMinorTicksChange={handleShowXMinorTicksChange}
+                    colorForAxis={colorForXAxis}
+                    setColorForAxis={setColorForXAxis}
+                    isAutoscaleChecked={isXAutoscaleChecked}
+                    handleAutoscaleChange={handleAutoscaleXChange}
+                />
+            )}
+            {isYButtonOpen && (
+                <AxisProperties
+                    isDarkMode={isDarkMode}
+                    axisType="Y"
+                    nameOfAxisUserInput={nameOfYAxisUserInput}
+                    setNameOfAxisUserInput={setNameOfYAxisUserInput}
+                    axisTitleIsShown={yAxisTitleIsShown}
+                    setAxisTitleIsShown={setYAxisTitleIsShown}
+                    styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
+                    graphState={graphState}
+                    setGraphState={setGraphState}
+                    styleForCheckboxCustomize={styleForCheckboxCustomize}
+                    showMajorTicks={showYMajorTicks}
+                    handleShowMajorTicksChange={handleShowYMajorTicksChange}
+                    showMinorTicks={showYMinorTicks}
+                    handleShowMinorTicksChange={handleShowYMinorTicksChange}
+                    colorForAxis={colorForYAxis}
+                    setColorForAxis={setColorForYAxis}
+                    isAutoscaleChecked={isYAutoscaleChecked}
+                    handleAutoscaleChange={handleAutoscaleYChange}
+                />
             )}
         </div>
     )
 };
 
-export default GraphEditFeatures;
+export default AxesEditFeatures;

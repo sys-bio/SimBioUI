@@ -4,6 +4,7 @@ import PlotGraph from "./PlotGraph";
 import NumberInput from "./NumberInput";
 import GraphEditFeatures from "./edit-graph-popup/GraphEditFeatures";
 import AxesEditFeatures from "./edit-graph-popup/AxesEditFeatures";
+import GridEditFeatures from "./edit-graph-popup/GridEditFeatures";
 import { INITIAL_GRAPH_STATE, colorOptions } from "../../constants/const";
 import "../../styles/rightSubPanel/right-subpanel-edit-graph.css";
 
@@ -33,6 +34,11 @@ const RightPanel = (props, ref) => {
 
     // When click on Edit Graph, there is a popup shown up
     const [showEditGraphPopup, setShowEditGraphPopup] = useState(false);
+
+    // Make the popup draggable
+    const [popupPosition, setPopupPosition] = useState({ x: 750, y: 450 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
     // ALL ELEMENTS IN GRAPH BUTTON
 
@@ -73,15 +79,24 @@ const RightPanel = (props, ref) => {
     // Change name of x axis
     const [nameOfXAxisUserInput, setNameOfXAxisUserInput] = useState("");
 
+    // Change name of y axis
+    const [nameOfYAxisUserInput, setNameOfYAxisUserInput] = useState("");
+
     // X Axis title checkbox state
     const [xAxisTitleIsShown, setXAxisTitleIsShown] = useState(true);
+    const [yAxisTitleIsShown, setYAxisTitleIsShown] = useState(true);
 
     // Show major and minor ticks
-    const [showMajorTicks, setShowMajorTicks] = useState(true);
-    const [showMinorTicks, setShowMinorTicks] = useState(false);
+    const [showXMajorTicks, setShowXMajorTicks] = useState(true);
+    const [showXMinorTicks, setShowXMinorTicks] = useState(false);
+    const [showYMajorTicks, setShowYMajorTicks] = useState(true);
+    const [showYMinorTicks, setShowYMinorTicks] = useState(false);
 
     // Color for x axis
     const [colorForXAxis, setColorForXAxis] = useState("black");
+
+    // Color for y axis
+    const [colorForYAxis, setColorForYAxis] = useState("black");
 
     // ALL ELEMENTS FOR RIGHT SUBPANEL
     const rightPanelRef = useRef(null);
@@ -102,6 +117,42 @@ const RightPanel = (props, ref) => {
         setIsXAutoscaleChecked(autoScaleBothAxes);
         setIsYAutoscaleChecked(autoScaleBothAxes);
     }, [autoScaleBothAxes]);
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener("mousemove", handleMouseMove);
+            window.addEventListener("mouseup", handleMouseUp);
+        } else {
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [isDragging]);
+
+    // Implement functions for Edit Graph popup draggable
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setDragOffset({
+            x: e.clientX - popupPosition.x,
+            y: e.clientY - popupPosition.y,
+        });
+    };
+
+    const handleMouseMove = (e) => {
+        if (isDragging) {
+            setPopupPosition({
+                x: e.clientX - dragOffset.x,
+                y: e.clientY - dragOffset.y,
+            });
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
 
     const handleRightResize = (e) => {
         if (rightResizingRef.current && rightPanelRef.current) {
@@ -212,10 +263,15 @@ const RightPanel = (props, ref) => {
                     includeGraphBorder={includeGraphBorder}
                     borderWidth={borderWidth}
                     nameOfXAxisUserInput={nameOfXAxisUserInput}
+                    nameOfYAxisUserInput={nameOfYAxisUserInput}
                     xAxisTitleIsShown={xAxisTitleIsShown}
-                    showMajorTicks={showMajorTicks}
-                    showMinorTicks={showMinorTicks}
+                    yAxisTitleIsShown={yAxisTitleIsShown}
+                    showXMajorTicks={showXMajorTicks}
+                    showYMajorTicks={showYMajorTicks}
+                    showXMinorTicks={showXMinorTicks}
+                    showYMinorTicks={showYMinorTicks}
                     colorForXAxis={colorForXAxis}
+                    colorForYAxis={colorForYAxis}
                 />
                 <div>
                     <div
@@ -230,6 +286,7 @@ const RightPanel = (props, ref) => {
                                 style={styleForNumberInputInXYMinimum()}
                                 value={graphState.xMin || ''}
                                 onChange={(e) =>
+
                                     setGraphState((prevState) => ({
                                         ...prevState,
                                         xMin: e.target.value,
@@ -374,31 +431,40 @@ const RightPanel = (props, ref) => {
                 </div>
             </div>
             {showEditGraphPopup && (
-                <div className="popup-edit-graph" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", border: "1px solid grey", borderRadius: "8px"}}>
+                <div className="popup-edit-graph"
+                     style={{
+                         backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                         border: "1px solid grey",
+                         borderRadius: "8px",
+                         top: `${popupPosition.y}px`,
+                         left: `${popupPosition.x}px`,
+                         cursor: isDragging ? "grabbing" : "grab",
+                     }}
+                     onMouseDown={handleMouseDown}>
                     <div className="popup-top-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
                         <button
-                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGraphButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
+                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGraphButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
                             onClick={() =>
                                 handleShowButtonFeaturesInEditGraph(setShowGraphButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
                             }
                         >Graph</button>
                         <button
-                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showAxesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
+                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showAxesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
                             onClick={() =>
                                 handleShowButtonFeaturesInEditGraph(setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
                             }
                             >Axes</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGridButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGridButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
                             onClick={() =>
                                 handleShowButtonFeaturesInEditGraph(setShowGridButtonFeatures, setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
                             }
                         >Grid</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showSeriesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showSeriesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
                         onClick={() =>
                             handleShowButtonFeaturesInEditGraph(setShowSeriesButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowGraphButtonFeatures, setShowLegendButtonFeatures)
                         }
                         >Series</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showLegendButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black"}}
+                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showLegendButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
                         onClick={() =>
                             handleShowButtonFeaturesInEditGraph(setShowLegendButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowGraphButtonFeatures)
                         }
@@ -437,6 +503,7 @@ const RightPanel = (props, ref) => {
                             isXAutoscaleChecked={isXAutoscaleChecked}
                             setShowEditGraphPopup={setShowEditGraphPopup}
                             styleForCheckboxCustomize={styleForCheckboxCustomize}
+                            setAutoScaleBothAxes={setAutoScaleBothAxes}
                         />
                     )}
                     {showAxesButtonFeatures && (
@@ -445,18 +512,38 @@ const RightPanel = (props, ref) => {
                             xAxis_selected_option={xAxis_selected_option}
                             nameOfXAxisUserInput={nameOfXAxisUserInput}
                             setNameOfXAxisUserInput={setNameOfXAxisUserInput}
+                            nameOfYAxisUserInput={nameOfYAxisUserInput}
+                            setNameOfYAxisUserInput={setNameOfYAxisUserInput}
                             xAxisTitleIsShown={xAxisTitleIsShown}
                             setXAxisTitleIsShown={setXAxisTitleIsShown}
+                            yAxisTitleIsShown={yAxisTitleIsShown}
+                            setYAxisTitleIsShown={setYAxisTitleIsShown}
                             styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
                             graphState={graphState}
+                            setGraphState={setGraphState}
                             isXAutoscaleChecked={isXAutoscaleChecked}
                             styleForCheckboxCustomize={styleForCheckboxCustomize}
-                            showMajorTicks={showMajorTicks}
-                            setShowMajorTicks={setShowMajorTicks}
-                            showMinorTicks={showMinorTicks}
-                            setShowMinorTicks={setShowMinorTicks}
+                            showXMajorTicks={showXMajorTicks}
+                            setShowXMajorTicks={setShowXMajorTicks}
+                            showYMajorTicks={showYMajorTicks}
+                            setShowYMajorTicks={setShowYMajorTicks}
+                            showXMinorTicks={showXMinorTicks}
+                            setShowXMinorTicks={setShowXMinorTicks}
+                            showYMinorTicks={showYMinorTicks}
+                            setShowYMinorTicks={setShowYMinorTicks}
                             colorForXAxis={colorForXAxis}
                             setColorForXAxis={setColorForXAxis}
+                            colorForYAxis={colorForYAxis}
+                            setColorForYAxis={setColorForYAxis}
+                            setIsXAutoscaleChecked={setIsXAutoscaleChecked}
+                            isXAutoscaleChecked={isXAutoscaleChecked}
+                            setIsYAutoscaleChecked={setIsYAutoscaleChecked}
+                            isYAutoscaleChecked={isYAutoscaleChecked}
+                        />
+                    )}
+                    {showGridButtonFeatures && (
+                        <GridEditFeatures
+                            isDarkMode={isDarkMode}
                         />
                     )}
                     <div className="popup-bottom-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
