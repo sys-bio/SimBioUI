@@ -1,0 +1,27 @@
+// A simple three step pathway using
+// Michaelis-Menten kinetics.
+
+// Reactions:
+J0: $Node0 -> Node1; (J0_Vmax/J0_Km1)*(Node0 - Node1/J0_Keq)/(1 + Node0/J0_Km1 + Node1/J0_Km2);
+J1: Node1 -> Node2; (J1_Vmax/J1_Km1)*(Node1 - Node2/J1_Keq)/(1 + Node1/J1_Km1 + Node2/J1_Km2);
+J2: Node2 -> $Node3; (J2_Vmax/J2_Km1)*(Node2 - Node3/J2_Keq)/(1 + Node2/J2_Km1 + Node3/J2_Km2);
+
+// Species initializations:
+Node1 = 0;
+Node2 = 0;
+Node0 = 10;
+Node3 = 0;
+
+// Variable initializations:
+J0_Vmax = 1;
+J0_Km1 = 0.4;
+J0_Keq = 1;
+J0_Km2 = 1;
+J1_Vmax = 1;
+J1_Km1 = 0.8;
+J1_Keq = 1.5;
+J1_Km2 = 1;
+J2_Vmax = 1;
+J2_Km1 = 0.232;
+J2_Keq = 1.6;
+J2_Km2 = 1;

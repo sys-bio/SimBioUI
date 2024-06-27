@@ -765,6 +765,7 @@ A = 10
                 refreshCurrentTab={refreshCurrentTab}
                 simulationParam={simulationParam}
                 setSelectedParameter={setSelectedParameter}
+                updateActiveTabContent={updateActiveTabContent}
             />
         </div>
     );

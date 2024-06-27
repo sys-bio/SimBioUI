@@ -1,0 +1,15 @@
+// Sample model
+// Integral controller from Tau and Doyle
+
+$Xo -> S1; k1*Xo/(1 + P)
+S1 -> ; k2*S1
+
+S1 -> P; k3*S1
+P -> ; v1
+
+v1 = 0.3
+k1 = 0.1; k2 = 0.3
+k3 = 0.23; Xo = 20
+
+at time > 40: k2 = k2*3
+at time > 80: k2 = 0.3

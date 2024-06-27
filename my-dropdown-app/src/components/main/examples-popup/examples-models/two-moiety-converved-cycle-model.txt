@@ -1,0 +1,14 @@
+// Reactions:
+J0: E + S1 -> ES; k1*E*S1
+J1: S2 -> S1; k2*S2
+J2: ES -> E + S2; k3*ES
+
+// Species initializations:
+E = 5;
+S1 = 6;
+S2 = 0
+
+// Variable initializations:
+k1 = 0.1
+k2 = 0.4
+k3 = 0.9

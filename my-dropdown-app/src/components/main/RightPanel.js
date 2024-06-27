@@ -5,6 +5,7 @@ import NumberInput from "./NumberInput";
 import GraphEditFeatures from "./edit-graph-popup/GraphEditFeatures";
 import AxesEditFeatures from "./edit-graph-popup/AxesEditFeatures";
 import GridEditFeatures from "./edit-graph-popup/GridEditFeatures";
+import LegendEditFeatures from "./edit-graph-popup/LegendEditFeatures";
 import { INITIAL_GRAPH_STATE, colorOptions } from "../../constants/const";
 import "../../styles/rightSubPanel/right-subpanel-edit-graph.css";
 
@@ -97,6 +98,35 @@ const RightPanel = (props, ref) => {
 
     // Color for y axis
     const [colorForYAxis, setColorForYAxis] = useState("black");
+
+    // ALL ELEMENTS IN GRID BUTTON
+    // Major Grids
+    const [xMajorGridColor, setXMajorGridColor] = useState('#000000');
+    const [yMajorGridColor, setYMajorGridColor] = useState('#000000');
+    const [xMajorGridWidth, setXMajorGridWidth] = useState(1);
+    const [yMajorGridWidth, setYMajorGridWidth] = useState(1);
+    const [xMajorGridCount, setXMajorGridCount] = useState(5);
+    const [yMajorGridCount, setYMajorGridCount] = useState(5);
+    // Minor Grids
+    const [xMinorGridColor, setXMinorGridColor] = useState('gray');
+    const [yMinorGridColor, setYMinorGridColor] = useState('gray');
+    const [xMinorGridWidth, setXMinorGridWidth] = useState(1);
+    const [yMinorGridWidth, setYMinorGridWidth] = useState(1);
+    const [xMinorGridCount, setXMinorGridCount] = useState(5);
+    const [yMinorGridCount, setYMinorGridCount] = useState(5);
+    // Set x,y major/minor grids on/off
+    const [isXMajorGridOn, setIsXMajorGridOn] = useState(false);
+    const [isYMajorGridOn, setIsYMajorGridOn] = useState(false);
+    const [isXMinorGridOn, setIsXMinorGridOn] = useState(false);
+    const [isYMinorGridOn, setIsYMinorGridOn] = useState(false);
+
+    // ALL ELEMENTS IN LEGEND BUTTON
+    const [isLegendFrameBorderOn, setIsLegendFrameBorderOn] = useState(true);
+    const [legendFrameColor, setLegendFrameColor] = useState('black');
+    const [legendFrameWidth, setLegendFrameWidth] = useState(1);
+    const [legendFrameGap, setLegendFrameGap] = useState(10);
+    const [legendFrameLineLength, setLegendFrameLineLength] = useState(30);
+    const [legendFrameInteriorColor, setLegendFrameInteriorColor] = useState("white");
 
     // ALL ELEMENTS FOR RIGHT SUBPANEL
     const rightPanelRef = useRef(null);
@@ -272,6 +302,28 @@ const RightPanel = (props, ref) => {
                     showYMinorTicks={showYMinorTicks}
                     colorForXAxis={colorForXAxis}
                     colorForYAxis={colorForYAxis}
+                    xMajorGridColor={xMajorGridColor}
+                    yMajorGridColor={yMajorGridColor}
+                    xMajorGridCount={xMajorGridCount}
+                    yMajorGridCount={yMajorGridCount}
+                    xMajorGridWidth={xMajorGridWidth}
+                    yMajorGridWidth={yMajorGridWidth}
+                    xMinorGridColor={xMinorGridColor}
+                    yMinorGridColor={yMinorGridColor}
+                    xMinorGridCount={xMinorGridCount}
+                    yMinorGridCount={yMinorGridCount}
+                    xMinorGridWidth={xMinorGridWidth}
+                    yMinorGridWidth={yMinorGridWidth}
+                    isXMajorGridOn={isXMajorGridOn}
+                    isYMajorGridOn={isYMajorGridOn}
+                    isXMinorGridOn={isXMinorGridOn}
+                    isYMinorGridOn={isYMinorGridOn}
+                    isLegendFrameBorderOn={isLegendFrameBorderOn}
+                    legendFrameColor={legendFrameColor}
+                    legendFrameWidth={legendFrameWidth}
+                    legendFrameGap={legendFrameGap}
+                    legendFrameLineLength={legendFrameLineLength}
+                    legendFrameInteriorColor={legendFrameInteriorColor}
                 />
                 <div>
                     <div
@@ -431,126 +483,177 @@ const RightPanel = (props, ref) => {
                 </div>
             </div>
             {showEditGraphPopup && (
-                <div className="popup-edit-graph"
-                     style={{
-                         backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-                         border: "1px solid grey",
-                         borderRadius: "8px",
-                         top: `${popupPosition.y}px`,
-                         left: `${popupPosition.x}px`,
-                         cursor: isDragging ? "grabbing" : "grab",
-                     }}
-                     onMouseDown={handleMouseDown}>
-                    <div className="popup-top-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
-                        <button
-                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGraphButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                <div className="modal-overlay">
+                    <div className="popup-edit-graph"
+                         style={{
+                             backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+                             border: "1px solid grey",
+                             borderRadius: "8px",
+                             top: `${popupPosition.y}px`,
+                             left: `${popupPosition.x}px`,
+                             cursor: isDragging ? "grabbing" : "grab",
+                         }}
+                         onMouseDown={handleMouseDown}>
+                        <div className="popup-top-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
+                            <button
+                                className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGraphButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                                onClick={() =>
+                                    handleShowButtonFeaturesInEditGraph(setShowGraphButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                                }
+                            >Graph</button>
+                            <button
+                                className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showAxesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                                onClick={() =>
+                                    handleShowButtonFeaturesInEditGraph(setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                                }
+                                >Axes</button>
+                            <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGridButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                                onClick={() =>
+                                    handleShowButtonFeaturesInEditGraph(setShowGridButtonFeatures, setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                                }
+                            >Grid</button>
+                            <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showSeriesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
                             onClick={() =>
-                                handleShowButtonFeaturesInEditGraph(setShowGraphButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                                handleShowButtonFeaturesInEditGraph(setShowSeriesButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowGraphButtonFeatures, setShowLegendButtonFeatures)
                             }
-                        >Graph</button>
-                        <button
-                            className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showAxesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                            >Series</button>
+                            <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showLegendButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
                             onClick={() =>
-                                handleShowButtonFeaturesInEditGraph(setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                                handleShowButtonFeaturesInEditGraph(setShowLegendButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowGraphButtonFeatures)
                             }
-                            >Axes</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGridButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-                            onClick={() =>
-                                handleShowButtonFeaturesInEditGraph(setShowGridButtonFeatures, setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
-                            }
-                        >Grid</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showSeriesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-                        onClick={() =>
-                            handleShowButtonFeaturesInEditGraph(setShowSeriesButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowGraphButtonFeatures, setShowLegendButtonFeatures)
-                        }
-                        >Series</button>
-                        <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showLegendButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-                        onClick={() =>
-                            handleShowButtonFeaturesInEditGraph(setShowLegendButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowGraphButtonFeatures)
-                        }
-                        >Legend</button>
-                    </div>
-                    {showGraphButtonFeatures && (
-                        <GraphEditFeatures
-                            isDarkMode={isDarkMode}
-                            graphTitleName={graphTitleName}
-                            setGraphTitleName={setGraphTitleName}
-                            titleVisible={titleVisible}
-                            setTitleVisible={setTitleVisible}
-                            selectedMainTitleColor={selectedMainTitleColor}
-                            setSelectedMainTitleColor={setSelectedMainTitleColor}
-                            setShowMainTitleColorDropdown={setShowMainTitleColorDropdown}
-                            showMainTitleColorDropdown={showMainTitleColorDropdown}
-                            autoScaleBothAxes={autoScaleBothAxes}
-                            logBothAxes={logBothAxes}
-                            setLogBothAxes={setLogBothAxes}
-                            selectedGraphBackgroundColor={selectedGraphBackgroundColor}
-                            setSelectedGraphBackgroundColor={setSelectedGraphBackgroundColor}
-                            setShowGraphBackgroundColorDropdown={setShowGraphBackgroundColorDropdown}
-                            showGraphBackgroundColorDropdown={showGraphBackgroundColorDropdown}
-                            borderWidth={borderWidth}
-                            setBorderWidth={setBorderWidth}
-                            selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
-                            setSelectedGraphDrawingAreaColor={setSelectedGraphDrawingAreaColor}
-                            setShowGraphDrawingAreaColorDropdown={setShowGraphDrawingAreaColorDropdown}
-                            showGraphDrawingAreaColorDropdown={showGraphDrawingAreaColorDropdown}
-                            includeGraphBorder={includeGraphBorder}
-                            setIncludeGraphBorder={setIncludeGraphBorder}
-                            selectedGraphBorderColor={selectedGraphBorderColor}
-                            setSelectedGraphBorderColor={setSelectedGraphBorderColor}
-                            setShowGraphBorderColorDropdown={setShowGraphBorderColorDropdown}
-                            showGraphBorderColorDropdown={showGraphBorderColorDropdown}
-                            isXAutoscaleChecked={isXAutoscaleChecked}
-                            setShowEditGraphPopup={setShowEditGraphPopup}
-                            styleForCheckboxCustomize={styleForCheckboxCustomize}
-                            setAutoScaleBothAxes={setAutoScaleBothAxes}
-                        />
-                    )}
-                    {showAxesButtonFeatures && (
-                        <AxesEditFeatures
-                            isDarkMode={isDarkMode}
-                            xAxis_selected_option={xAxis_selected_option}
-                            nameOfXAxisUserInput={nameOfXAxisUserInput}
-                            setNameOfXAxisUserInput={setNameOfXAxisUserInput}
-                            nameOfYAxisUserInput={nameOfYAxisUserInput}
-                            setNameOfYAxisUserInput={setNameOfYAxisUserInput}
-                            xAxisTitleIsShown={xAxisTitleIsShown}
-                            setXAxisTitleIsShown={setXAxisTitleIsShown}
-                            yAxisTitleIsShown={yAxisTitleIsShown}
-                            setYAxisTitleIsShown={setYAxisTitleIsShown}
-                            styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
-                            graphState={graphState}
-                            setGraphState={setGraphState}
-                            isXAutoscaleChecked={isXAutoscaleChecked}
-                            styleForCheckboxCustomize={styleForCheckboxCustomize}
-                            showXMajorTicks={showXMajorTicks}
-                            setShowXMajorTicks={setShowXMajorTicks}
-                            showYMajorTicks={showYMajorTicks}
-                            setShowYMajorTicks={setShowYMajorTicks}
-                            showXMinorTicks={showXMinorTicks}
-                            setShowXMinorTicks={setShowXMinorTicks}
-                            showYMinorTicks={showYMinorTicks}
-                            setShowYMinorTicks={setShowYMinorTicks}
-                            colorForXAxis={colorForXAxis}
-                            setColorForXAxis={setColorForXAxis}
-                            colorForYAxis={colorForYAxis}
-                            setColorForYAxis={setColorForYAxis}
-                            setIsXAutoscaleChecked={setIsXAutoscaleChecked}
-                            isXAutoscaleChecked={isXAutoscaleChecked}
-                            setIsYAutoscaleChecked={setIsYAutoscaleChecked}
-                            isYAutoscaleChecked={isYAutoscaleChecked}
-                        />
-                    )}
-                    {showGridButtonFeatures && (
-                        <GridEditFeatures
-                            isDarkMode={isDarkMode}
-                        />
-                    )}
-                    <div className="popup-bottom-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
-                           <button
-                                className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
-                                onClick={handleButtonClose}
-                           >Close</button>
+                            >Legend</button>
+                        </div>
+                        {showGraphButtonFeatures && (
+                            <GraphEditFeatures
+                                isDarkMode={isDarkMode}
+                                graphTitleName={graphTitleName}
+                                setGraphTitleName={setGraphTitleName}
+                                titleVisible={titleVisible}
+                                setTitleVisible={setTitleVisible}
+                                selectedMainTitleColor={selectedMainTitleColor}
+                                setSelectedMainTitleColor={setSelectedMainTitleColor}
+                                setShowMainTitleColorDropdown={setShowMainTitleColorDropdown}
+                                showMainTitleColorDropdown={showMainTitleColorDropdown}
+                                autoScaleBothAxes={autoScaleBothAxes}
+                                logBothAxes={logBothAxes}
+                                setLogBothAxes={setLogBothAxes}
+                                selectedGraphBackgroundColor={selectedGraphBackgroundColor}
+                                setSelectedGraphBackgroundColor={setSelectedGraphBackgroundColor}
+                                setShowGraphBackgroundColorDropdown={setShowGraphBackgroundColorDropdown}
+                                showGraphBackgroundColorDropdown={showGraphBackgroundColorDropdown}
+                                borderWidth={borderWidth}
+                                setBorderWidth={setBorderWidth}
+                                selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
+                                setSelectedGraphDrawingAreaColor={setSelectedGraphDrawingAreaColor}
+                                setShowGraphDrawingAreaColorDropdown={setShowGraphDrawingAreaColorDropdown}
+                                showGraphDrawingAreaColorDropdown={showGraphDrawingAreaColorDropdown}
+                                includeGraphBorder={includeGraphBorder}
+                                setIncludeGraphBorder={setIncludeGraphBorder}
+                                selectedGraphBorderColor={selectedGraphBorderColor}
+                                setSelectedGraphBorderColor={setSelectedGraphBorderColor}
+                                setShowGraphBorderColorDropdown={setShowGraphBorderColorDropdown}
+                                showGraphBorderColorDropdown={showGraphBorderColorDropdown}
+                                isXAutoscaleChecked={isXAutoscaleChecked}
+                                setShowEditGraphPopup={setShowEditGraphPopup}
+                                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                                setAutoScaleBothAxes={setAutoScaleBothAxes}
+                            />
+                        )}
+                        {showAxesButtonFeatures && (
+                            <AxesEditFeatures
+                                isDarkMode={isDarkMode}
+                                xAxis_selected_option={xAxis_selected_option}
+                                nameOfXAxisUserInput={nameOfXAxisUserInput}
+                                setNameOfXAxisUserInput={setNameOfXAxisUserInput}
+                                nameOfYAxisUserInput={nameOfYAxisUserInput}
+                                setNameOfYAxisUserInput={setNameOfYAxisUserInput}
+                                xAxisTitleIsShown={xAxisTitleIsShown}
+                                setXAxisTitleIsShown={setXAxisTitleIsShown}
+                                yAxisTitleIsShown={yAxisTitleIsShown}
+                                setYAxisTitleIsShown={setYAxisTitleIsShown}
+                                styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
+                                graphState={graphState}
+                                setGraphState={setGraphState}
+                                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                                showXMajorTicks={showXMajorTicks}
+                                setShowXMajorTicks={setShowXMajorTicks}
+                                showYMajorTicks={showYMajorTicks}
+                                setShowYMajorTicks={setShowYMajorTicks}
+                                showXMinorTicks={showXMinorTicks}
+                                setShowXMinorTicks={setShowXMinorTicks}
+                                showYMinorTicks={showYMinorTicks}
+                                setShowYMinorTicks={setShowYMinorTicks}
+                                colorForXAxis={colorForXAxis}
+                                setColorForXAxis={setColorForXAxis}
+                                colorForYAxis={colorForYAxis}
+                                setColorForYAxis={setColorForYAxis}
+                                setIsXAutoscaleChecked={setIsXAutoscaleChecked}
+                                isXAutoscaleChecked={isXAutoscaleChecked}
+                                setIsYAutoscaleChecked={setIsYAutoscaleChecked}
+                                isYAutoscaleChecked={isYAutoscaleChecked}
+                            />
+                        )}
+                        {showGridButtonFeatures && (
+                            <GridEditFeatures
+                                isDarkMode={isDarkMode}
+                                // Major
+                                xMajorGridColor={xMajorGridColor}
+                                setXMajorGridColor={setXMajorGridColor}
+                                yMajorGridColor={yMajorGridColor}
+                                setYMajorGridColor={setYMajorGridColor}
+                                xMajorGridWidth={xMajorGridWidth}
+                                setXMajorGridWidth={setXMajorGridWidth}
+                                yMajorGridWidth={yMajorGridWidth}
+                                setYMajorGridWidth={setYMajorGridWidth}
+                                xMajorGridCount={xMajorGridCount}
+                                setXMajorGridCount={setXMajorGridCount}
+                                yMajorGridCount={yMajorGridCount}
+                                setYMajorGridCount={setYMajorGridCount}
+                                setIsXMajorGridOn={setIsXMajorGridOn}
+                                setIsYMajorGridOn={setIsYMajorGridOn}
+                                //Minor
+                                xMinorGridColor={xMinorGridColor}
+                                setXMinorGridColor={setXMinorGridColor}
+                                yMinorGridColor={yMinorGridColor}
+                                setYMinorGridColor={setYMinorGridColor}
+                                xMinorGridWidth={xMinorGridWidth}
+                                setXMinorGridWidth={setXMinorGridWidth}
+                                yMinorGridWidth={yMinorGridWidth}
+                                setYMinorGridWidth={setYMinorGridWidth}
+                                xMinorGridCount={xMinorGridCount}
+                                setXMinorGridCount={setXMinorGridCount}
+                                yMinorGridCount={yMinorGridCount}
+                                setYMinorGridCount={setYMinorGridCount}
+                                setIsXMinorGridOn={setIsXMinorGridOn}
+                                setIsYMinorGridOn={setIsYMinorGridOn}
+                            />
+                        )}
+                        {showLegendButtonFeatures && (
+                            <LegendEditFeatures
+                                isDarkMode={isDarkMode}
+                                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                                isShowLegendChecked={isShowLegendChecked}
+                                setIsShowLegendChecked={setIsShowLegendChecked}
+                                isLegendFrameBorderOn={isLegendFrameBorderOn}
+                                setIsLegendFrameBorderOn={setIsLegendFrameBorderOn}
+                                legendFrameColor={legendFrameColor}
+                                setLegendFrameColor={setLegendFrameColor}
+                                legendFrameWidth={legendFrameWidth}
+                                setLegendFrameWidth={setLegendFrameWidth}
+                                legendFrameGap={legendFrameGap}
+                                setLegendFrameGap={setLegendFrameGap}
+                                legendFrameLineLength={legendFrameLineLength}
+                                setLegendFrameLineLength={setLegendFrameLineLength}
+                                legendFrameInteriorColor={legendFrameInteriorColor}
+                                setLegendFrameInteriorColor={setLegendFrameInteriorColor}
+                            />
+                        )}
+                        <div className="popup-bottom-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
+                               <button
+                                    className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                                    onClick={handleButtonClose}
+                               >Close</button>
+                        </div>
                     </div>
                 </div>
             )}

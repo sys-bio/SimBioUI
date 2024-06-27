@@ -1,0 +1,17 @@
+// Simple bistable model (non-mass-action)
+
+// Set S1 to 0 or S1 to 10 to observe the two stable states
+// To find the unstable state, set S1 = 3.4863321029603696
+// To examine the stabilty, change to the steady-state tab
+// and observe the eigenvalues (+ve = unstable)
+
+// Reactions
+J0: $X0 -> S1; X0*(32 + (S1/0.75)^3.2)/(1 + (S1/4.3)^3.2)
+J1: S1 ->; k1*S1;
+
+// Species initializations
+S1 = 0
+X0 = 0.1
+
+// Parameter initialization
+k1 = 3.2

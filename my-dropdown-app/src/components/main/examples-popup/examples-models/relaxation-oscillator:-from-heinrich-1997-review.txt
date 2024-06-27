@@ -1,0 +1,21 @@
+// Oscillator (Heinrich model)
+// From the review:
+// Metabolic Regulation and Mathematical Models
+// R.HEINRICH, S.M.RAPOPORT, T.A.RAPOPORT
+// In Progress in Biophysics and Molecular Biology
+// 1977, Vol 32, p1-82
+
+// Reactions:
+J0: $X0 -> S1; v0
+J1: S1 -> ; k3*S1
+J2: S1 -> S2; (k1*S1 - k_1*S2)*(1 + c*S2^q)
+J3: S2 ->; k2*S2
+
+// Species initializations
+S1 = 0; S2 = 1; X0 = 1
+
+// Variable initializations
+v0 = 8; k3 = 0
+k1 = 1; k_1 = 0
+c = 1;  q = 3
+k2 = 5;

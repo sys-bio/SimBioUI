@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 
-function DraggableLegend({ data, selectedOptions,colors }) {
+function DraggableLegend({
+    data,
+    selectedOptions,
+    colors,
+    isLegendFrameBorderOn,
+    legendFrameColor,
+    legendFrameWidth,
+    legendFrameGap,
+    legendFrameLineLength,
+    legendFrameInteriorColor}) {
   const [position, setPosition] = useState({ x: 50, y: 50 });
   const [dragging, setDragging] = useState(false);
   const [relPos, setRelPos] = useState({ x: 0, y: 0 });
@@ -34,7 +43,7 @@ function DraggableLegend({ data, selectedOptions,colors }) {
           const color = colors[index % colors.length]
           return (
             <div key={index} style={{ fontSize: '12px', color: '#333', padding: '5px', display: 'flex', alignItems: 'center' }}>
-              <div style={{ width: '30px', height: '2px', backgroundColor: color, marginRight: '7px' }}></div>
+              <div style={{ width: `${legendFrameLineLength}px`, height: '2px', backgroundColor: color, marginRight: '7px' }}></div>
               {title}
             </div>
           );
@@ -48,9 +57,9 @@ function DraggableLegend({ data, selectedOptions,colors }) {
         position: 'absolute',
         left: `${position.x}px`,
         top: `${position.y}px`,
-        backgroundColor: 'white',
-        border: '1px solid #ccc',
-        padding: '10px',
+        backgroundColor: legendFrameInteriorColor,
+        border: isLegendFrameBorderOn ? `${legendFrameWidth}px solid ${legendFrameColor}` : 'none',
+        padding: `${legendFrameGap}px`,
         cursor: 'move'
       }}
       onMouseDown={onMouseDown}

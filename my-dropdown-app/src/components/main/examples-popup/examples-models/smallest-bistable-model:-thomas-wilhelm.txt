@@ -1,0 +1,24 @@
+// Smallest mass-action based models that shows bistability
+// From:
+// The smallest chemical reaction system with bistability
+// Thomas Wilhelm
+// BMC Systems Biology
+// Vol 3(90), 2009
+
+$S + Y -> 2X; k1*S*Y
+2X -> X + Y; k2*X*X
+X + Y -> Y; k3*X*Y
+X ->; k4*X;
+
+k1 = 8; k2 = 1
+k3 = 1; k4 = 1.5
+S = 1
+
+// Set X = 2.75 to get the lower steady-state
+// X = 2.75
+// Set X = 3 to get the upper steady-state
+X = 3
+
+// You can also do a parameter scan
+// using init([X]) from
+// 0.1 to 6, using 15 values

@@ -47,7 +47,7 @@ class PlotGraph extends PureComponent {
         const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
         const xValues = this.props.data.columns[indexOfX];
         const plotsCount = this.props.data.columns.length;
-        const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+        const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
 
         const plotData = [];
         if (this.props.data.titles) {
@@ -81,6 +81,13 @@ class PlotGraph extends PureComponent {
         } else {
             yaxisRange = [parseFloat(graphState.yMin), parseFloat(graphState.yMax)];
         }
+
+        // Calculate dtick for x and y axis based on the grid count and axis range
+        const xMajorDTick = xaxisRange ? (xaxisRange[1] - xaxisRange[0]) / this.props.xMajorGridCount : null;
+        const yMajorDTick = yaxisRange ? (yaxisRange[1] - yaxisRange[0]) / this.props.yMajorGridCount : null;
+        const xMinorDTick = xMajorDTick / this.props.xMinorGridCount;
+        const yMinorDTick = yMajorDTick / this.props.yMinorGridCount;
+
         return (
             <div>
                 <Plot
@@ -108,22 +115,30 @@ class PlotGraph extends PureComponent {
                             },
                             tickfont: {
                                 color: 'black',
-                                size: dynamicFontSize * 0.8
+                                size: dynamicFontSize * 0.8,
                             },
-                            gridcolor: this.props.selectedGraphDrawingAreaColor,
+                            gridcolor: this.props.isXMajorGridOn ? this.props.xMajorGridColor : this.props.selectedGraphDrawingAreaColor,
+                            gridwidth: this.props.isXMajorGridOn ? this.props.xMajorGridWidth : 0,
                             zeroline: false,
                             range: xaxisRange,
                             autorange: isXAutoscaleChecked,
                             showline: this.props.includeGraphBorder ? false : true,
-                            tickmode: 'auto', // or 'linear' depending on your preference
-                            showgrid: this.props.showXMinorTicks, // Show minor ticks if isMinorTick is true
+                            tickmode: 'linear',
+                            dtick: xMajorDTick,
+                            showgrid: this.props.isXMajorGridOn,
                             showticklabels: this.props.showXMajorTicks,
-                            color: this.props.includeGraphBorder ? this.props.selectedGraphBorderColor : this.props.colorForXAxis // Set the color of the x-axis line directly
+                            color: this.props.includeGraphBorder ? this.props.selectedGraphBorderColor : this.props.colorForXAxis, // Set the color of the x-axis line directly
+                            minor: {
+                                showgrid: this.props.isXMinorGridOn,
+                                gridcolor: this.props.isXMinorGridOn ? this.props.xMinorGridColor : this.props.selectedGraphDrawingAreaColor,
+                                gridwidth: this.props.isXMinorGridOn ? this.props.xMinorGridWidth : 0,
+                                dtick: xMinorDTick,
+                            },
                         },
 
                         yaxis: {
                             title: {
-                                text: this.props.yAxisTitleIsShown ? (this.props.nameOfYAxisUserInput !== '' ?  this.props.nameOfYAxisUserInput : 'Entities') : '',
+                                text: this.props.yAxisTitleIsShown ? (this.props.nameOfYAxisUserInput !== '' ? this.props.nameOfYAxisUserInput : 'Entities') : '',
                                 font: {
                                     color: 'black',
                                     size: dynamicFontSize,
@@ -133,15 +148,23 @@ class PlotGraph extends PureComponent {
                                 color: 'black',
                                 size: dynamicFontSize * 0.8,
                             },
-                            gridcolor: this.props.selectedGraphDrawingAreaColor,
+                            gridcolor: this.props.isYMajorGridOn ? this.props.yMajorGridColor : this.props.selectedGraphDrawingAreaColor,
+                            gridwidth: this.props.isYMajorGridOn ? this.props.yMajorGridWidth : 0,
                             range: yaxisRange,
                             zeroline: false,
                             autorange: isYAutoscaleChecked,
                             showline: this.props.includeGraphBorder ? false : true,
-                            tickmode: 'auto', // or 'linear' depending on your preference
-                            showgrid: this.props.showYMinorTicks, // Show minor ticks if isMinorTick is true
+                            tickmode: 'linear',
+                            dtick: yMajorDTick,
+                            showgrid: this.props.isYMajorGridOn,
                             showticklabels: this.props.showYMajorTicks,
-                            color: this.props.includeGraphBorder ? this.props.selectedGraphBorderColor : this.props.colorForYAxis
+                            color: this.props.includeGraphBorder ? this.props.selectedGraphBorderColor : this.props.colorForYAxis,
+                            minor: {
+                                showgrid: this.props.isYMinorGridOn,
+                                gridcolor: this.props.isYMinorGridOn ? this.props.yMinorGridColor : this.props.selectedGraphDrawingAreaColor,
+                                gridwidth: this.props.isYMinorGridOn ? this.props.yMinorGridWidth : 0,
+                                dtick: yMinorDTick
+                            },
                         },
                         showlegend: false,
                         shapes: this.props.includeGraphBorder ? [
@@ -155,7 +178,7 @@ class PlotGraph extends PureComponent {
                                 y1: 1,
                                 line: {
                                     color: this.props.selectedGraphBorderColor,
-                                    width: this.props.borderWidth == '' ? 0.5 : this.props.borderWidth,
+                                    width: this.props.borderWidth === '' ? 0.5 : this.props.borderWidth,
                                 },
                             },
                         ] : [],
@@ -170,7 +193,19 @@ class PlotGraph extends PureComponent {
                         displayModeBar: false,
                     }}
                 />
-                {this.props.isShowLegendChecked && <DraggableLegend data={this.props.data} selectedOptions={this.props.selectedOptions} colors={colors}/>}
+                {this.props.isShowLegendChecked &&
+                <DraggableLegend
+                    data={this.props.data}
+                    selectedOptions={this.props.selectedOptions}
+                    colors={colors}
+                    isLegendFrameBorderOn={this.props.isLegendFrameBorderOn}
+                    legendFrameColor={this.props.legendFrameColor}
+                    legendFrameWidth={this.props.legendFrameWidth}
+                    legendFrameGap={this.props.legendFrameGap}
+                    legendFrameLineLength={this.props.legendFrameLineLength}
+                    legendFrameInteriorColor={this.props.legendFrameInteriorColor}
+                />
+                }
             </div>
         );
     }

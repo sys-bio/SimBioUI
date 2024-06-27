@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ANALYSIS_ITEM, EXAMPLE_ITEMS, FILE_ITEMS, HELP_ITEMS, OPTIONS_ITEMS } from "../../constants/const";
 import { FaMoon, FaSun } from "react-icons/fa";
 import DropdownContainers from "./DropdownContainers";
+import ExamplePopup from "./examples-popup/ExamplePopup";
 
 const MenuHeader = (props) => {
     const {
@@ -18,13 +19,20 @@ const MenuHeader = (props) => {
         refreshCurrentTab,
         promptForFileNameAndDownload,
         simulationParam,
-        setSelectedParameter
+        setSelectedParameter,
+        updateActiveTabContent
     } = props;
 
     const fileDropdownRef = useRef(null);
+    const analysisDropdownRef = useRef(null);
+    const optionsDropdownRef = useRef(null);
+    const examplesDropdownRef = useRef(null);
+    const helpDropdownRef = useRef(null);
 
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
     const [activeToolbarButton, setActiveToolbarButton] = useState("");
+    const [showExamplePopup, setShowExamplePopup] = useState(false);
+    const [showHelpPopup, setShowHelpPopup] = useState(false);
 
     const { dropdownToolbarStyle, dropdownToolbarButtonsStyle, modeIcon, modeTooltip } = useMemo(() => {
         const dropdownToolbarStyle = {
@@ -48,10 +56,8 @@ const MenuHeader = (props) => {
         setActiveToolbarButton(menu === activeToolbarButton ? "" : menu);
     };
 
-    // Example logic in DropdownWithPopup
     const onExportSBMLSelected = () => {
-        // Assuming `getContentOfActiveTab` or similar method exists to get the current content
-        const antimonyContent = getContentOfActiveTab(); // You need to implement this
+        const antimonyContent = getContentOfActiveTab();
         handleExportSBML(antimonyContent);
     };
 
@@ -71,9 +77,16 @@ const MenuHeader = (props) => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (showDropdownToolbar && fileDropdownRef.current) {
-                if (!fileDropdownRef.current.contains(event.target)) {
+            if (showDropdownToolbar) {
+                if (
+                    fileDropdownRef.current && !fileDropdownRef.current.contains(event.target) &&
+                    analysisDropdownRef.current && !analysisDropdownRef.current.contains(event.target) &&
+                    optionsDropdownRef.current && !optionsDropdownRef.current.contains(event.target) &&
+                    examplesDropdownRef.current && !examplesDropdownRef.current.contains(event.target) &&
+                    helpDropdownRef.current && !helpDropdownRef.current.contains(event.target)
+                ) {
                     setShowDropdownToolbar(false);
+                    setActiveToolbarButton("");
                 }
             }
         };
@@ -113,14 +126,15 @@ const MenuHeader = (props) => {
                         withCheckboxes={false}
                         xAxis={false}
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
-                        setShowDropdownToolbar={setShowDropdownToolbar}
                         refreshCurrentTab={refreshCurrentTab}
                         isNewFileUploaded={isNewFileUploaded}
                         setIsNewFileUploaded={setIsNewFileUploaded}
+                        setShowDropdownToolbar={setShowDropdownToolbar}
+                        setActiveToolbarButton={setActiveToolbarButton}
                     />
                 )}
             </div>
-            <div>
+            <div ref={analysisDropdownRef}>
                 <button
                     className="top-menu-button"
                     style={{
@@ -140,10 +154,12 @@ const MenuHeader = (props) => {
                         withCheckboxes={false}
                         xAxis={false}
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-analysis"}
+                        setShowDropdownToolbar={setShowDropdownToolbar}
+                        setActiveToolbarButton={setActiveToolbarButton}
                     />
                 )}
             </div>
-            <div>
+            <div ref={optionsDropdownRef}>
                 <button
                     className="top-menu-button"
                     style={{
@@ -163,10 +179,12 @@ const MenuHeader = (props) => {
                         withCheckboxes={false}
                         xAxis={false}
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-options"}
+                        setShowDropdownToolbar={setShowDropdownToolbar}
+                        setActiveToolbarButton={setActiveToolbarButton}
                     />
                 )}
             </div>
-            <div className={"container-of-toolbar-and-dropdown"}>
+            <div ref={examplesDropdownRef} className={"container-of-toolbar-and-dropdown"}>
                 <button
                     className="top-menu-button"
                     style={{
@@ -186,10 +204,13 @@ const MenuHeader = (props) => {
                         withCheckboxes={false}
                         xAxis={false}
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-examples"}
+                        setShowExamplePopup={setShowExamplePopup}
+                        setShowDropdownToolbar={setShowDropdownToolbar}
+                        setActiveToolbarButton={setActiveToolbarButton}
                     />
                 )}
             </div>
-            <div className={"container-of-toolbar-and-dropdown"}>
+            <div ref={helpDropdownRef} className={"container-of-toolbar-and-dropdown"}>
                 <button
                     className="top-menu-button"
                     style={{
@@ -209,12 +230,33 @@ const MenuHeader = (props) => {
                         withCheckboxes={false}
                         xAxis={false}
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-help"}
+                        setShowDropdownToolbar={setShowDropdownToolbar}
+                        setActiveToolbarButton={setActiveToolbarButton}
+                        setShowHelpPopup={setShowHelpPopup}
                     />
                 )}
             </div>
             <button onClick={toggleDarkMode} title={modeTooltip}>
                 {modeIcon}
             </button>
+            {showExamplePopup && (
+                <ExamplePopup isDarkMode={isDarkMode} setShowExamplePopup={setShowExamplePopup} updateActiveTabContent={updateActiveTabContent}/>
+            )}
+            {showHelpPopup && (
+                <div className={"modal-overlay"}>
+                    <div
+                        style={{
+                            backgroundColor: isDarkMode ? "#2e2d2d" : "#fff",
+                            border: "1px solid grey",
+                            borderRadius: "8px",
+                            width: "300px",
+                            height: "300px"
+                        }}
+                    >
+//
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

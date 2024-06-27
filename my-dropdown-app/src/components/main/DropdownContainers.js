@@ -8,7 +8,7 @@ class DropdownContainers extends Component {
             options: this.props.options,
             showExportModal: false,
             customFilename: "exported_model.xml",
-            fileInputAccept: "", // Initialize without specifying a file type
+            fileInputAccept: "",
         };
         this.fileInputRef = React.createRef();
         this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -29,6 +29,7 @@ class DropdownContainers extends Component {
     };
 
     handleFileSelect = (event) => {
+        this.props.setActiveToolbarButton("");
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -90,26 +91,46 @@ class DropdownContainers extends Component {
             } else if (item === "New") {
                 this.props.refreshCurrentTab();
                 this.props.setShowDropdownToolbar(false);
+                this.props.setActiveToolbarButton("");
             } else if (item === "Import SBML...") {
                 // Set accepted file types for SBML (xml) files
                 this.setState({ fileInputAccept: ".xml" }, () => {
                     this.props.setIsNewFileUploaded(true);
                     this.fileInputRef.current.click();
                 });
-            }
-             else if (item === "New Window") {
+            } else if (item === "New Window") {
                 window.open("https://sys-bio.github.io/SimBioUI/", "_blank");
+                this.props.setActiveToolbarButton("");
             } else if (item === "Export SBML...") {
                 this.props.onExportSBMLSelected();
                 this.props.setShowDropdownToolbar(false);
+                this.props.setActiveToolbarButton("");
             } else if (item === "Save...") {
                 this.props.onExportAntSelected();
                 this.props.setShowDropdownToolbar(false);
+                this.props.setActiveToolbarButton("");
             } else if (item === "Save Graph as PDF") {
                 this.props.onDownloadPDF();
+                this.props.setActiveToolbarButton("");
+            } else if (item === "Example Models") {
+                this.props.setShowDropdownToolbar(false);
+                if (this.props.setShowExamplePopup) {
+                    this.props.setShowExamplePopup(true);
+                }
+                this.props.setActiveToolbarButton("");
+            } else if (item === "Help on Antimony") {
+                window.open("https://tellurium.readthedocs.io/en/latest/antimony.html", "_blank");
+                this.props.setActiveToolbarButton("");
+            } else if (item === "Help...") {
+                this.props.setShowDropdownToolbar(false);
+                if (this.props.setShowHelpPopup) {
+                    this.props.setShowHelpPopup(true);
+                }
+                this.props.setActiveToolbarButton("");
             } else {
                 if (typeof this.props.func === "function") {
                     this.props.func(item);
+                    this.props.setActiveToolbarButton("");
                 }
             }
         }
@@ -140,7 +161,6 @@ class DropdownContainers extends Component {
                 {withCheckboxes ? (
                     Object.keys(options).map((option) => (
                         <div key={option} style={{marginTop: '12px'}}>
-
                             <input
                                 type="checkbox"
                                 id={`checkbox-${option}`}

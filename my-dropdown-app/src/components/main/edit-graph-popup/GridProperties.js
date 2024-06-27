@@ -1,17 +1,46 @@
 import React, { useState } from 'react';
 import ColorPickerComponent from './ColorPickerComponent'; // Ensure you have this component or use a library like 'react-color'
 
-const GridProperties = ({ isDarkMode }) => {
-    const [xMajorGridColor, setXMajorGridColor] = useState('#000000');
-    const [yMajorGridColor, setYMajorGridColor] = useState('#000000');
-    const [xMajorGridWidth, setXMajorGridWidth] = useState(1);
-    const [yMajorGridWidth, setYMajorGridWidth] = useState(1);
-    const [xMajorGridCount, setXMajorGridCount] = useState(5);
-    const [yMajorGridCount, setYMajorGridCount] = useState(5);
+const GridProperties = ({
+    isDarkMode,
+    xGridColor,
+    setXGridColor,
+    yGridColor,
+    setYGridColor,
+    xGridWidth,
+    setXGridWidth,
+    yGridWidth,
+    setYGridWidth,
+    xGridCount,
+    setXGridCount,
+    yGridCount,
+    setYGridCount,
+    type,
+    setIsXGridOn,
+    setIsYGridOn
+    }) => {
 
     const handleGridWidthChange = (setter, value) => {
         setter(Math.max(1, value));
     };
+
+    // Functions to choose which grid is on
+    const handleNoGrid = () => {
+        setIsXGridOn(false);
+        setIsYGridOn(false);
+    }
+    const handleXGrid =() => {
+        setIsXGridOn(true);
+        setIsYGridOn(false);
+    }
+    const handleYGrid = () => {
+        setIsXGridOn(false);
+        setIsYGridOn(true);
+    }
+    const handleBothGrids = () => {
+        setIsXGridOn(true);
+        setIsYGridOn(true);
+    }
 
     // Function to change style for buttons
     const styleForButtonsInGridPanel = {
@@ -24,74 +53,74 @@ const GridProperties = ({ isDarkMode }) => {
     return (
         <>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src={`${process.env.PUBLIC_URL}/grid1.png`} alt="Grid Style 1" style={{ width: '50px', height: '50px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src={`${process.env.PUBLIC_URL}/grid2.png`} alt="Grid Style 2" style={{ width: '50px', height: '50px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src={`${process.env.PUBLIC_URL}/grid3.png`} alt="Grid Style 3" style={{ width: '50px', height: '50px' }} />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src={`${process.env.PUBLIC_URL}/grid4.png`} alt="Grid Style 4" style={{ width: '50px', height: '50px' }} />
-                </div>
+                <button onClick={handleNoGrid} style={{ background: 'none', border: 'none', padding: 0 }}>
+                    <img src={`${process.env.PUBLIC_URL}/grid1.png`} style={{ width: '50px', height: '50px' }} />
+                </button>
+                <button onClick={handleXGrid} style={{ background: 'none', border: 'none', padding: 0 }}>
+                    <img src={`${process.env.PUBLIC_URL}/grid2.png`} style={{ width: '50px', height: '50px' }} />
+                </button>
+                <button onClick={handleYGrid} style={{ background: 'none', border: 'none', padding: 0 }}>
+                    <img src={`${process.env.PUBLIC_URL}/grid3.png`} style={{ width: '50px', height: '50px' }} />
+                </button>
+                <button onClick={handleBothGrids} style={{ background: 'none', border: 'none', padding: 0 }}>
+                    <img src={`${process.env.PUBLIC_URL}/grid4.png`} style={{ width: '50px', height: '50px' }} />
+                </button>
             </div>
             <div>
-                <label style={{color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
-                    X Major Grid Color:
-                    <ColorPickerComponent color={xMajorGridColor} setColor={setXMajorGridColor} isDarkMode={isDarkMode} />
-                </label>
+                <span style={{color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
+                    X {type} Grid Color:
+                </span>
+                <ColorPickerComponent color={xGridColor} setColor={setXGridColor} isDarkMode={isDarkMode} />
             </div>
             <div>
-                <label style={{color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
-                    Y Major Grid Color:
-                    <ColorPickerComponent color={yMajorGridColor} setColor={setYMajorGridColor} isDarkMode={isDarkMode} />
-                </label>
+                <span style={{color: isDarkMode ? "white" : "black", fontSize: "12px"}}>
+                    Y {type} Grid Color:
+                </span>
+                <ColorPickerComponent color={yGridColor} setColor={setYGridColor} isDarkMode={isDarkMode} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center'}}>
-                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>X Major Grid Width:</label>
-                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setXMajorGridWidth, xMajorGridWidth - 1)}>-</button>
+                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>X {type} Grid Width:</label>
+                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setXGridWidth, xGridWidth - 1)}>-</button>
                 <input
                     type="number"
-                    value={xMajorGridWidth}
-                    onChange={(e) => setXMajorGridWidth(Number(e.target.value))}
+                    value={xGridWidth}
+                    onChange={(e) => setXGridWidth(Number(e.target.value))}
                     style={{ ...styleForButtonsInGridPanel, width: '50px', textAlign: 'center' }}
                 />
-                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setXMajorGridWidth, xMajorGridWidth + 1)}>+</button>
+                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setXGridWidth, xGridWidth + 1)}>+</button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center'}}>
-                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Y Major Grid Width:</label>
-                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setYMajorGridWidth, yMajorGridWidth - 1)}>-</button>
+                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Y {type} Grid Width:</label>
+                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setYGridWidth, yGridWidth - 1)}>-</button>
                 <input
                     type="number"
-                    value={yMajorGridWidth}
-                    onChange={(e) => setYMajorGridWidth(Number(e.target.value))}
+                    value={yGridWidth}
+                    onChange={(e) => setYGridWidth(Number(e.target.value))}
                     style={{ ...styleForButtonsInGridPanel, width: '50px', textAlign: 'center' }}
                 />
-                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setYMajorGridWidth, yMajorGridWidth + 1)}>+</button>
+                <button style={styleForButtonsInGridPanel} onClick={() => handleGridWidthChange(setYGridWidth, yGridWidth + 1)}>+</button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center'}}>
-                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Number of X Major Grids:</label>
-                <button style={styleForButtonsInGridPanel} onClick={() => setXMajorGridCount(Math.max(1, xMajorGridCount - 1))}>-</button>
+                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Number of X {type} Grids:</label>
+                <button style={styleForButtonsInGridPanel} onClick={() => setXGridCount(Math.max(1, xGridCount - 1))}>-</button>
                 <input
                     type="number"
-                    value={xMajorGridCount}
-                    onChange={(e) => setXMajorGridCount(Number(e.target.value))}
+                    value={xGridCount}
+                    onChange={(e) => setXGridCount(Number(e.target.value))}
                     style={{ ...styleForButtonsInGridPanel, width: '50px', textAlign: 'center' }}
                 />
-                <button style={styleForButtonsInGridPanel} onClick={() => setXMajorGridCount(xMajorGridCount + 1)}>+</button>
+                <button style={styleForButtonsInGridPanel} onClick={() => setXGridCount(xGridCount + 1)}>+</button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center'}}>
-                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Number of Y Major Grids:</label>
-                <button style={styleForButtonsInGridPanel} onClick={() => setYMajorGridCount(Math.max(1, yMajorGridCount - 1))}>-</button>
+                <label style={{ flex: 1, color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Number of Y {type} Grids:</label>
+                <button style={styleForButtonsInGridPanel} onClick={() => setYGridCount(Math.max(1, yGridCount - 1))}>-</button>
                 <input
                     type="number"
-                    value={yMajorGridCount}
-                    onChange={(e) => setYMajorGridCount(Number(e.target.value))}
+                    value={yGridCount}
+                    onChange={(e) => setYGridCount(Number(e.target.value))}
                     style={{ ...styleForButtonsInGridPanel, width: '50px', textAlign: 'center' }}
                 />
-                <button style={styleForButtonsInGridPanel} onClick={() => setYMajorGridCount(yMajorGridCount + 1)}>+</button>
+                <button style={styleForButtonsInGridPanel} onClick={() => setYGridCount(yGridCount + 1)}>+</button>
             </div>
         </>
     );
