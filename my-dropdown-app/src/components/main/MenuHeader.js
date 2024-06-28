@@ -250,10 +250,40 @@ const MenuHeader = (props) => {
                             border: "1px solid grey",
                             borderRadius: "8px",
                             width: "300px",
-                            height: "300px"
+                            height: "100px",
+                            position: "relative", // Ensure relative positioning for absolute positioning of text
+                            padding: "10px" // Add padding for text container
                         }}
                     >
-//
+                        <div
+                            style={{
+                                position: "absolute",
+                                top: "10px", // Adjust top positioning as needed
+                                left: "10px", // Adjust left positioning as needed
+                                color: isDarkMode ? "white" : "black",
+                                fontSize: "12px",
+                                lineHeight: "1.5"
+                            }}
+                        >
+                            There is no help at present. You are on your own...
+                            <br />
+                            Hint: Press the simulation button.
+                        </div>
+
+                        <button
+                            className="example-popup-buttons"
+                            style={{
+                                backgroundColor: isDarkMode ? "black" : "white",
+                                color: isDarkMode ? "white" : "black",
+                                border: "1px solid gray",
+                                position: "absolute",
+                                bottom: "10px", // Adjust bottom positioning as needed
+                                right: "10px", // Adjust right positioning as needed
+                            }}
+                            onClick={() => setShowHelpPopup(false)}
+                        >
+                            Close
+                        </button>
                     </div>
                 </div>
             )}

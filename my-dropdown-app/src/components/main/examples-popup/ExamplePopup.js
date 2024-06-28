@@ -35,7 +35,10 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
                 style={{
                     backgroundColor: isDarkMode ? "#2e2d2d" : "#fff",
                     border: "1px solid grey",
-                    borderRadius: "8px"
+                    borderRadius: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center" // Center align content horizontally
                 }}
             >
                 <div
@@ -48,10 +51,11 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
                         paddingLeft: "10px",
                         fontSize: "14px",
                         fontWeight: "bold",
-                        borderRadius: "8px"
+                        borderRadius: "8px",
+                        marginTop: "10px"
                     }}
                 >
-                    <span style={{ color: isDarkMode ? "white" : "black", fontSize: "12px", marginTop: "10px" }}>Examples</span>
+                    <span style={{ color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Examples</span>
                 </div>
                 <div
                     style={{
@@ -59,6 +63,7 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
                         width: "375px",
                         height: "380px",
                         marginTop: "15px",
+                        marginLeft: "4px",
                         border: "1px solid grey",
                         borderRadius: "8px",
                         overflowY: 'auto'
@@ -85,7 +90,8 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
                     style={{
                         backgroundColor: isDarkMode ? "black" : "white",
                         color: isDarkMode ? "white" : "black",
-                        border: "1px solid gray"
+                        border: "1px solid gray",
+                        marginTop: '5px',
                     }}
                     onClick={() => setShowExamplePopup(false)}>Close</button>
             </div>
