@@ -1,7 +1,7 @@
 # Web Iridium
 Web systems biology simulator
 
-To see the simulator try the link:
+To see the simulator try the link: https://sys-bio.github.io/SimBioUI/
 
 # Setting up Web Iridium (SimBioUI) Locally
 Web Iridium (SimBioUI) is a web-based systems biology simulator that allows users to simulate various biological systems. Follow these steps to set it up locally on your machine:
