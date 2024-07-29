@@ -194,17 +194,18 @@ class PlotGraph extends PureComponent {
                     }}
                 />
                 {this.props.isShowLegendChecked &&
-                <DraggableLegend
-                    data={this.props.data}
-                    selectedOptions={this.props.selectedOptions}
-                    colors={colors}
-                    isLegendFrameBorderOn={this.props.isLegendFrameBorderOn}
-                    legendFrameColor={this.props.legendFrameColor}
-                    legendFrameWidth={this.props.legendFrameWidth}
-                    legendFrameGap={this.props.legendFrameGap}
-                    legendFrameLineLength={this.props.legendFrameLineLength}
-                    legendFrameInteriorColor={this.props.legendFrameInteriorColor}
-                />
+                    <DraggableLegend
+                        data={this.props.data}
+                        selectedOptions={this.props.selectedOptions}
+                        colors={colors}
+                        isLegendFrameBorderOn={this.props.isLegendFrameBorderOn}
+                        legendFrameColor={this.props.legendFrameColor}
+                        legendFrameWidth={this.props.legendFrameWidth}
+                        legendFrameGap={this.props.legendFrameGap}
+                        legendFrameLineLength={this.props.legendFrameLineLength}
+                        legendFrameInteriorColor={this.props.legendFrameInteriorColor}
+                        rightPanelWidth={rightPanelWidth}
+                    />
                 }
             </div>
         );

@@ -1,4 +1,3 @@
-Châu Quỳnh Phan
 // This is a randomly generated model that
 // uses simple mass-action kinetics
 

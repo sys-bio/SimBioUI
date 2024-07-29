@@ -1,0 +1,47 @@
+.example-popup-top-container {
+    width: 375px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-top: 10px
+}
+.example-popup-options-container {
+    width: 375px;
+    height: 380px;
+    margin-top: 15px;
+    margin-left: 4px;
+    border: 1px solid grey;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+.example-popup-options {
+    cursor: pointer;
+    padding: 8px;
+    border-bottom: 1px solid grey;
+    font-size: 12px
+}
+.example-popup-buttons {
+    width: 60px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 12px;
+    border: 1px solid gray;
+    margin-top: 5px
+}
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Make sure it appears above other elements */
+}
+

@@ -1,32 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import "../../../styles/leftTopCorner/example-popup.css";
+import "./ExamplePopup.css";
 
 const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent }) => {
     const [files, setFiles] = useState([]);
-    const [selectedFile, setSelectedFile] = useState('');
-    const [fileContent, setFileContent] = useState('');
 
     useEffect(() => {
-        fetch('/files')
-            .then(response => response.json())
-            .then(data => setFiles(data))
-            .catch(error => console.error('Error fetching files:', error));
+        fetchFileList();
     }, []);
 
-    const handleFileClick = (fileName) => {
-        setSelectedFile(fileName);
-        fetch(`/file-content?name=${encodeURIComponent(fileName)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setFileContent(data.content);
-                updateActiveTabContent(data.content); // Call update immediately after setting file content
-            })
-            .catch(error => console.error('Error fetching file content:', error));
+    const fetchFileList = async () => {
+        try {
+            const response = await fetch('https://api.github.com/repos/sys-bio/SimBioUI/contents/my-dropdown-app/src/components/main/examples-popup/examples-models');
+            const data = await response.json();
+            const formattedFiles = data.map(file => ({
+                original: file.name,
+                formatted: formatFileName(file.name)
+            }));
+            setFiles(formattedFiles);
+        } catch (error) {
+            console.error('Error fetching files:', error);
+        }
+    };
+
+    const handleFileClick = async (fileName) => {
+        try {
+            const response = await fetch(`https://raw.githubusercontent.com/sys-bio/SimBioUI/main/my-dropdown-app/src/components/main/examples-popup/examples-models/${fileName}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const content = await response.text();
+            updateActiveTabContent(content); // Call update immediately after setting file content
+        } catch (error) {
+            console.error('Error fetching file content:', error);
+        }
+    };
+
+    const formatFileName = (fileName) => {
+        return fileName.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase()).replace(/\//g, ' / ');
     };
 
     return (
@@ -42,44 +52,27 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
                 }}
             >
                 <div
+                    className={"example-popup-top-container"}
                     style={{
-                        backgroundColor: isDarkMode ? "#2e2d2d" : "#fff",
-                        width: "375px",
-                        height: "15px",
-                        display: "flex",
-                        alignItems: "center",
-                        paddingLeft: "10px",
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                        borderRadius: "8px",
-                        marginTop: "10px"
+                        backgroundColor: isDarkMode ? "#2e2d2d" : "#fff"
                     }}
                 >
                     <span style={{ color: isDarkMode ? "white" : "black", fontSize: "12px"}}>Examples</span>
                 </div>
                 <div
+                    className={"example-popup-options-container"}
                     style={{
-                        backgroundColor: isDarkMode ? "black" : "white",
-                        width: "375px",
-                        height: "380px",
-                        marginTop: "15px",
-                        marginLeft: "4px",
-                        border: "1px solid grey",
-                        borderRadius: "8px",
-                        overflowY: 'auto'
+                        backgroundColor: isDarkMode ? "black" : "white"
                     }}
                 >
                     {files.map(file => (
                         <div
+                            className={"example-popup-options"}
                             key={file.original}
                             onClick={() => handleFileClick(file.original)}
                             style={{
-                                cursor: 'pointer',
-                                padding: '8px',
-                                borderBottom: '1px solid grey',
                                 color: isDarkMode ? "white" : "black",
-                                backgroundColor: isDarkMode ? "black" : "white",
-                                fontSize: "12px"
+                                backgroundColor: isDarkMode ? "black" : "white"
                             }}
                         >
                             {file.formatted.slice(0, -4)}
@@ -87,13 +80,11 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
                     ))}
                 </div>
                 <button className="example-popup-buttons"
-                    style={{
-                        backgroundColor: isDarkMode ? "black" : "white",
-                        color: isDarkMode ? "white" : "black",
-                        border: "1px solid gray",
-                        marginTop: '5px',
-                    }}
-                    onClick={() => setShowExamplePopup(false)}>Close</button>
+                        style={{
+                            backgroundColor: isDarkMode ? "black" : "white",
+                            color: isDarkMode ? "white" : "black"
+                        }}
+                        onClick={() => setShowExamplePopup(false)}>Close</button>
             </div>
         </div>
     );
