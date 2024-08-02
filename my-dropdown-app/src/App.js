@@ -189,6 +189,10 @@ export class App extends React.Component {
 
     // In App.js
     handleExportSBML = (antimonyContent) => {
+        if (typeof ant_wrap === 'undefined') {
+            alert("Run \"Simulation\" to export SBML")
+            return;
+        }
         if (antimonyContent.trim() !== "") {
             const result = ant_wrap.convertAntimonyToSBML(antimonyContent);
             if (result.isSuccess()) {

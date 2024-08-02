@@ -20,7 +20,8 @@ const MenuHeader = (props) => {
         promptForFileNameAndDownload,
         simulationParam,
         setSelectedParameter,
-        updateActiveTabContent
+        updateActiveTabContent,
+        setActiveAnalysisPanel
     } = props;
 
     const fileDropdownRef = useRef(null);
@@ -156,6 +157,8 @@ const MenuHeader = (props) => {
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-analysis"}
                         setShowDropdownToolbar={setShowDropdownToolbar}
                         setActiveToolbarButton={setActiveToolbarButton}
+                        setActiveAnalysisPanel={setActiveAnalysisPanel}
+                        activeToolbarButton={activeToolbarButton}
                     />
                 )}
             </div>

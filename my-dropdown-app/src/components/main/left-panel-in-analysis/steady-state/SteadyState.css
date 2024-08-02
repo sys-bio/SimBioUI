@@ -1,0 +1,28 @@
+.config-button {
+    margin-left: 13px;
+    font-size: 12px;
+}
+.compute-steady-state-button {
+    font-size: 12px;
+}
+
+/* SteadyState.css */
+.table-container {
+    max-height: 200px; /* Adjust the height as needed */
+    overflow-y: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    font-size: 12px;
+    padding: 8px;
+}
+
+.table td {
+    font-size: 12px;
+    padding: 8px;
+}

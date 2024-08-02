@@ -1,0 +1,44 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    padding: 0; /* Remove padding to manage specific padding for body and footer */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    width: 50%; /* Adjust as needed */
+    max-height: 50%; /* Adjust to fit within view height */
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.modal-body {
+    padding: 20px;
+    flex: 1; /* Allow this area to grow */
+    overflow-y: auto; /* Make this area scrollable */
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px 20px; /* Padding for the footer */
+}
+
+.copy-button, .close-button {
+    font-size: 12px;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: 10px;
+}

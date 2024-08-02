@@ -1,0 +1,50 @@
+.config-button {
+    margin-left: 13px;
+    font-size: 12px;
+}
+
+.simulate-style {
+    background-color: royalblue;
+    margin-left: 10px;
+    font-size: 12px;
+    white-space: normal; /* Allows text to wrap */
+    overflow: hidden; /* Prevents text from overflowing the button */
+    text-overflow: ellipsis; /* Adds an ellipsis if the text overflows (optional) */
+    word-wrap: break-word; /* Ensures words can be broken if needed to fit */
+    width: auto; /* Adjusts width to content up to max width */
+    max-width: 100%; /* Ensures button doesn't exceed its container */
+    padding: 8px 25px; /* Adjust padding as needed */
+    line-height: 1.2; /* Adjust line height to control spacing between wrapped lines */
+}
+
+.text-checkbox-input {
+    color: white;
+    font-size: 12px;
+    margin-top: 10px;
+    margin-left: 8px;
+}
+
+.x-axis-option-style {
+    padding: 2px 11px; /* Padding inside the button */
+    text-align: left; /* Center the text */
+    text-decoration: none; /* No underline on text */
+    display: inline-block; /* Button does not take full width */
+    font-size: 10px; /* Font size */
+    margin: 4px 2px; /* Margin around the button */
+    cursor: pointer; /* Cursor appears as a pointer on hover */
+    border-radius: 4px; /* Rounded corners */
+    width: 95%; /* Set a specific width */
+    height: 24px; /* Set a specific height */
+}
+
+.hide-left-subpanel-icon{
+    margin-top: 10px;
+    margin-left: 0px;
+}
+
+.select-and-unselect-all-style {
+    background-color: royalblue;
+    font-size: 10px;
+    overflow: hidden;
+    width: auto; /* Adjusts width to content up to max width */
+}

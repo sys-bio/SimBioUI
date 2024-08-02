@@ -13,7 +13,7 @@ import { useTabManager } from "../../hooks/useTabManager";
 
 import { MdClose } from "react-icons/md";
 import MenuHeader from "./MenuHeader";
-import LeftPanel from "./LeftPanel";
+import LeftPanel from "./left-panel-in-analysis/LeftPanel";
 import { getPanelStyles } from "../../utils/common";
 import { MIN_PANEL_WIDTH, BREAKPOINT_WIDTH, LEFT_PANEL_FIXED_WIDTH } from "../../constants/const";
 import RightPanel from "./RightPanel";
@@ -79,6 +79,10 @@ A = 10
     const [selectedParameter, setSelectedParameter] = useState("");
     const [layoutVertical, setLayoutVertical] = useState(window.innerWidth <= BREAKPOINT_WIDTH);
     const [isNewTabCreated, setIsNewTabCreated] = useState(false);
+    // Active Analysis Panel
+    const [activeAnalysisPanel, setActiveAnalysisPanel] = useState("Time Course Simulation");
+    // Show legend
+    const [isShowLegendChecked, setIsShowLegendChecked] = useState(true);
 
     const resetContent = () => {
         setSelectedOptions([]);
@@ -661,9 +665,12 @@ A = 10
     return (
         <div className={`main-container ${isDarkMode ? "dark-mode" : "bright-mode"}`}>
             <LeftPanel
+                // For general left panel
                 leftSubpanelStyle={leftSubpanelStyle}
                 panelWidth={panelWidth}
                 isDarkMode={isDarkMode}
+                activeAnalysisPanel={activeAnalysisPanel}
+                // For Time Course Simulation
                 handleLocalReset={handleLocalReset}
                 getContentOfActiveTab={getContentOfActiveTab}
                 onParametersChange={onParametersChange}
@@ -673,15 +680,19 @@ A = 10
                 handleTextChange={handleTextChange}
                 initialOptions={initialOptions}
                 setSelectedOptions={setSelectedOptions}
-                selectedOptions={selectedOptions}
+                selectedOptions={selectedOptions} // For Parameter Scan
                 set_xAxis_selected_option={set_xAxis_selected_option}
                 onCheckboxChange={onCheckboxChange}
                 additionalElements={additionalElements}
                 isNewFileUploaded={isNewFileUploaded}
                 setIsNewFileUploaded={setIsNewFileUploaded}
                 isNewTabCreated={isNewTabCreated}
-                setSelectedParameter={setSelectedParameter}
+                // For Steady State
+                data={data}
+                // For Parameter Scan
                 kOptions={kOptions}
+                isShowLegendChecked={isShowLegendChecked}
+                setIsShowLegendChecked={setIsShowLegendChecked}
             />
 
             <div
@@ -746,6 +757,8 @@ A = 10
                     isNewTabCreated={isNewTabCreated}
                     handleDownloadPDF={handleDownloadPDF}
                     simulationParam={simulationParam}
+                    isShowLegendChecked={isShowLegendChecked}
+                    setIsShowLegendChecked={setIsShowLegendChecked}
                 />
             </div>
 
@@ -766,6 +779,7 @@ A = 10
                 simulationParam={simulationParam}
                 setSelectedParameter={setSelectedParameter}
                 updateActiveTabContent={updateActiveTabContent}
+                setActiveAnalysisPanel={setActiveAnalysisPanel}
             />
         </div>
     );

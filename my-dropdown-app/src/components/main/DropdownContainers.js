@@ -58,25 +58,12 @@ class DropdownContainers extends Component {
         }
     };
 
-    exportSBMLFile = () => {
-        const filename = "exported_model.xml";
-        const content = this.props.SBMLContent;
-        if (!content) {
-            console.error("SBML content is empty or undefined.");
-            return;
-        }
-
-        const blob = new Blob([content], { type: "application/xml" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
     handleButtonClick = (item, isXAxis) => {
+        if(this.props.activeToolbarButton === 'Analysis') {
+            this.props.setActiveAnalysisPanel(item);
+            this.props.setActiveToolbarButton("");
+        }
+        // Handle X Axis dropdown to choose which parameter represents for x axis in graph
         if (isXAxis) {
             this.props.setSelectedXOption(item);
             this.props.onXOptionSelected(item);

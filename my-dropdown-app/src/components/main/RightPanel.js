@@ -23,7 +23,9 @@ const RightPanel = (props, ref) => {
         leftPanelWidth,
         isNewTabCreated,
         handleDownloadPDF,
-        simulationParam
+        simulationParam,
+        isShowLegendChecked,
+        setIsShowLegendChecked,
     } = props;
 
     const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
@@ -31,7 +33,6 @@ const RightPanel = (props, ref) => {
     // Checkboxes for graph
     const [isXAutoscaleChecked, setIsXAutoscaleChecked] = useState(false);
     const [isYAutoscaleChecked, setIsYAutoscaleChecked] = useState(false);
-    const [isShowLegendChecked, setIsShowLegendChecked] = useState(true);
 
     // When click on Edit Graph, there is a popup shown up
     const [showEditGraphPopup, setShowEditGraphPopup] = useState(false);
