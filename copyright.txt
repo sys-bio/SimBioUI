@@ -1,0 +1,3 @@
+About Web Iridium
+Version: 1.0.0
+Copyright: 2024

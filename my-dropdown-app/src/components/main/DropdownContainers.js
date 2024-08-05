@@ -22,7 +22,7 @@ class DropdownContainers extends Component {
 
     fetchAboutContent = async () => {
         try {
-            const response = await fetch("https://raw.githubusercontent.com/sys-bio/SimBioUI/main/copyright.txt");
+            const response = await fetch(`https://raw.githubusercontent.com/sys-bio/SimBioUI/main/copyright.txt`);
             if (!response.ok) throw new Error('Failed to fetch content');
             const text = await response.text();
             this.setState({ aboutContent: text });
