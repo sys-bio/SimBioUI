@@ -10,7 +10,7 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
 
     const fetchFileList = async () => {
         try {
-            const response = await fetch('https://api.github.com/repos/sys-bio/SimBioUI/contents/my-dropdown-app/src/components/main/examples-popup/examples-models');
+            const response = await fetch('https://api.github.com/repos/sys-bio/SimBioUI/contents/examples-models');
             const data = await response.json();
             const formattedFiles = data.map(file => ({
                 original: file.name,
@@ -24,7 +24,7 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
 
     const handleFileClick = async (fileName) => {
         try {
-            const response = await fetch(`https://raw.githubusercontent.com/sys-bio/SimBioUI/main/my-dropdown-app/src/components/main/examples-popup/examples-models/${fileName}`);
+            const response = await fetch(`https://raw.githubusercontent.com/sys-bio/SimBioUI/main/examples-models/${fileName}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }

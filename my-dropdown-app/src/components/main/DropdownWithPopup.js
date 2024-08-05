@@ -83,6 +83,7 @@ A = 10
     const [activeAnalysisPanel, setActiveAnalysisPanel] = useState("Time Course Simulation");
     // Show legend
     const [isShowLegendChecked, setIsShowLegendChecked] = useState(true);
+    const [graphColor, setGraphColor] = useState([]);
 
     const resetContent = () => {
         setSelectedOptions([]);
@@ -693,6 +694,7 @@ A = 10
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}
                 setIsShowLegendChecked={setIsShowLegendChecked}
+                setGraphColor={setGraphColor}
             />
 
             <div
@@ -759,6 +761,7 @@ A = 10
                     simulationParam={simulationParam}
                     isShowLegendChecked={isShowLegendChecked}
                     setIsShowLegendChecked={setIsShowLegendChecked}
+                    graphColor={graphColor}
                 />
             </div>
 

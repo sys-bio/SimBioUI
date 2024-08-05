@@ -26,6 +26,7 @@ const RightPanel = (props, ref) => {
         simulationParam,
         isShowLegendChecked,
         setIsShowLegendChecked,
+        graphColor
     } = props;
 
     const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
@@ -325,6 +326,7 @@ const RightPanel = (props, ref) => {
                     legendFrameGap={legendFrameGap}
                     legendFrameLineLength={legendFrameLineLength}
                     legendFrameInteriorColor={legendFrameInteriorColor}
+                    graphColor={graphColor}
                 />
                 <div>
                     <div

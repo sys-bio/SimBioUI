@@ -148,7 +148,7 @@ class TimeCourseSimulation extends Component {
                         <>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <FaBars
-                                    size="20"
+                                    size="15"
                                     color={isDarkMode ? "white" : "black"}
                                     onClick={() => handleIconClick("narrow")}
                                     style={{ marginRight: '10px' }}

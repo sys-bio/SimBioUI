@@ -2,6 +2,7 @@ import React from "react";
 import TimeCourseSimulation from "./time-course-simulation/TimeCourseSimulation";
 import SteadyState from "./steady-state/SteadyState";
 import ParameterScan from "./parameter-scan/ParameterScan";
+import RealTimeSimulation from "./realtime-simulation/RealTimeSimulation";
 
 const LeftPanel = (props) => {
     const {
@@ -32,6 +33,7 @@ const LeftPanel = (props) => {
         kOptions,
         isShowLegendChecked,
         setIsShowLegendChecked,
+        setGraphColor
     } = props;
 
     return (
@@ -80,6 +82,14 @@ const LeftPanel = (props) => {
                     isShowLegendChecked={isShowLegendChecked}
                     setIsShowLegendChecked={setIsShowLegendChecked}
                     getContentOfActiveTab={getContentOfActiveTab}
+                    onPaletteChange={(colors) => setGraphColor(colors)}
+                />
+            ) : activeAnalysisPanel === "Real-Time Simulation" ? (
+                <RealTimeSimulation
+                    leftSubpanelStyle={leftSubpanelStyle}
+                    panelWidth={panelWidth}
+                    isDarkMode={isDarkMode}
+                    handleIconClick={handleIconClick}
                 />
             ) : null}
         </>

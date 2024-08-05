@@ -28,6 +28,25 @@ const Checkbox = ({ isChecked, onChange, label, isDarkMode }) => (
     </div>
 );
 
+const colorPalettes = {
+    Default: [], // No specific colors for default
+    BlueRed: ["#0000FF", "#FF0000"],
+    RedGreen: ["#FF0000", "#00FF00"],
+    BlackWhite: ["#000000", "#FFFFFF"],
+    SunSet: ["#FF4500", "#FFD700"],
+    CosmicFusion: ["#800080", "#8A2BE2"],
+    Nepal: ["#7F7F7F", "#708090"],
+    AzurePop: ["#00FFFF", "#008080"],
+    GreenPale: ["#98FB98", "#32CD32"],
+    GreyShades: ["#A9A9A9", "#696969"],
+    Jupiter: ["#FF6347", "#FF4500"],
+    Sherbert: ["#FF69B4", "#FFB6C1"],
+    RedBlack: ["#FF0000", "#000000"],
+    Timber: ["#D2B48C", "#8B4513"],
+    OceanBlue: ["#1E90FF", "#4682B4"],
+    // Add other palettes here
+};
+
 class ParameterScan extends Component {
     constructor(props) {
         super(props);
@@ -47,7 +66,9 @@ class ParameterScan extends Component {
             timeStart: '0.0', // Initial time start
             timeEnd: '10.0', // Initial time end
             numPoints: '100', // Initial number of points
-            pythonContent: '' // To store the generated Python content
+            pythonContent: '', // To store the generated Python content
+            selectedPalette: 'Default', // Default selection
+            selectedPaletteColors: colorPalettes.Default, // Store the colors
         };
     }
 
@@ -91,6 +112,16 @@ class ParameterScan extends Component {
 
     handleShowLegendChange = (event) => {
         this.props.setIsShowLegendChecked(!this.props.isShowLegendChecked);
+    };
+
+    handlePaletteChange = (e) => {
+        const selectedPalette = e.target.value;
+        const selectedPaletteColors = colorPalettes[selectedPalette];
+        this.setState({
+            selectedPalette,
+            selectedPaletteColors,
+        });
+        this.props.onPaletteChange(selectedPaletteColors);
     };
 
     toggleModal = () => {
@@ -215,6 +246,27 @@ if showLegend:
         );
     };
 
+    renderColorPaletteDropdown = () => {
+        return (
+            <select
+                value={this.state.selectedPalette}
+                onChange={this.handlePaletteChange}
+                style={{
+                    ...generalStyle(this.props.isDarkMode, "black", "white", "gray", "black"),
+                    borderRadius: "4px",
+                    height: "25px",
+                    marginLeft: "10px",
+                }}
+            >
+                {Object.keys(colorPalettes).map((paletteName, index) => (
+                    <option key={index} value={paletteName}>
+                        {paletteName}
+                    </option>
+                ))}
+            </select>
+        );
+    };
+
     render() {
         const {
             isDarkMode,
@@ -247,12 +299,12 @@ if showLegend:
                 >
                     {panelWidth > MIN_PANEL_WIDTH ? (
                         <>
-                            <div style={{ display: "flex", alignItems: "center" }}>
+                            <div style={{display: "flex", alignItems: "center"}}>
                                 <FaBars
-                                    size="20"
+                                    size="15"
                                     color={isDarkMode ? "white" : "black"}
                                     onClick={() => handleIconClick("narrow")}
-                                    style={{ marginRight: "10px" }}
+                                    style={{marginRight: "10px"}}
                                 />
                                 <div
                                     style={{
@@ -264,7 +316,7 @@ if showLegend:
                                     Parameter Scan
                                 </div>
                             </div>
-                            <div style={{ marginTop: "10px" }}>
+                            <div style={{marginTop: "10px"}}>
                                 <button
                                     className={"text"}
                                     style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
@@ -280,7 +332,7 @@ if showLegend:
                             >
                                 {this.renderOptions(selectedOptions)}
                             </div>
-                            <div style={{ marginTop: "10px", display: "flex", justifyContent: "space-between" }}>
+                            <div style={{marginTop: "10px", display: "flex", justifyContent: "space-between"}}>
                                 <button
                                     className={"text"}
                                     style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
@@ -305,12 +357,12 @@ if showLegend:
                                     Scan Type
                                 </span>
                                 <div className={"circle-checkbox-container"}>
-                                    <div className={"large-circle-checkbox-container"} style={{ marginRight: "20px" }}>
+                                    <div className={"large-circle-checkbox-container"} style={{marginRight: "20px"}}>
                                         <div
                                             className="circle-checkbox"
                                             onClick={() => this.handleScanTypeCheckboxChange("timeCourse")}
                                         >
-                                            {isTimeCourse && <div className="circle-checkbox-tick" />}
+                                            {isTimeCourse && <div className="circle-checkbox-tick"/>}
                                         </div>
                                         <span className={"text"} style={generalStyle(isDarkMode)}>
                                             Time Course
@@ -321,7 +373,7 @@ if showLegend:
                                             className="circle-checkbox"
                                             onClick={() => this.handleScanTypeCheckboxChange("steadyState")}
                                         >
-                                            {isSteadyState && <div className="circle-checkbox-tick" />}
+                                            {isSteadyState && <div className="circle-checkbox-tick"/>}
                                         </div>
                                         <span className={"text"} style={generalStyle(isDarkMode)}>
                                             Steady State
@@ -368,7 +420,7 @@ if showLegend:
                                 >
                                     First Parameter
                                 </span>
-                                <div style={{ display: "flex", alignItems: "center", padding: "10px" }}>
+                                <div style={{display: "flex", alignItems: "center", padding: "10px"}}>
                                     <span
                                         className={"text"}
                                         style={generalStyle(isDarkMode, "", "", "#2e2d2d", "white")}
@@ -442,7 +494,7 @@ if showLegend:
                                 >
                                     Select Output
                                 </span>
-                                <div style={{ display: "flex" }}>
+                                <div style={{display: "flex"}}>
                                     <Checkbox
                                         isChecked={isPlotGraph}
                                         onChange={() => this.handleFirstParameterCheckboxChange("isPlotGraph")}
@@ -457,7 +509,7 @@ if showLegend:
                                     />
                                 </div>
                             </div>
-                            <div style={{ display: "flex" }}>
+                            <div style={{display: "flex"}}>
                                 <Checkbox
                                     isChecked={isShowLegendChecked}
                                     onChange={this.handleShowLegendChange}
@@ -474,6 +526,12 @@ if showLegend:
                                 >
                                     Generate Python
                                 </button>
+                            </div>
+                            <div style={{display: "flex", marginTop: "10px"}}>
+                                <span className={"text"} style={generalStyle(isDarkMode, "", "", "#2e2d2d", "white")}>
+                                    Color palette:
+                                </span>
+                                    {this.renderColorPaletteDropdown()}
                             </div>
                         </>
                     ) : (

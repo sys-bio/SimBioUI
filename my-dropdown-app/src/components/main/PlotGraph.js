@@ -10,6 +10,35 @@ class PlotGraph extends PureComponent {
         this.plotRef = React.createRef();
     }
 
+    hexToRgb = (hex) => {
+        const bigint = parseInt(hex.slice(1), 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+
+        return [r, g, b];
+    };
+
+    rgbToHex = (r, g, b) => {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    };
+
+    generateColorRange = (startColor, endColor, numColors) => {
+        const startRGB = this.hexToRgb(startColor);
+        const endRGB = this.hexToRgb(endColor);
+        const colorRange = [];
+
+        for (let i = 0; i < numColors; i++) {
+            const r = Math.round(startRGB[0] + ((endRGB[0] - startRGB[0]) * i) / (numColors - 1));
+            const g = Math.round(startRGB[1] + ((endRGB[1] - startRGB[1]) * i) / (numColors - 1));
+            const b = Math.round(startRGB[2] + ((endRGB[2] - startRGB[2]) * i) / (numColors - 1));
+
+            colorRange.push(this.rgbToHex(r, g, b));
+        }
+
+        return colorRange;
+    };
+
     downloadPDF = () => {
         const gd = this.plotRef.current.el;
         const { rightPanelWidth, rightPanelHeight } = this.props;
@@ -30,7 +59,7 @@ class PlotGraph extends PureComponent {
     };
 
     render() {
-        const { rightPanelWidth, rightPanelHeight, isXAutoscaleChecked, isYAutoscaleChecked, graphState } = this.props;
+        const { rightPanelWidth, rightPanelHeight, isXAutoscaleChecked, isYAutoscaleChecked, graphState, graphColor } = this.props;
         let indexOfX;
         let name_of_xAxis;
         if (this.props.data.titles !== undefined) {
@@ -42,12 +71,11 @@ class PlotGraph extends PureComponent {
                 name_of_xAxis = this.props.xAxis_selected_option;
             }
         }
-
         const baseFontSize = 12;
         const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
         const xValues = this.props.data.columns[indexOfX];
         const plotsCount = this.props.data.columns.length;
-        const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
+        const colors = graphColor.length > 0 ? this.generateColorRange(graphColor[0], graphColor[1], plotsCount) : ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
 
         const plotData = [];
         if (this.props.data.titles) {
