@@ -35,6 +35,8 @@ const MenuHeader = (props) => {
     const [showExamplePopup, setShowExamplePopup] = useState(false);
     const [showHelpPopup, setShowHelpPopup] = useState(false);
 
+    const[contentForPopup, setContentForPopup] = useState("");
+
     const { dropdownToolbarStyle, dropdownToolbarButtonsStyle, modeIcon, modeTooltip } = useMemo(() => {
         const dropdownToolbarStyle = {
             backgroundColor: isDarkMode ? "#1f1f1e" : "white",
@@ -236,6 +238,7 @@ const MenuHeader = (props) => {
                         setShowDropdownToolbar={setShowDropdownToolbar}
                         setActiveToolbarButton={setActiveToolbarButton}
                         setShowHelpPopup={setShowHelpPopup}
+                        setContentForPopup={setContentForPopup}
                     />
                 )}
             </div>
@@ -268,9 +271,7 @@ const MenuHeader = (props) => {
                                 lineHeight: "1.5"
                             }}
                         >
-                            There is no help at present. You are on your own...
-                            <br />
-                            Hint: Press the simulation button.
+                            {contentForPopup}
                         </div>
 
                         <button
@@ -283,7 +284,7 @@ const MenuHeader = (props) => {
                                 bottom: "10px", // Adjust bottom positioning as needed
                                 right: "10px", // Adjust right positioning as needed
                             }}
-                            onClick={() => setShowHelpPopup(false)}
+                            onClick={() => {setShowHelpPopup(false); setContentForPopup("")}}
                         >
                             Close
                         </button>
