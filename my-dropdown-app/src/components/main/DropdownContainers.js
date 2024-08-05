@@ -9,28 +9,10 @@ class DropdownContainers extends Component {
             showExportModal: false,
             customFilename: "exported_model.xml",
             fileInputAccept: "",
-            showAboutPopup: false,
-            aboutContent: "",
         };
         this.fileInputRef = React.createRef();
         this.handleButtonClick = this.handleButtonClick.bind(this);
     }
-
-    componentDidMount() {
-        this.fetchAboutContent();
-    }
-
-    fetchAboutContent = async () => {
-        try {
-            const response = await fetch(`https://raw.githubusercontent.com/sys-bio/SimBioUI/main/copyright.txt`);
-            if (!response.ok) throw new Error('Failed to fetch content');
-            const text = await response.text();
-            this.setState({ aboutContent: text });
-        } catch (error) {
-            console.error("Error fetching about content:", error);
-            this.setState({ aboutContent: "Error loading content." });
-        }
-    };
 
     toggleOptionSpecific = (optionValue) => {
         this.setState(
@@ -127,20 +109,17 @@ class DropdownContainers extends Component {
                 window.open("https://tellurium.readthedocs.io/en/latest/antimony.html", "_blank");
                 this.props.setActiveToolbarButton("");
             } else if (item === "Help...") {
-                const text = "There is no help at present. You are on your own...\nHint: Press the simulation button."
                 this.props.setShowDropdownToolbar(false);
                 if (this.props.setShowHelpPopup) {
                     this.props.setShowHelpPopup(true);
                 }
-                this.props.setContentForPopup(text);
                 this.props.setActiveToolbarButton("");
             } else if (item === "About Iridium") {
-                this.props.setShowDropdownToolbar(false);
-                if (this.props.setShowHelpPopup) {
-                    this.props.setShowHelpPopup(true);
-                }
-                this.props.setActiveToolbarButton("");
-            } else {
+                          // Open the About Iridium popup
+                          this.props.setShowDropdownToolbar(false);
+                          this.props.setShowAboutIridiumPopup(true);
+                          this.props.setActiveToolbarButton("");
+                      } else {
                 if (typeof this.props.func === "function") {
                     this.props.func(item);
                     this.props.setActiveToolbarButton("");
@@ -160,7 +139,7 @@ class DropdownContainers extends Component {
             withCheckboxes,
             dropdown_toolbar_buttons_style,
         } = this.props;
-        const { options, fileInputAccept, showAboutPopup, aboutContent } = this.state;
+        const { options, fileInputAccept } = this.state;
         return (
             <div
                 className={`${className} ${isDarkMode ? "custom-scrollbar-xyaxis-dropdown-dark-mode" : "custom-scrollbar-light-mode"}`}

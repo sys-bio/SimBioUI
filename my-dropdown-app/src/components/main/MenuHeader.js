@@ -1,8 +1,10 @@
+// Inside MenuHeader.js
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ANALYSIS_ITEM, EXAMPLE_ITEMS, FILE_ITEMS, HELP_ITEMS, OPTIONS_ITEMS } from "../../constants/const";
 import { FaMoon, FaSun } from "react-icons/fa";
 import DropdownContainers from "./DropdownContainers";
 import ExamplePopup from "./examples-popup/ExamplePopup";
+import AboutIridiumPopup from "./AboutIridiumPopup"; // Import the new popup
 
 const MenuHeader = (props) => {
     const {
@@ -34,8 +36,7 @@ const MenuHeader = (props) => {
     const [activeToolbarButton, setActiveToolbarButton] = useState("");
     const [showExamplePopup, setShowExamplePopup] = useState(false);
     const [showHelpPopup, setShowHelpPopup] = useState(false);
-
-    const[contentForPopup, setContentForPopup] = useState("");
+    const [showAboutIridiumPopup, setShowAboutIridiumPopup] = useState(false); // State for the new popup
 
     const { dropdownToolbarStyle, dropdownToolbarButtonsStyle, modeIcon, modeTooltip } = useMemo(() => {
         const dropdownToolbarStyle = {
@@ -238,7 +239,7 @@ const MenuHeader = (props) => {
                         setShowDropdownToolbar={setShowDropdownToolbar}
                         setActiveToolbarButton={setActiveToolbarButton}
                         setShowHelpPopup={setShowHelpPopup}
-                        setContentForPopup={setContentForPopup}
+                        setShowAboutIridiumPopup={setShowAboutIridiumPopup}
                     />
                 )}
             </div>
@@ -271,7 +272,9 @@ const MenuHeader = (props) => {
                                 lineHeight: "1.5"
                             }}
                         >
-                            {contentForPopup}
+                            There is no help at present. You are on your own...
+                            <br />
+                            Hint: Press the simulation button.
                         </div>
 
                         <button
@@ -284,12 +287,15 @@ const MenuHeader = (props) => {
                                 bottom: "10px", // Adjust bottom positioning as needed
                                 right: "10px", // Adjust right positioning as needed
                             }}
-                            onClick={() => {setShowHelpPopup(false); setContentForPopup("")}}
+                            onClick={() => setShowHelpPopup(false)}
                         >
                             Close
                         </button>
                     </div>
                 </div>
+            )}
+            {showAboutIridiumPopup && (
+                <AboutIridiumPopup isDarkMode={isDarkMode} setShowAboutIridiumPopup={setShowAboutIridiumPopup} />
             )}
         </div>
     );
