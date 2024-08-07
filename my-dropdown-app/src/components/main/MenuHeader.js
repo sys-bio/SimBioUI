@@ -4,7 +4,7 @@ import { ANALYSIS_ITEM, EXAMPLE_ITEMS, FILE_ITEMS, HELP_ITEMS, OPTIONS_ITEMS } f
 import { FaMoon, FaSun } from "react-icons/fa";
 import DropdownContainers from "./DropdownContainers";
 import ExamplePopup from "./examples-popup/ExamplePopup";
-import AboutIridiumPopup from "./AboutIridiumPopup"; // Import the new popup
+import AboutIridiumPopup from "./about-iridium-popup/AboutIridiumPopup"; // Import the new popup
 
 const MenuHeader = (props) => {
     const {

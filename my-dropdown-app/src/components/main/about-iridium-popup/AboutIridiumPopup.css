@@ -1,0 +1,62 @@
+.about-iridium-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Background for the overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.about-iridium-content {
+  background-color: var(--background-color);
+  border: 1px solid grey;
+  border-radius: 8px;
+  width: 400px;
+  max-height: 400px; /* Increased height for more content */
+  overflow-y: auto;
+  color: var(--text-color);
+  position: relative;
+  padding: 20px; /* Added padding for better content layout */
+}
+
+.about-iridium-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px; /* Spacing between title and content */
+}
+
+.about-iridium-text {
+  font-size: 12px;
+  white-space: pre-wrap; /* Preserve formatting for text content */
+  margin-bottom: 20px; /* Space above the button */
+}
+
+.about-iridium-popup-buttons {
+  background-color: var(--button-background);
+  color: var(--button-text-color);
+  border: 1px solid gray;
+  padding: 5px 10px;
+  position: absolute;
+  right: 20px;
+  bottom: 10px;
+}
+
+/* Variables for light mode */
+:root {
+  --background-color: #fff;
+  --text-color: black;
+  --button-background: white;
+  --button-text-color: black;
+}
+
+/* Override for dark mode */
+[data-theme='dark'] {
+  --background-color: #2e2d2d;
+  --text-color: white;
+  --button-background: black;
+  --button-text-color: white;
+}

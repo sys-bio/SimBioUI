@@ -11,7 +11,6 @@ class TimeCourseSimulation extends Component {
         this.state = {
             options: props.initialOptions,
             previousContent: "",
-            isChecked: true,
             selectedXOption: "Time",
             showDropdown: false,
             showXDropdown: false,
@@ -24,7 +23,7 @@ class TimeCourseSimulation extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.isNewTabCreated && !prevProps.isNewTabCreated) {
-            this.setState({ isChecked: true });
+            this.props.setIsResetInitialState(true);
         }
 
         if (this.props.initialOptions !== prevProps.initialOptions) {
@@ -50,15 +49,15 @@ class TimeCourseSimulation extends Component {
         const currentContent = this.props.getContentOfActiveTab();
         if (currentContent !== this.state.previousContent) {
             this.props.setSelectedOptions([]);
-            this.props.handleTextChange(currentContent, this.state.isChecked, true);
+            this.props.handleTextChange(currentContent, this.props.isResetInitialState, true);
             this.setState({ shouldUpdateSelectedOptions: true });
         } else {
             this.setState({ shouldUpdateSelectedOptions: false });
             if (this.props.isNewFileUploaded) {
-                this.props.handleTextChange(currentContent, this.state.isChecked, true);
+                this.props.handleTextChange(currentContent, this.props.isResetInitialState, true);
                 this.props.setIsNewFileUploaded(false);
             } else {
-                this.props.onCheckboxChange(this.state.isChecked);
+                this.props.onCheckboxChange(this.props.isResetInitialState);
             }
         }
         this.setState({ previousContent: currentContent });
@@ -66,7 +65,7 @@ class TimeCourseSimulation extends Component {
 
     resetInitialConditions = (e) => {
         const isChecked = e.target.checked;
-        this.setState({ isChecked });
+        this.props.setIsResetInitialState(isChecked);
         this.props.handleTextChange(this.props.getContentOfActiveTab(), !isChecked, false);
     };
 
@@ -132,8 +131,8 @@ class TimeCourseSimulation extends Component {
     };
 
     render() {
-        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, additionalElements } = this.props;
-        const { options, isChecked, selectedXOption, showDropdown, showXDropdown, showDropdownButtons, showMoreOptions, selectedElements } = this.state;
+        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, additionalElements, isResetInitialState } = this.props;
+        const { options, selectedXOption, showDropdown, showXDropdown, showDropdownButtons, showMoreOptions, selectedElements } = this.state;
 
         const dropdownXAxisButtonStyle = {
             backgroundColor: isDarkMode ? "#242323" : "white",
@@ -221,7 +220,7 @@ class TimeCourseSimulation extends Component {
                                 >
                                     <input
                                         className={"checkbox-input"}
-                                        checked={isChecked}
+                                        checked={isResetInitialState}
                                         type="checkbox"
                                         onChange={this.resetInitialConditions}
                                     />

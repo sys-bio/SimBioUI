@@ -27,8 +27,12 @@ const LeftPanel = (props) => {
         setIsNewFileUploaded,
         isNewTabCreated,
         activeAnalysisPanel,
+        setIsResetInitialState,
+        isResetInitialState,
         // For Steady State
         data,
+        computeSteadyState,
+        steadyState,
         // For Parameter Scan
         kOptions,
         isShowLegendChecked,
@@ -59,6 +63,8 @@ const LeftPanel = (props) => {
                     isNewFileUploaded={isNewFileUploaded}
                     setIsNewFileUploaded={setIsNewFileUploaded}
                     isNewTabCreated={isNewTabCreated}
+                    setIsResetInitialState={setIsResetInitialState}
+                    isResetInitialState={isResetInitialState}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState
@@ -68,6 +74,10 @@ const LeftPanel = (props) => {
                     handleIconClick={handleIconClick}
                     selectedOptions={selectedOptions}
                     data={data}
+                    computeSteadyState={computeSteadyState}
+                    steadyState={steadyState}
+                    getContentOfActiveTab={getContentOfActiveTab}
+                    isResetInitialState={isResetInitialState}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan

@@ -29,6 +29,7 @@ export class App extends React.Component {
             oldSBMLContent: "",
             kOptions: [],
             kValues: [],
+            steadyState: 0
         };
     }
     componentDidMount() {
@@ -72,6 +73,7 @@ export class App extends React.Component {
             console.error(`Error in loadCopasi: ${err.message}`);
         }
     };
+
     handleTextChange = (content, isChecked) => {
         if (!ant_wrap) {
             this.loadAntimonyLib(() => this.processTextChange(content, isChecked));
@@ -133,7 +135,7 @@ export class App extends React.Component {
                             titles: simResults.titles
                         },
                         initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
-                        oldSBMLContent: this.state.sbmlCode
+                        oldSBMLContent: this.state.sbmlCode,
                     });
                 }
             });
@@ -253,6 +255,41 @@ export class App extends React.Component {
         kOptions: [],
         kValues: [],})
     }
+computeSteadyState = () => {
+    if (ant_wrap) {
+        const parameters = this.state.simulationParameters;
+        const start = parameters.timeStart;
+        const end = parameters.timeEnd;
+        const points = parameters.numPoints;
+
+        // Reset the model to ensure it starts from initial conditions
+        this.state.copasi.reset();
+
+        // Set time course settings explicitly
+        this.state.copasi.timeCourseSettings = {
+            startTime: start,
+            endTime: end,
+            numPoints: points
+        };
+
+        const steadyStateValue = this.state.copasi.steadyState();
+
+        // Run the simulation from start to end
+        const simResults = JSON.parse(this.state.copasi.simulateEx(start, end, points));
+        console.log(simResults);
+
+        this.setState({
+            steadyState: steadyStateValue,
+            data: {
+                columns: simResults.columns,
+                titles: simResults.titles,
+            },
+        }); // Update the state with the new steadyState value
+    } else {
+        alert("Run Simulation to perform this feature");
+    }
+};
+
 
     render() {
         const simulationParameters = this.state;
@@ -296,6 +333,8 @@ export class App extends React.Component {
                     kValues={this.state.kValues}
                     handleResetParameters={this.handleResetParameters}
                     promptForFileNameAndDownload={this.promptForFileNameAndDownload}
+                    computeSteadyState={this.computeSteadyState}
+                    steadyState={this.state.steadyState}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>

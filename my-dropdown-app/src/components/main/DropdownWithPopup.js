@@ -37,6 +37,8 @@ const DropdownWithPopup = ({
     data,
     kOptions,
     kValues,
+    computeSteadyState,
+    steadyState
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -97,6 +99,7 @@ A = 10
         handleResetParameters();
         setIsNewTabCreated(true);
     };
+    const [isResetInitialState, setIsResetInitialState] = useState(true);
 
     // Use the custom hook for tab management
     const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab, getContentOfActiveTab, refreshCurrentTab } =
@@ -688,8 +691,12 @@ A = 10
                 isNewFileUploaded={isNewFileUploaded}
                 setIsNewFileUploaded={setIsNewFileUploaded}
                 isNewTabCreated={isNewTabCreated}
+                setIsResetInitialState={setIsResetInitialState}
+                isResetInitialState={isResetInitialState}
                 // For Steady State
                 data={data}
+                computeSteadyState={computeSteadyState}
+                steadyState={steadyState}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}

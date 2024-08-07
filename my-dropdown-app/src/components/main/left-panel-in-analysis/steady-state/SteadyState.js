@@ -37,7 +37,7 @@ class SteadyState extends Component {
                         const value = index !== -1 ? parseFloat(data.columns[index][0]).toFixed(8) : "N/A";
                         return (
                             <tr key={key}>
-                                <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{key}</td>
+                                <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>[{key}]</td>
                                 <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{value.toString()}</td>
                             </tr>
                         );
@@ -49,13 +49,14 @@ class SteadyState extends Component {
     }
 
     handleComputeClick = () => {
+        this.props.computeSteadyState();
         this.setState({ showData: true }, () => {
             sessionStorage.setItem('showData', 'true');
         });
     }
 
     render() {
-        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, selectedOptions } = this.props;
+        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, selectedOptions, steadyState } = this.props;
         const { showData } = this.state;
 
         return (
@@ -98,6 +99,9 @@ class SteadyState extends Component {
                                 >
                                     Compute the Steady-State
                                 </button>
+                            </div>
+                            <div style={{ marginTop: '10px', color: isDarkMode ? "white" : "black", fontSize: "12px" }}>
+                                {steadyState}
                             </div>
                             <div style={{ marginTop: '20px' }}>
                                 {this.renderTable(selectedOptions, "Symbol", "Value")}
