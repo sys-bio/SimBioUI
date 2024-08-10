@@ -58,8 +58,59 @@ class PlotGraph extends PureComponent {
         });
     };
 
+    resetLineColorMap = (titles) => {
+        const { paletteColor } = this.props;
+        const plotsCount = titles.length;
+        const colors = paletteColor.length > 0 ? this.generateColorRange(paletteColor[0], paletteColor[1], plotsCount) : ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
+
+        const newMap = {};
+        titles.forEach((title, index) => {
+            newMap[title] = colors[index % colors.length];
+        });
+
+        this.props.setLineColorMap(newMap);
+    };
+
+    resetLineWidthMap = (titles) => {
+        const newMap = {};
+        titles.forEach((title) => {
+            newMap[title] = 2;
+        });
+        this.props.setLineWidthMap(newMap);
+    }
+
+    resetLineStyleMap = (titles) => {
+        const newMap = {};
+        titles.forEach((title) => {
+            newMap[title] = 'solid';
+        });
+        this.props.setLineStyleMap(newMap);
+    }
+//    componentDidMount() {
+//        this.checkAndUpdateLineColorMap();
+//    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.data.titles !== this.props.data.titles) {
+            this.checkAndUpdateLineColorMap(false);
+        }
+        else if (prevProps.paletteColor != this.props.paletteColor) {
+            this.checkAndUpdateLineColorMap(true);
+        }
+    }
+
+    checkAndUpdateLineColorMap = (isPaletteChanged) => {
+        const currentTitles = this.props.data.titles || [];
+        this.resetLineColorMap(currentTitles);
+        if (!isPaletteChanged) {
+            this.resetLineWidthMap(currentTitles);
+            this.resetLineStyleMap(currentTitles);
+        }
+    };
+
     render() {
-        const { rightPanelWidth, rightPanelHeight, isXAutoscaleChecked, isYAutoscaleChecked, graphState, graphColor } = this.props;
+        const { rightPanelWidth, rightPanelHeight, isXAutoscaleChecked, isYAutoscaleChecked, graphState } = this.props;
+
         let indexOfX;
         let name_of_xAxis;
         if (this.props.data.titles !== undefined) {
@@ -75,9 +126,12 @@ class PlotGraph extends PureComponent {
         const dynamicFontSize = Math.max(baseFontSize, (rightPanelWidth / 500) * baseFontSize);
         const xValues = this.props.data.columns[indexOfX];
         const plotsCount = this.props.data.columns.length;
-        const colors = graphColor.length > 0 ? this.generateColorRange(graphColor[0], graphColor[1], plotsCount) : ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
 
         const plotData = [];
+        const lineColorMap = this.props.lineColorMap || {};
+        const lineWidthMap = this.props.lineWidthMap || {};
+        const lineStyleMap = this.props.lineStyleMap || {};
+
         if (this.props.data.titles) {
             for (let i = 0; i < plotsCount; i++) {
                 if (this.props.selectedOptions[this.props.data.titles[i]]) {
@@ -86,8 +140,11 @@ class PlotGraph extends PureComponent {
                         y: this.props.data.columns[i],
                         type: 'scatter',
                         mode: 'lines',
-                        marker: { color: colors[i % colors.length] },
-                        line: { width: 2 },
+                        marker: { color: lineColorMap[this.props.data.titles[i]] },
+                        line: {
+                            width: lineWidthMap[this.props.data.titles[i]],
+                            dash: lineStyleMap[this.props.data.titles[i]]
+                        },
                     });
                 }
             }
@@ -225,7 +282,7 @@ class PlotGraph extends PureComponent {
                     <DraggableLegend
                         data={this.props.data}
                         selectedOptions={this.props.selectedOptions}
-                        colors={colors}
+                        colors={Object.values(lineColorMap)}
                         isLegendFrameBorderOn={this.props.isLegendFrameBorderOn}
                         legendFrameColor={this.props.legendFrameColor}
                         legendFrameWidth={this.props.legendFrameWidth}

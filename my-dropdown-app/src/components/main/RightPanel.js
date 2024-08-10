@@ -5,6 +5,7 @@ import NumberInput from "./NumberInput";
 import GraphEditFeatures from "./edit-graph-popup/GraphEditFeatures";
 import AxesEditFeatures from "./edit-graph-popup/AxesEditFeatures";
 import GridEditFeatures from "./edit-graph-popup/GridEditFeatures";
+import SeriesEditFeatures from "./edit-graph-popup/series-edit-features/SeriesEditFeatures";
 import LegendEditFeatures from "./edit-graph-popup/LegendEditFeatures";
 import { INITIAL_GRAPH_STATE, colorOptions } from "../../constants/const";
 import "../../styles/rightSubPanel/right-subpanel-edit-graph.css";
@@ -19,6 +20,7 @@ const RightPanel = (props, ref) => {
         rightPanelWidth,
         data,
         selectedOptions,
+        setSelectedOptions,
         xAxis_selected_option,
         leftPanelWidth,
         isNewTabCreated,
@@ -26,7 +28,13 @@ const RightPanel = (props, ref) => {
         simulationParam,
         isShowLegendChecked,
         setIsShowLegendChecked,
-        graphColor
+        paletteColor,
+        setLineColorMap,
+        lineColorMap,
+        setLineWidthMap,
+        lineWidthMap,
+        setLineStyleMap,
+        lineStyleMap
     } = props;
 
     const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
@@ -326,7 +334,13 @@ const RightPanel = (props, ref) => {
                     legendFrameGap={legendFrameGap}
                     legendFrameLineLength={legendFrameLineLength}
                     legendFrameInteriorColor={legendFrameInteriorColor}
-                    graphColor={graphColor}
+                    paletteColor={paletteColor}
+                    setLineColorMap={setLineColorMap}
+                    lineColorMap={lineColorMap}
+                    setLineWidthMap={setLineWidthMap}
+                    lineWidthMap={lineWidthMap}
+                    setLineStyleMap={setLineStyleMap}
+                    lineStyleMap={lineStyleMap}
                 />
                 <div>
                     <div
@@ -629,6 +643,20 @@ const RightPanel = (props, ref) => {
                                 setYMinorGridCount={setYMinorGridCount}
                                 setIsXMinorGridOn={setIsXMinorGridOn}
                                 setIsYMinorGridOn={setIsYMinorGridOn}
+                            />
+                        )}
+                        {showSeriesButtonFeatures && (
+                            <SeriesEditFeatures
+                                isDarkMode={isDarkMode}
+                                selectedOptions={selectedOptions}
+                                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                                setSelectedOptions={setSelectedOptions}
+                                lineColorMap={lineColorMap}
+                                setLineColorMap={setLineColorMap}
+                                setLineWidthMap={setLineWidthMap}
+                                lineWidthMap={lineWidthMap}
+                                setLineStyleMap={setLineStyleMap}
+                                lineStyleMap={lineStyleMap}
                             />
                         )}
                         {showLegendButtonFeatures && (

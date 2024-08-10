@@ -255,40 +255,39 @@ export class App extends React.Component {
         kOptions: [],
         kValues: [],})
     }
-computeSteadyState = () => {
-    if (ant_wrap) {
-        const parameters = this.state.simulationParameters;
-        const start = parameters.timeStart;
-        const end = parameters.timeEnd;
-        const points = parameters.numPoints;
+    computeSteadyState = () => {
+        if (ant_wrap) {
+            const parameters = this.state.simulationParameters;
+            const start = parameters.timeStart;
+            const end = parameters.timeEnd;
+            const points = parameters.numPoints;
 
-        // Reset the model to ensure it starts from initial conditions
-        this.state.copasi.reset();
+            // Reset the model to ensure it starts from initial conditions
+            this.state.copasi.reset();
 
-        // Set time course settings explicitly
-        this.state.copasi.timeCourseSettings = {
-            startTime: start,
-            endTime: end,
-            numPoints: points
-        };
+            // Set time course settings explicitly
+            this.state.copasi.timeCourseSettings = {
+                startTime: start,
+                endTime: end,
+                numPoints: points
+            };
 
-        const steadyStateValue = this.state.copasi.steadyState();
+            const steadyStateValue = this.state.copasi.steadyState();
 
-        // Run the simulation from start to end
-        const simResults = JSON.parse(this.state.copasi.simulateEx(start, end, points));
-        console.log(simResults);
+            // Run the simulation from start to end
+            const simResults = JSON.parse(this.state.copasi.simulateEx(start, end, points));
 
-        this.setState({
-            steadyState: steadyStateValue,
-            data: {
-                columns: simResults.columns,
-                titles: simResults.titles,
-            },
-        }); // Update the state with the new steadyState value
-    } else {
-        alert("Run Simulation to perform this feature");
-    }
-};
+            this.setState({
+                steadyState: steadyStateValue,
+                data: {
+                    columns: simResults.columns,
+                    titles: simResults.titles,
+                },
+            }); // Update the state with the new steadyState value
+        } else {
+            alert("Run Simulation to perform this feature");
+        }
+    };
 
 
     render() {

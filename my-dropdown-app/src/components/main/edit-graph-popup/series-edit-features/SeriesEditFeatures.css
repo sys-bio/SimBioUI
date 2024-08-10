@@ -1,0 +1,59 @@
+/* SeriesEditFeatures.css */
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    width: 750px;
+    margin-top: 12px;
+}
+
+.keyContainer {
+    width: 150px;
+    height: 300px;
+    overflow-y: auto;
+    margin-right: 12px;
+}
+
+.keyItem {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.keyButton {
+    width: 97%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 12px;
+}
+.label-for-checkbox {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    padding-left: 25px;
+    font-size: 12px
+}
+.line-color-container {
+    margin-top: 10px;
+    margin-left: 3px
+}
+.line-adjustment-container{
+    width: 300px;
+    height: 150px;
+    marginTop: 10px;
+    marginLeft: 30px
+}
+.line-thickness-container {
+    width: 100%;
+    margin-top: 5%;
+    display: flex;
+    align-items: center
+}
+.dropdown-line-style-container {
+    border-radius: 4px;
+    height: 25px;
+}

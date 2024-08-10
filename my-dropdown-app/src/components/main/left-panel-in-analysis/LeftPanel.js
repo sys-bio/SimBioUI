@@ -37,7 +37,7 @@ const LeftPanel = (props) => {
         kOptions,
         isShowLegendChecked,
         setIsShowLegendChecked,
-        setGraphColor
+        setPaletteColor
     } = props;
 
     return (
@@ -92,7 +92,7 @@ const LeftPanel = (props) => {
                     isShowLegendChecked={isShowLegendChecked}
                     setIsShowLegendChecked={setIsShowLegendChecked}
                     getContentOfActiveTab={getContentOfActiveTab}
-                    onPaletteChange={(colors) => setGraphColor(colors)}
+                    onPaletteChange={(colors) => setPaletteColor(colors)}
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation

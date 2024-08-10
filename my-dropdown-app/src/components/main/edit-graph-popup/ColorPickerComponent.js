@@ -1,3 +1,4 @@
+// ColorPickerComponent.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { SketchPicker } from 'react-color';
 
@@ -52,7 +53,7 @@ const ColorPickerComponent = ({ color, setColor, isDarkMode }) => {
                 <div ref={pickerRef} style={{ position: 'absolute', zIndex: 1 }}>
                     <SketchPicker
                         color={color}
-                        onChange={(color) => setColor(color.hex)}
+                        onChange={(color) => setColor(color.hex)} // Notify parent about color change
                         styles={{
                             default: {
                                 picker: {

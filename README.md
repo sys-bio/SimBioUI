@@ -36,4 +36,9 @@ This command will compile the code and start a local development server. The Web
 
 You're now ready to explore and use the Web Iridium (SimBioUI) simulator on your local machine!
 
+5. Add More Examples
+If you want to add more examples to the Web Iridium (SimBioUI) simulator, you can do so by placing them in the examples-models directory within the repository. Ensure that the name of each example is formatted with a hyphen, such as "example-name". This format helps in organizing and identifying examples easily.
+6. Change Copyright Information
+If you want to change the copyright information for Web Iridium (SimBioUI), you can add or modify the relevant details in the copyright.txt file located in the project directory.
+
 

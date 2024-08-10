@@ -85,7 +85,11 @@ A = 10
     const [activeAnalysisPanel, setActiveAnalysisPanel] = useState("Time Course Simulation");
     // Show legend
     const [isShowLegendChecked, setIsShowLegendChecked] = useState(true);
-    const [graphColor, setGraphColor] = useState([]);
+    const [paletteColor, setPaletteColor] = useState([]);
+    // Create map of colors, key is parameter, and value is color
+    const [lineColorMap, setLineColorMap] = useState({});
+    const [lineWidthMap, setLineWidthMap] = useState({});
+    const [lineStyleMap, setLineStyleMap] = useState({});
 
     const resetContent = () => {
         setSelectedOptions([]);
@@ -701,7 +705,7 @@ A = 10
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}
                 setIsShowLegendChecked={setIsShowLegendChecked}
-                setGraphColor={setGraphColor}
+                setPaletteColor={setPaletteColor}
             />
 
             <div
@@ -762,13 +766,20 @@ A = 10
                     rightPanelWidth={rightPanelWidth}
                     data={data}
                     selectedOptions={selectedOptions}
+                    setSelectedOptions={setSelectedOptions}
                     xAxis_selected_option={xAxis_selected_option}
                     isNewTabCreated={isNewTabCreated}
                     handleDownloadPDF={handleDownloadPDF}
                     simulationParam={simulationParam}
                     isShowLegendChecked={isShowLegendChecked}
                     setIsShowLegendChecked={setIsShowLegendChecked}
-                    graphColor={graphColor}
+                    paletteColor={paletteColor}
+                    setLineColorMap={setLineColorMap}
+                    lineColorMap={lineColorMap}
+                    setLineWidthMap={setLineWidthMap}
+                    lineWidthMap={lineWidthMap}
+                    setLineStyleMap={setLineStyleMap}
+                    lineStyleMap={lineStyleMap}
                 />
             </div>
 
