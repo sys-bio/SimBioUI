@@ -371,7 +371,7 @@ class COPASI {
      * @property {object} jacobian the jacobian as object
      */
     get jacobian() {
-        return JSON.parse(this.Module.getJacbian());
+        return JSON.parse(this.Module.getJacobian());
     }
 
     /**

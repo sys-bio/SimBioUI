@@ -38,7 +38,8 @@ const DropdownWithPopup = ({
     kOptions,
     kValues,
     computeSteadyState,
-    steadyState
+    steadyState,
+    eigenValues
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -701,6 +702,7 @@ A = 10
                 data={data}
                 computeSteadyState={computeSteadyState}
                 steadyState={steadyState}
+                eigenValues={eigenValues}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}

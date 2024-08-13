@@ -7,7 +7,8 @@ class SteadyState extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showData: sessionStorage.getItem('showData') === 'true' || false
+            showData: sessionStorage.getItem('showData') === 'true' || false,
+            isSteadyStateComputed: sessionStorage.getItem('isSteadyStateComputed') === 'true' || false
         };
     }
 
@@ -17,10 +18,16 @@ class SteadyState extends Component {
         border: isDarkMode ? "1px solid gray" : "1px solid black"
     });
 
-    renderTable = (options, label_of_first_column, label_of_second_columns) => {
+    renderTable = (dataSource, label_of_first_column, label_of_second_columns, isEigenvalues) => {
         const { data, isDarkMode } = this.props;
         const { showData } = this.state;
-        const filteredOptions = Object.entries(options).filter(([key, value]) => value === true);
+        let filteredOptions;
+
+        if (isEigenvalues) {
+            filteredOptions = dataSource;
+        } else {
+            filteredOptions = Object.entries(dataSource).filter(([key, value]) => value === true);
+        }
 
         return (
             <div className={`table-container ${isDarkMode ? "custom-scrollbar-xyaxis-dropdown-dark-mode" : "custom-scrollbar-light-mode"}`}>
@@ -32,16 +39,31 @@ class SteadyState extends Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {showData && filteredOptions.map(([key]) => {
-                        const index = data.titles.indexOf(key);
-                        const value = index !== -1 ? parseFloat(data.columns[index][0]).toFixed(8) : "N/A";
-                        return (
-                            <tr key={key}>
-                                <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>[{key}]</td>
-                                <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{value.toString()}</td>
-                            </tr>
-                        );
-                    })}
+                    {showData && (filteredOptions.length > 0 ? filteredOptions.map((item, index) => {
+                        if (isEigenvalues) {
+                            const [real, imaginary] = item;
+                            return (
+                                <tr key={index}>
+                                    <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{real.toFixed(6)}</td>
+                                    <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{imaginary.toFixed(6)}</td>
+                                </tr>
+                            );
+                        } else {
+                            const [key] = item;
+                            const index = data.titles.indexOf(key);
+                            const value = index !== -1 ? parseFloat(data.columns[index][0]).toFixed(8) : "N/A";
+                            return (
+                                <tr key={key}>
+                                    <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>[{key}]</td>
+                                    <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{value.toString()}</td>
+                                </tr>
+                            );
+                        }
+                    }) : (
+                        <tr>
+                            <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")} colSpan="2">No Data Available</td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
             </div>
@@ -50,14 +72,18 @@ class SteadyState extends Component {
 
     handleComputeClick = () => {
         this.props.computeSteadyState();
-        this.setState({ showData: true }, () => {
+        this.setState({
+            showData: true,
+            isSteadyStateComputed: true
+        }, () => {
             sessionStorage.setItem('showData', 'true');
+            sessionStorage.setItem('isSteadyStateComputed', 'true');
         });
     }
 
     render() {
-        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, selectedOptions, steadyState } = this.props;
-        const { showData } = this.state;
+        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, selectedOptions, steadyState, eigenValues } = this.props;
+        const { showData, isSteadyStateComputed } = this.state;
 
         return (
             <>
@@ -103,13 +129,17 @@ class SteadyState extends Component {
                             <div style={{ marginTop: '10px', color: isDarkMode ? "white" : "black", fontSize: "12px" }}>
                                 {steadyState}
                             </div>
-                            <div style={{ marginTop: '20px' }}>
-                                {this.renderTable(selectedOptions, "Symbol", "Value")}
-                            </div>
-                            <div style={{ marginTop: '20px' }}>
-                                <h3 style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Eigenvalues:</h3>
-                                {this.renderTable(selectedOptions, "Real", "Imaginary")}
-                            </div>
+                            {isSteadyStateComputed && (
+                                <>
+                                    <div style={{ marginTop: '20px' }}>
+                                        {this.renderTable(selectedOptions, "Symbol", "Value", false)}
+                                    </div>
+                                    <div style={{ marginTop: '20px' }}>
+                                        <h3 style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Eigenvalues:</h3>
+                                        {this.renderTable(eigenValues, "Real", "Imaginary", true)}
+                                    </div>
+                                </>
+                            )}
                         </>
                     ) : (
                         <div>

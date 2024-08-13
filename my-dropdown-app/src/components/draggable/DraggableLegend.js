@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
 function DraggableLegend({
-                             data,
-                             selectedOptions,
-                             colors,
-                             isLegendFrameBorderOn,
-                             legendFrameColor,
-                             legendFrameWidth,
-                             legendFrameGap,
-                             legendFrameLineLength,
-                             legendFrameInteriorColor,
-                             rightPanelWidth
-                         }) {
+         data,
+         selectedOptions,
+         colors,
+         isLegendFrameBorderOn,
+         legendFrameColor,
+         legendFrameWidth,
+         legendFrameGap,
+         legendFrameLineLength,
+         legendFrameInteriorColor,
+         rightPanelWidth
+     }) {
     const [position, setPosition] = useState({ x: rightPanelWidth - 200, y: 50 });
     const [dragging, setDragging] = useState(false);
     const [relPos, setRelPos] = useState({ x: 0, y: 0 });
@@ -44,9 +44,9 @@ function DraggableLegend({
     };
 
     // Generate legend items based on plot data
-    const legendItems = data.titles.map((title, index) => {
-        if (selectedOptions[title]) {
-            const color = colors[index % colors.length]
+    const legendItems = (data.titles || []).map((title, index) => {
+        if (selectedOptions && selectedOptions[title]) {
+            const color = colors[index % colors.length];
             return (
                 <div key={index} style={{ fontSize: '12px', color: '#333', padding: '5px', display: 'flex', alignItems: 'center' }}>
                     <div style={{ width: `${legendFrameLineLength}px`, height: '2px', backgroundColor: color, marginRight: '7px' }}></div>

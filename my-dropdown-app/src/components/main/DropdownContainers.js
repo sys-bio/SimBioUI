@@ -115,11 +115,11 @@ class DropdownContainers extends Component {
                 }
                 this.props.setActiveToolbarButton("");
             } else if (item === "About Iridium") {
-                          // Open the About Iridium popup
-                          this.props.setShowDropdownToolbar(false);
-                          this.props.setShowAboutIridiumPopup(true);
-                          this.props.setActiveToolbarButton("");
-                      } else {
+                // Open the About Iridium popup
+                this.props.setShowDropdownToolbar(false);
+                this.props.setShowAboutIridiumPopup(true);
+                this.props.setActiveToolbarButton("");
+            } else {
                 if (typeof this.props.func === "function") {
                     this.props.func(item);
                     this.props.setActiveToolbarButton("");

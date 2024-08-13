@@ -3,6 +3,7 @@ import TimeCourseSimulation from "./time-course-simulation/TimeCourseSimulation"
 import SteadyState from "./steady-state/SteadyState";
 import ParameterScan from "./parameter-scan/ParameterScan";
 import RealTimeSimulation from "./realtime-simulation/RealTimeSimulation";
+import StructureAnalysis from "./structure-analysis/StructureAnalysis";
 
 const LeftPanel = (props) => {
     const {
@@ -33,6 +34,7 @@ const LeftPanel = (props) => {
         data,
         computeSteadyState,
         steadyState,
+        eigenValues,
         // For Parameter Scan
         kOptions,
         isShowLegendChecked,
@@ -78,6 +80,7 @@ const LeftPanel = (props) => {
                     steadyState={steadyState}
                     getContentOfActiveTab={getContentOfActiveTab}
                     isResetInitialState={isResetInitialState}
+                    eigenValues={eigenValues}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan
@@ -96,6 +99,13 @@ const LeftPanel = (props) => {
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation
+                    leftSubpanelStyle={leftSubpanelStyle}
+                    panelWidth={panelWidth}
+                    isDarkMode={isDarkMode}
+                    handleIconClick={handleIconClick}
+                />
+            ) : activeAnalysisPanel === "Structure Analysis" ? (
+                <StructureAnalysis
                     leftSubpanelStyle={leftSubpanelStyle}
                     panelWidth={panelWidth}
                     isDarkMode={isDarkMode}

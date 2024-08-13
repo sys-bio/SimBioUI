@@ -29,7 +29,8 @@ export class App extends React.Component {
             oldSBMLContent: "",
             kOptions: [],
             kValues: [],
-            steadyState: 0
+            steadyState: 0,
+            eigenValues: []
         };
     }
     componentDidMount() {
@@ -275,7 +276,30 @@ export class App extends React.Component {
             const steadyStateValue = this.state.copasi.steadyState();
 
             // Run the simulation from start to end
-            const simResults = JSON.parse(this.state.copasi.simulateEx(start, end, points));
+            const simResults = this.state.copasi.simulateEx(start, end, points);
+
+            if (typeof simResults === 'string') {
+                // If it's a string, we assume it's JSON
+                const parsedResults = JSON.parse(simResults);
+                this.setState({
+                    steadyState: steadyStateValue,
+                    data: {
+                        columns: parsedResults.columns,
+                        titles: parsedResults.titles,
+                    },
+                });
+            } else {
+                // If it's an object, use it directly
+                this.setState({
+                    steadyState: steadyStateValue,
+                    data: {
+                        columns: simResults.columns,
+                        titles: simResults.titles,
+                    },
+                });
+            }
+
+            const eigenValuesRes = this.state.copasi.eigenValues2D;
 
             this.setState({
                 steadyState: steadyStateValue,
@@ -283,6 +307,7 @@ export class App extends React.Component {
                     columns: simResults.columns,
                     titles: simResults.titles,
                 },
+                eigenValues: eigenValuesRes
             }); // Update the state with the new steadyState value
         } else {
             alert("Run Simulation to perform this feature");
@@ -334,6 +359,7 @@ export class App extends React.Component {
                     promptForFileNameAndDownload={this.promptForFileNameAndDownload}
                     computeSteadyState={this.computeSteadyState}
                     steadyState={this.state.steadyState}
+                    eigenValues={this.state.eigenValues}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>
