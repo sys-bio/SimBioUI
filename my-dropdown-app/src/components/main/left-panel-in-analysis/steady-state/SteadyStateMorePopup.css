@@ -1,0 +1,135 @@
+/* General popup styling */
+.steady-state-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.steady-state-popup-content {
+    width: 700px;
+    height: 400px;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+}
+
+.steady-state-popup-buttons-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.steady-state-popup-buttons {
+    width: 150px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.steady-state-popup-text-container {
+    display: flex;
+    align-items: flex-start; /* Align items to the top */
+    font-size: 12px;
+    width: 100%;
+}
+
+.steady-state-popup-left {
+    display: flex;
+    flex-direction: column; /* Stack row and columns vertically */
+    align-items: flex-start;
+    margin-right: 10px; /* Add some space between the left section and df(x)/dx */
+}
+
+.steady-state-popup-row,
+.steady-state-popup-columns {
+    margin-bottom: 5px; /* Add some space between row and columns */
+}
+
+.steady-state-popup-df {
+    align-self: flex-start;
+    margin-left: 10px; /* Add spacing to control the exact position next to the left section */
+}
+
+.steady-state-popup-content-area {
+    flex: 1;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+}
+
+.steady-state-popup-jacobian-table-container {
+    width: 100%;
+    overflow: auto;
+    flex: 1;
+}
+
+.steady-state-popup-bottom {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.steady-state-popup-close-button {
+    width: 100px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #f44336;
+    color: white;
+    border: none;
+}
+
+/* Table styling */
+.jacobian-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.jacobian-table th,
+.jacobian-table td {
+    text-align: center;
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+}
+
+.jacobian-table th {
+    background-color: inherit;
+    position: sticky;
+}
+
+.jacobian-table td:first-child {
+    position: sticky;
+    background-color: inherit;
+    z-index: 1;
+}
+
+.jacobian-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+.custom-tooltip {
+    position: fixed;
+    padding: 5px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1001;
+    white-space: nowrap;
+    white-space: pre-line;
+    text-align: left
+}

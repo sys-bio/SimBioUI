@@ -39,7 +39,8 @@ const DropdownWithPopup = ({
     kValues,
     computeSteadyState,
     steadyState,
-    eigenValues
+    eigenValues,
+    jacobian
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -82,6 +83,7 @@ A = 10
     const [selectedParameter, setSelectedParameter] = useState("");
     const [layoutVertical, setLayoutVertical] = useState(window.innerWidth <= BREAKPOINT_WIDTH);
     const [isNewTabCreated, setIsNewTabCreated] = useState(false);
+
     // Active Analysis Panel
     const [activeAnalysisPanel, setActiveAnalysisPanel] = useState("Time Course Simulation");
     // Show legend
@@ -331,6 +333,11 @@ A = 10
         }
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        // You can implement additional search logic here if needed
+    };
+
     const renderActiveTabContent = () => {
         const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
@@ -350,6 +357,7 @@ A = 10
                             marginLeft: "10px",
                         }}
                     >
+
                         <textarea
                             className={isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode"}
                             style={{
@@ -616,6 +624,7 @@ A = 10
                             marginLeft: "10px",
                         }}
                     >
+
                         <textarea
                             style={{
                                 fontSize: `${sizeOfInput}px`,
@@ -703,6 +712,7 @@ A = 10
                 computeSteadyState={computeSteadyState}
                 steadyState={steadyState}
                 eigenValues={eigenValues}
+                jacobian={jacobian}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}

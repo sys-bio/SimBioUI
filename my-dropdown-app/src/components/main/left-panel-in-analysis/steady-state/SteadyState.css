@@ -26,3 +26,18 @@
     font-size: 12px;
     padding: 8px;
 }
+.more-info-button {
+    width: 80px;
+    background-color: #007bff; /* A blue color for the button */
+    color: white; /* White text */
+    border: none; /* Remove the default border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 12px; /* Font size */
+    transition: background-color 0.3s ease; /* Smooth transition for background color change */
+}
+
+.more-info-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+

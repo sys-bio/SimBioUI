@@ -2,13 +2,15 @@ import React, { Component } from "react";
 import { MIN_PANEL_WIDTH } from "../../../../constants/const";
 import { FaBars } from "react-icons/fa";
 import "./SteadyState.css";
+import SteadyStateMorePopup from "./SteadyStateMorePopup"; // Import the new popup component
 
 class SteadyState extends Component {
     constructor(props) {
         super(props);
         this.state = {
             showData: sessionStorage.getItem('showData') === 'true' || false,
-            isSteadyStateComputed: sessionStorage.getItem('isSteadyStateComputed') === 'true' || false
+            isSteadyStateComputed: sessionStorage.getItem('isSteadyStateComputed') === 'true' || false,
+            showMorePopup: false // State to control the visibility of the More popup
         };
     }
 
@@ -17,6 +19,29 @@ class SteadyState extends Component {
         color: isDarkMode ? "white" : "black",
         border: isDarkMode ? "1px solid gray" : "1px solid black"
     });
+
+    handleComputeClick = () => {
+        this.props.computeSteadyState();
+        this.setState({
+            showData: true,
+            isSteadyStateComputed: true
+        }, () => {
+            sessionStorage.setItem('showData', 'true');
+            sessionStorage.setItem('isSteadyStateComputed', 'true');
+        });
+    }
+
+    handleShowMoreClick = () => {
+        if (this.props.jacobian.length === 0) {
+            alert("Compute Steady State to show more information")
+        } else {
+            this.setState({ showMorePopup: true });
+        }
+    }
+
+    handleCloseMorePopup = () => {
+        this.setState({ showMorePopup: false });
+    }
 
     renderTable = (dataSource, label_of_first_column, label_of_second_columns, isEigenvalues) => {
         const { data, isDarkMode } = this.props;
@@ -70,20 +95,9 @@ class SteadyState extends Component {
         );
     }
 
-    handleComputeClick = () => {
-        this.props.computeSteadyState();
-        this.setState({
-            showData: true,
-            isSteadyStateComputed: true
-        }, () => {
-            sessionStorage.setItem('showData', 'true');
-            sessionStorage.setItem('isSteadyStateComputed', 'true');
-        });
-    }
-
     render() {
         const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, selectedOptions, steadyState, eigenValues } = this.props;
-        const { showData, isSteadyStateComputed } = this.state;
+        const { showData, isSteadyStateComputed, showMorePopup } = this.state;
 
         return (
             <>
@@ -138,6 +152,15 @@ class SteadyState extends Component {
                                         <h3 style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Eigenvalues:</h3>
                                         {this.renderTable(eigenValues, "Real", "Imaginary", true)}
                                     </div>
+                                    <div style={{ marginTop: '20px' }}>
+                                        <button
+                                            className={"more-info-button"}
+                                            style={this.generalStyle(isDarkMode, "black", "white")}
+                                            onClick={this.handleShowMoreClick}
+                                        >
+                                            More >>
+                                        </button>
+                                    </div>
                                 </>
                             )}
                         </>
@@ -152,6 +175,12 @@ class SteadyState extends Component {
                         </div>
                     )}
                 </div>
+                {showMorePopup &&
+                    <SteadyStateMorePopup
+                        onClose={this.handleCloseMorePopup}
+                        isDarkMode={isDarkMode}
+                        jacobian={this.props.jacobian}
+                    />}
             </>
         );
     }

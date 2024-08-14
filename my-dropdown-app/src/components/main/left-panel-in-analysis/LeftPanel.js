@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TimeCourseSimulation from "./time-course-simulation/TimeCourseSimulation";
 import SteadyState from "./steady-state/SteadyState";
 import ParameterScan from "./parameter-scan/ParameterScan";
@@ -35,6 +35,7 @@ const LeftPanel = (props) => {
         computeSteadyState,
         steadyState,
         eigenValues,
+        jacobian,
         // For Parameter Scan
         kOptions,
         isShowLegendChecked,
@@ -81,6 +82,7 @@ const LeftPanel = (props) => {
                     getContentOfActiveTab={getContentOfActiveTab}
                     isResetInitialState={isResetInitialState}
                     eigenValues={eigenValues}
+                    jacobian={jacobian}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan

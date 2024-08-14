@@ -30,7 +30,8 @@ export class App extends React.Component {
             kOptions: [],
             kValues: [],
             steadyState: 0,
-            eigenValues: []
+            eigenValues: [],
+            jacobian: []
         };
     }
     componentDidMount() {
@@ -274,10 +275,8 @@ export class App extends React.Component {
             };
 
             const steadyStateValue = this.state.copasi.steadyState();
-
             // Run the simulation from start to end
             const simResults = this.state.copasi.simulateEx(start, end, points);
-
             if (typeof simResults === 'string') {
                 // If it's a string, we assume it's JSON
                 const parsedResults = JSON.parse(simResults);
@@ -300,14 +299,15 @@ export class App extends React.Component {
             }
 
             const eigenValuesRes = this.state.copasi.eigenValues2D;
-
+            const jacobianRes = this.state.copasi.jacobian;
             this.setState({
                 steadyState: steadyStateValue,
                 data: {
                     columns: simResults.columns,
                     titles: simResults.titles,
                 },
-                eigenValues: eigenValuesRes
+                eigenValues: eigenValuesRes,
+                jacobian: jacobianRes
             }); // Update the state with the new steadyState value
         } else {
             alert("Run Simulation to perform this feature");
@@ -360,6 +360,7 @@ export class App extends React.Component {
                     computeSteadyState={this.computeSteadyState}
                     steadyState={this.state.steadyState}
                     eigenValues={this.state.eigenValues}
+                    jacobian={this.state.jacobian}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>
