@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "./ExamplePopup.css";
 
-const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent }) => {
+const ExamplePopup = ({ isDarkMode, setShowExamplePopup, editorInstance, handleResetInApp, handleResetParameters }) => {
     const [files, setFiles] = useState([]);
 
     useEffect(() => {
@@ -29,18 +29,23 @@ const ExamplePopup = ({ isDarkMode, setShowExamplePopup, updateActiveTabContent 
                 throw new Error('Network response was not ok');
             }
             const content = await response.text();
-            updateActiveTabContent(content); // Call update immediately after setting file content
+            if (editorInstance) {
+                editorInstance.setValue(content);
+            }
+            handleResetInApp();
+            handleResetParameters();
         } catch (error) {
             console.error('Error fetching file content:', error);
         }
     };
+
 
     const formatFileName = (fileName) => {
         return fileName.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase()).replace(/\//g, ' / ');
     };
 
     return (
-        <div className="modal-overlay">
+        <div className="example-popup-overlay">
             <div
                 style={{
                     backgroundColor: isDarkMode ? "#2e2d2d" : "#fff",

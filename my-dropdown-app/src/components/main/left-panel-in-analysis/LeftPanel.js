@@ -12,7 +12,6 @@ const LeftPanel = (props) => {
         isDarkMode,
         // For Time Course Simulation
         handleLocalReset,
-        getContentOfActiveTab,
         onParametersChange,
         handleIconClick,
         simulationParam,
@@ -40,7 +39,8 @@ const LeftPanel = (props) => {
         kOptions,
         isShowLegendChecked,
         setIsShowLegendChecked,
-        setPaletteColor
+        setPaletteColor,
+        editorInstance
     } = props;
 
     return (
@@ -51,7 +51,6 @@ const LeftPanel = (props) => {
                     panelWidth={panelWidth}
                     isDarkMode={isDarkMode}
                     handleLocalReset={handleLocalReset}
-                    getContentOfActiveTab={getContentOfActiveTab}
                     onParametersChange={onParametersChange}
                     handleIconClick={handleIconClick}
                     simulationParam={simulationParam}
@@ -68,6 +67,7 @@ const LeftPanel = (props) => {
                     isNewTabCreated={isNewTabCreated}
                     setIsResetInitialState={setIsResetInitialState}
                     isResetInitialState={isResetInitialState}
+                    editorInstance={editorInstance}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState
@@ -79,7 +79,6 @@ const LeftPanel = (props) => {
                     data={data}
                     computeSteadyState={computeSteadyState}
                     steadyState={steadyState}
-                    getContentOfActiveTab={getContentOfActiveTab}
                     isResetInitialState={isResetInitialState}
                     eigenValues={eigenValues}
                     jacobian={jacobian}
@@ -96,7 +95,7 @@ const LeftPanel = (props) => {
                     kOptions={kOptions}
                     isShowLegendChecked={isShowLegendChecked}
                     setIsShowLegendChecked={setIsShowLegendChecked}
-                    getContentOfActiveTab={getContentOfActiveTab}
+                    editorInstance={editorInstance}
                     onPaletteChange={(colors) => setPaletteColor(colors)}
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (

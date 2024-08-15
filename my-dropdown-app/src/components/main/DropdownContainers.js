@@ -76,7 +76,9 @@ class DropdownContainers extends Component {
                     this.fileInputRef.current.click();
                 });
             } else if (item === "New") {
-                this.props.refreshCurrentTab();
+                if (this.props.editorInstance) {
+                    this.props.editorInstance.setValue(this.props.initialTabData.textContent); // Set the new content in the editor
+                }
                 this.props.setShowDropdownToolbar(false);
                 this.props.setActiveToolbarButton("");
             } else if (item === "Import SBML...") {

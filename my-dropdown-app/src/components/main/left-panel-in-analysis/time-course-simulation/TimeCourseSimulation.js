@@ -46,27 +46,30 @@ class TimeCourseSimulation extends Component {
     };
 
     handleSimulateButtonClick = () => {
-        const currentContent = this.props.getContentOfActiveTab();
-        if (currentContent !== this.state.previousContent) {
+        // Ensure that you have access to the Monaco Editor instance
+        const editorContent = this.props.editorInstance?.getValue(); // Get the current value from the Monaco Editor
+
+        if (editorContent !== this.state.previousContent) {
             this.props.setSelectedOptions([]);
-            this.props.handleTextChange(currentContent, this.props.isResetInitialState, true);
+            this.props.handleTextChange(editorContent, this.props.isResetInitialState, true); // Pass the editor content here
             this.setState({ shouldUpdateSelectedOptions: true });
         } else {
             this.setState({ shouldUpdateSelectedOptions: false });
             if (this.props.isNewFileUploaded) {
-                this.props.handleTextChange(currentContent, this.props.isResetInitialState, true);
+                this.props.handleTextChange(editorContent, this.props.isResetInitialState, true); // Use editor content here
                 this.props.setIsNewFileUploaded(false);
             } else {
                 this.props.onCheckboxChange(this.props.isResetInitialState);
             }
         }
-        this.setState({ previousContent: currentContent });
+
+        this.setState({ previousContent: editorContent }); // Store the content as the previous content
     };
 
     resetInitialConditions = (e) => {
         const isChecked = e.target.checked;
         this.props.setIsResetInitialState(isChecked);
-        this.props.handleTextChange(this.props.getContentOfActiveTab(), !isChecked, false);
+        this.props.handleTextChange(this.props.editorInstance?.getValue(), !isChecked, false);
     };
 
     handleXOptionSelected = (option) => {

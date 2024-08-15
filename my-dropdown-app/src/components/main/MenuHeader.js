@@ -15,15 +15,17 @@ const MenuHeader = (props) => {
         handleExportSBML,
         SBMLContent,
         handleSBMLfile,
-        getContentOfActiveTab,
         isNewFileUploaded,
         setIsNewFileUploaded,
-        refreshCurrentTab,
         promptForFileNameAndDownload,
         simulationParam,
         setSelectedParameter,
-        updateActiveTabContent,
-        setActiveAnalysisPanel
+        selectedParameter,
+        setActiveAnalysisPanel,
+        editorInstance,
+        initialTabData,
+        handleResetParameters,
+        handleResetInApp
     } = props;
 
     const fileDropdownRef = useRef(null);
@@ -34,9 +36,10 @@ const MenuHeader = (props) => {
 
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
     const [activeToolbarButton, setActiveToolbarButton] = useState("");
-    const [showExamplePopup, setShowExamplePopup] = useState(false);
     const [showHelpPopup, setShowHelpPopup] = useState(false);
     const [showAboutIridiumPopup, setShowAboutIridiumPopup] = useState(false); // State for the new popup
+
+    const [showExamplePopup, setShowExamplePopup] = useState(false);
 
     const { dropdownToolbarStyle, dropdownToolbarButtonsStyle, modeIcon, modeTooltip } = useMemo(() => {
         const dropdownToolbarStyle = {
@@ -61,12 +64,12 @@ const MenuHeader = (props) => {
     };
 
     const onExportSBMLSelected = () => {
-        const antimonyContent = getContentOfActiveTab();
+        const antimonyContent = editorInstance?.getValue();
         handleExportSBML(antimonyContent);
     };
 
     const onExportAntSelected = () => {
-        const content = getContentOfActiveTab();
+        const content = editorInstance?.getValue();
         const timeStart = simulationParam.simulationParameters.timeStart;
         const timeEnd = simulationParam.simulationParameters.timeEnd;
         const numPoints = simulationParam.simulationParameters.numPoints;
@@ -76,6 +79,8 @@ const MenuHeader = (props) => {
 
     const onImportSBML = (content) => {
         handleSBMLfile(content);
+        handleResetInApp();
+        handleResetParameters();
         setSelectedParameter(null);
     };
 
@@ -118,10 +123,10 @@ const MenuHeader = (props) => {
                 {activeToolbarButton === "File" && showDropdownToolbar && (
                     <DropdownContainers
                         onDownloadPDF={handleDownloadPDF}
+                        onImportSBML={onImportSBML}
                         onExportSBMLSelected={onExportSBMLSelected}
                         onExportAntSelected={onExportAntSelected}
                         SBMLContent={SBMLContent}
-                        onImportSBML={onImportSBML}
                         onContentSelect={handleContentSelect}
                         className={"dropdown-file-container"}
                         dropdownToolbarStyle={dropdownToolbarStyle}
@@ -130,11 +135,12 @@ const MenuHeader = (props) => {
                         withCheckboxes={false}
                         xAxis={false}
                         dropdown_toolbar_buttons_style={"dropdown-toolbar-button-file"}
-                        refreshCurrentTab={refreshCurrentTab}
                         isNewFileUploaded={isNewFileUploaded}
                         setIsNewFileUploaded={setIsNewFileUploaded}
                         setShowDropdownToolbar={setShowDropdownToolbar}
                         setActiveToolbarButton={setActiveToolbarButton}
+                        editorInstance={editorInstance}
+                        initialTabData={initialTabData}
                     />
                 )}
             </div>
@@ -247,7 +253,13 @@ const MenuHeader = (props) => {
                 {modeIcon}
             </button>
             {showExamplePopup && (
-                <ExamplePopup isDarkMode={isDarkMode} setShowExamplePopup={setShowExamplePopup} updateActiveTabContent={updateActiveTabContent}/>
+                <ExamplePopup
+                    isDarkMode={isDarkMode}
+                    setShowExamplePopup={setShowExamplePopup}
+                    editorInstance={editorInstance}
+                    handleResetInApp={handleResetInApp}
+                    handleResetParameters={handleResetParameters}
+                />
             )}
             {showHelpPopup && (
                 <div className={"modal-overlay"}>

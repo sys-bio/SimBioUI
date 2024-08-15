@@ -8,8 +8,11 @@ import "../../styles/centerPanel/center-subpanel.css";
 import "../../styles/centerPanel/centered-input.css";
 import "../../styles/rightSubPanel/right-subpanel.css";
 import "../../styles/leftTopCorner/left-top-corner.css";
-
-import { useTabManager } from "../../hooks/useTabManager";
+import BioModelsService from "./BioModelsService";
+import Loader from "./Loader";
+import { WebIridiumTheme } from "./WebIridiumTheme";
+import { WebIridiumLanguage } from "./WebIridiumLanguage";
+import * as monaco from 'monaco-editor';
 
 import { MdClose } from "react-icons/md";
 import MenuHeader from "./MenuHeader";
@@ -40,7 +43,9 @@ const DropdownWithPopup = ({
     computeSteadyState,
     steadyState,
     eigenValues,
-    jacobian
+    jacobian,
+    textareaContent,
+    sbmlCode
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -84,6 +89,16 @@ A = 10
     const [layoutVertical, setLayoutVertical] = useState(window.innerWidth <= BREAKPOINT_WIDTH);
     const [isNewTabCreated, setIsNewTabCreated] = useState(false);
 
+    // Search area
+    const bioModelService = new BioModelsService();
+
+     const [loading, setLoading] = useState(false);
+     const [chosenModel, setChosenModel] = useState(null);
+     const [searchTerm, setSearchTerm] = useState("");
+     const [suggestions, setSuggestions] = useState([]);
+     const editorRef = useRef(null);
+     const [editorInstance, setEditorInstance] = useState(null);
+
     // Active Analysis Panel
     const [activeAnalysisPanel, setActiveAnalysisPanel] = useState("Time Course Simulation");
     // Show legend
@@ -107,10 +122,6 @@ A = 10
         setIsNewTabCreated(true);
     };
     const [isResetInitialState, setIsResetInitialState] = useState(true);
-
-    // Use the custom hook for tab management
-    const { tabs, addNewTab, switchTab, updateActiveTabContent, activeTabId, closeTab, getContentOfActiveTab, refreshCurrentTab } =
-        useTabManager(initialTabData, resetContent);
 
     useEffect(() => {
         const handleResize = () => {
@@ -143,11 +154,103 @@ A = 10
         }
     }, [kOptions, kValues]);
 
+    const handleSearchChange = async (e) => {
+        const queryText = e.target.value.trim();
+        setSearchTerm(queryText);
+
+        if (queryText.length > 2) {
+          setLoading(true);
+          try {
+            const models = await bioModelService.searchModels(queryText);
+            setSuggestions(Array.from(models.models.values()));
+          } catch (error) {
+            console.error("Error fetching models:", error);
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          setSuggestions([]);
+        }
+      };
+
+      const handleModelSelect = async (modelId) => {
+          setLoading(true);
+          try {
+            const model = await bioModelService.getModel(modelId);
+            setChosenModel(model);
+            // Handle the selected model as needed, e.g., updating the state, calling a conversion function, etc.
+          } catch (error) {
+            console.error("Error fetching model:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+      useEffect(() => {
+        if (editorRef.current) {
+          // Register the language and theme
+          monaco.languages.register({ id: "antimony" });
+          monaco.languages.setMonarchTokensProvider("antimony", WebIridiumLanguage);
+          monaco.editor.defineTheme("WebIridiumTheme", WebIridiumTheme);
+          monaco.editor.setTheme("WebIridiumTheme");
+
+          // Initialize Monaco Editor
+          const editor = monaco.editor.create(editorRef.current, {
+            value: initialTabData.textContent,
+            language: "antimony",
+            theme: "WebIridiumTheme",
+            automaticLayout: true,
+          });
+
+          setEditorInstance(editor);
+
+          return () => editor.dispose();
+        }
+      }, []);
+
+    useEffect(() => {
+        if (chosenModel) {
+            const dropdown = document.getElementById("biomddropdown");
+            if (dropdown) {
+                dropdown.style.display = "none";
+            }
+            setLoading(true);
+            if (chosenModel === "") {
+                setLoading(false);
+                return;
+            }
+            bioModelService.getModel(chosenModel)
+                .then((model) => {
+                    handleSBMLfile(model.sbmlData)
+                    window.modelId = model.modelId;
+                    window.biomodelsUrl = "https://www.ebi.ac.uk/biomodels/" + window.modelId;
+                    window.title = model.title;
+                    window.authors = model.authors;
+                    window.url = model.url;
+                    window.citation = model.citation;
+                    window.date = model.date;
+                    window.journal = model.journal;
+                    window.fileName = model.modelId;
+                    window.sbmlString = model.sbmlData;
+                    window.conversion = "biomodels";
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error("Error fetching model:", error);
+                    setLoading(false);
+                });
+        }
+    }, [chosenModel]);
+
     useEffect(() => {
         if (convertedAnt) {
             handleContentSelect(convertedAnt);
         }
     }, [convertedAnt]); // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        bioModelService.getBiomodels(setLoading, setChosenModel);
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -182,45 +285,6 @@ A = 10
             plotGraphRef.current.downloadPDF();
         }
     };
-
-    const confirmAndCloseTab = (tabId, event) => {
-        event.stopPropagation(); // Prevent the click from triggering any parent event
-        const isConfirmed = window.confirm("Do you really want to close this tab?");
-        if (isConfirmed) {
-            closeTab(tabId);
-        }
-    };
-
-    const renderTabs = () => (
-        <div className="tabs">
-            {tabs.map((tab) => (
-                <button
-                    style={{
-                        backgroundColor: isDarkMode ? "black" : "white",
-                        color: isDarkMode ? "white" : "black",
-                        border: isDarkMode ? "1px solid white" : "1px solid black",
-                    }}
-                    key={tab.id}
-                    onClick={() => switchTab(tab.id)}
-                    className={`tab-button ${tab.id === activeTabId ? "active" : ""}`}
-                >
-                    Untitled {tab.id}
-                    <MdClose
-                        onClick={(event) => confirmAndCloseTab(tab.id, event)}
-                        style={{
-                            cursor: "pointer",
-                            position: "relative",
-                            top: "-10px",
-                            marginLeft: "55px",
-                        }}
-                    />
-                </button>
-            ))}
-            <button className={"plus-button"} onClick={addNewTab}>
-                +
-            </button>
-        </div>
-    );
 
     const createInitialState = (keys, defaultValue) => {
         const top10Keys = keys.slice(0, 10); // Extract the first 10 keys
@@ -333,15 +397,7 @@ A = 10
         }
     };
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-        // You can implement additional search logic here if needed
-    };
-
     const renderActiveTabContent = () => {
-        const activeTab = tabs.find((tab) => tab.id === activeTabId);
-
-        if (!activeTab) return null;
         if (showSplitView) {
             // When split view is active, display text input on top and a blue box on bottom
             return (
@@ -351,29 +407,51 @@ A = 10
                         style={{
                             height: `${(centerSubPanelHeight - 80) / 2}px`,
                             width: `${centerPanelWidth - 42}px`,
-                            backgroundColor: isDarkMode ? "black" : "white",
+                            backgroundColor: isDarkMode ? "#1e1e1e" : "white",
                             border: isDarkMode ? "white" : "black",
                             outline: isDarkMode ? "1px solid white" : "1px solid black",
-                            marginLeft: "10px",
+                            marginLeft: "10px"
                         }}
                     >
-
-                        <textarea
-                            className={isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode"}
-                            style={{
-                                fontSize: `${sizeOfInput}px`,
-                                backgroundColor: isDarkMode ? "black" : "white",
-                                color: isDarkMode ? "white" : "black",
-                                height: "100%", // Make sure the textarea fills the container
-                                resize: "none", // Optional: disable resizing of the textarea
-                            }}
-                            value={activeTab.textContent || ""}
-                            onChange={handleTextareaChange}
-                        />
+                        <div className="search-container">
+                            <input
+                                id="biomodel-browse"
+                                style={{
+                                    backgroundColor: isDarkMode ? "black" : "white",
+                                    color: isDarkMode ? "white" : "black",
+                                    border: isDarkMode ? "1px solid gray" : "1px solid black",
+                                    borderRadius: "5px",
+                                    width: "80%",
+                                    height: "30px"
+                                }}
+                                type="text"
+                                placeholder="Search Biomodels"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <div id="biomddropdown" className="suggestions-dropdown">
+                                <ul>
+                                    {suggestions.map((model) => (
+                                        <li
+                                            key={model.id}
+                                            onClick={() => setChosenModel(model.id)}
+                                            style={{ cursor: "pointer"}}
+                                        >
+                                            {model.title}
+                                            <div style={{ color: "#FD7F20"}}>
+                                                {model.journal}, {model.date} - {model.authors.join(", ")}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            {loading && <Loader loading={loading} />}
+                        </div>
+                        <div ref={editorRef} style={{ height: "100%", width: "100%" }} />
                     </div>
                     <div
                         style={{
-                            height: `${(centerSubPanelHeight - 104) / 2}px`,
+                            height: `${(centerSubPanelHeight - 50) / 2}px`,
                             width: `${centerPanelWidth - 22}px`,
                             backgroundColor: isDarkMode ? "#2e2d2d" : "white", // Set the background color to blue for the bottom half
                             border: isDarkMode ? "1px solid white" : "1px solid black",
@@ -611,32 +689,57 @@ A = 10
                 </>
             );
         } else {
-            return activeTab ? (
+            return (
                 <>
                     <div
                         className={"centered-input-box"}
                         style={{
-                            height: `${centerSubPanelHeight - 80}px`,
+                            height: `${centerSubPanelHeight - 50}px`,
                             width: `${centerPanelWidth - 42}px`,
-                            backgroundColor: isDarkMode ? "black" : "white",
+                            backgroundColor: isDarkMode ? "#1e1e1e" : "white",
                             border: isDarkMode ? "white" : "black",
                             outline: isDarkMode ? "1px solid white" : "1px solid black",
                             marginLeft: "10px",
                         }}
                     >
-
-                        <textarea
-                            style={{
-                                fontSize: `${sizeOfInput}px`,
-                                backgroundColor: isDarkMode ? "black" : "white",
-                                color: isDarkMode ? "white" : "black",
-                            }}
-                            value={activeTab.textContent || ""}
-                            onChange={handleTextareaChange}
-                        />
+                        <div className="search-container">
+                            <input
+                                id="biomodel-browse"
+                                style={{
+                                    backgroundColor: isDarkMode ? "black" : "white",
+                                    color: isDarkMode ? "white" : "black",
+                                    border: isDarkMode ? "1px solid gray" : "1px solid black",
+                                    borderRadius: "5px",
+                                    width: "80%",
+                                    height: "30px"
+                                }}
+                                type="text"
+                                placeholder="Search Biomodels"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <div id="biomddropdown" className="suggestions-dropdown">
+                                <ul>
+                                    {suggestions.map((model) => (
+                                        <li
+                                            key={model.id}
+                                            onClick={() => setChosenModel(model.id)}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            {model.title}
+                                            <div style={{ color: "#FD7F20" }}>
+                                                {model.journal}, {model.date} - {model.authors.join(", ")}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            {loading && <Loader loading={loading} />}
+                        </div>
+                        <div ref={editorRef} style={{ height: "100%", width: "100%" }} />
                     </div>
                 </>
-            ) : null;
+            );
         }
     };
 
@@ -644,12 +747,13 @@ A = 10
         setIsDarkMode(!isDarkMode);
     };
 
-    const handleTextareaChange = (event) => {
-        const content = event.target.value;
-        updateActiveTabContent(content);
-    };
     const handleContentSelect = (content) => {
-        updateActiveTabContent(content);
+        // Set the new content directly in the Monaco Editor
+        if (editorInstance) {
+            editorInstance.setValue(content); // Set the new content in the editor
+        }
+
+        // Perform additional actions
         handleResetInApp();
         handleResetParameters();
         setSelectedParameter(null);
@@ -677,7 +781,11 @@ A = 10
     };
 
     const handleInputChange = (e) => {
-        setSizeOfInput(e.target.value);
+        const newFontSize = e.target.value;
+        editorInstance.updateOptions({
+          fontSize: newFontSize
+        });
+        setSizeOfInput(newFontSize);
     };
 
     return (
@@ -690,7 +798,6 @@ A = 10
                 activeAnalysisPanel={activeAnalysisPanel}
                 // For Time Course Simulation
                 handleLocalReset={handleLocalReset}
-                getContentOfActiveTab={getContentOfActiveTab}
                 onParametersChange={onParametersChange}
                 handleIconClick={handleIconClick}
                 simulationParam={simulationParam}
@@ -707,6 +814,7 @@ A = 10
                 isNewTabCreated={isNewTabCreated}
                 setIsResetInitialState={setIsResetInitialState}
                 isResetInitialState={isResetInitialState}
+                editorInstance={editorInstance}
                 // For Steady State
                 data={data}
                 computeSteadyState={computeSteadyState}
@@ -734,7 +842,6 @@ A = 10
                         height: `${centerSubPanelHeight}px`,
                     }}
                 >
-                    {renderTabs()}
                     <div className="tab-content">{renderActiveTabContent()}</div>
                     <div
                         className={"front-size-adjustment"}
@@ -800,21 +907,22 @@ A = 10
                 handleContentSelect={handleContentSelect}
                 toggleDarkMode={toggleDarkMode}
                 handleDownloadPDF={handleDownloadPDF}
-                addNewTab={addNewTab}
-                getContentOfActiveTab={getContentOfActiveTab}
                 handleExportSBML={handleExportSBML}
                 SBMLContent={SBMLContent}
                 handleSBMLfile={handleSBMLfile}
                 isNewFileUploaded={isNewFileUploaded}
                 setIsNewFileUploaded={setIsNewFileUploaded}
                 promptForFileNameAndDownload={promptForFileNameAndDownload}
-                refreshCurrentTab={refreshCurrentTab}
                 simulationParam={simulationParam}
                 setSelectedParameter={setSelectedParameter}
-                updateActiveTabContent={updateActiveTabContent}
                 setActiveAnalysisPanel={setActiveAnalysisPanel}
+                editorInstance={editorInstance}
+                initialTabData={initialTabData}
+                handleResetParameters={handleResetParameters}
+                handleResetInApp={handleResetInApp}
             />
         </div>
     );
 };
 export default DropdownWithPopup;
+

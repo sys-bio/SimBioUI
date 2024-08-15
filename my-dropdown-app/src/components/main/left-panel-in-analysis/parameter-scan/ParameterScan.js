@@ -144,7 +144,7 @@ class ParameterScan extends Component {
 
     generatePythonContent = () => {
         const { minValue, maxValue, numValues, selectedParameter } = this.state;
-        const { getContentOfActiveTab, isShowLegendChecked, simulationParam, selectedOptions } = this.props;
+        const { editorInstance, isShowLegendChecked, simulationParam, selectedOptions } = this.props;
         const end = simulationParam.simulationParameters.timeEnd;
         const selectionText = this.formatSelectionText(selectedOptions);
 
@@ -155,7 +155,7 @@ import matplotlib.pyplot as plt
 import math
 
 r = te.loada('''
-${getContentOfActiveTab()}
+${editorInstance?.getValue()}
 ''')
 
 showLegend = ${isShowLegendChecked}

@@ -14,11 +14,6 @@
     resize: none; /* Prevent resizing if you want a fixed size */
     overflow: auto; /* Handle scrolling for overflow text */
 }
-.tabs {
-    display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
-    overflow-x: auto; /* Allow horizontal scrolling */
-}
 
 .tab-button {
     /* Define default button styles here */
