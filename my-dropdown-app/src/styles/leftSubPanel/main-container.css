@@ -149,36 +149,47 @@
    transition: opacity 0.2s;
  }
 
- .search-container {
-     display: flex;
-     justify-content: center; /* Center horizontally */
-     align-items: center; /* Center vertically */
-     position: relative;
-     margin-bottom: 10px;
- }
+.search-container {
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1000;
+	width: 60%; /* You can adjust this width */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 
- .suggestions-dropdown {
-     position: absolute;
-     top: 100%; /* Position below the search input */
-     left: 50%;
-     transform: translateX(-50%); /* Center horizontally relative to the search input */
-     width: 100%; /* Same width as the input */
-     max-height: 300px; /* Maximum height before scrolling */
-     overflow-y: auto; /* Enable vertical scrolling */
-     background-color: black; /* Black background */
-     color: white; /* White text */
-     border-radius: 4px; /* Slightly rounded corners */
-     z-index: 100; /* Ensure it appears above other elements */
- }
+.suggestions-dropdown {
+    position: absolute;
+    top: 50px; /* Adjust as needed, depending on the input height */
+    left: 50%; /* Align to the center */
+    transform: translateX(-50%); /* Center the dropdown */
+    z-index: 1000; /* Ensure it's above other elements */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add some shadow */
+    border-radius: 4px;
+    width: 60%; /* Adjust as needed */
+    max-height: 400px; /* Control the height and allow scrolling */
+    overflow-y: auto;
+}
 
- .suggestions-dropdown ul {
-     list-style-type: none; /* Remove bullet points */
-     margin: 0;
-     padding: 0;
- }
- .monaco-editor-container {
-   position: relative;
- }
+.search-container input {
+    width: 40%; /* Adjust as needed */
+    height: 30px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.suggestions-dropdown ul {
+ list-style-type: none; /* Remove bullet points */
+ margin: 0;
+ padding: 0;
+}
+
+.monaco-editor-container {
+position: relative;
+}
 
 
 

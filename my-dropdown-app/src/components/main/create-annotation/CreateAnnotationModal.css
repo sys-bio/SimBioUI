@@ -1,0 +1,117 @@
+.annot-modal {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border-radius: 5px;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  width: 400px;
+  padding: 10px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-title-container {
+  display: flex;
+  align-items: center;
+}
+
+.modal-title {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 14px;
+  color: #d4d4d4;
+}
+
+.back-button {
+  border: none;
+  border-radius: 3px;
+  background-color: #d4d4d4;
+  color: #333;
+  cursor: pointer;
+}
+
+.back-button,
+.filler {
+  width: 50px;
+  margin: 0;
+}
+
+#annot-browse {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background-color: #333;
+  color: #d4d4d4;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+#annot-browse::placeholder {
+  color: #777;
+}
+
+.annot-results {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 10px;
+  margin-bottom: 0;
+  height: 500px;
+  overflow-y: auto;
+}
+
+.annot-results li {
+  padding: 10px;
+}
+
+.annot-results li:not(.loading, .unable-to-retrieve, .no-results-found) {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.annot-results li:hover:not(.loading, .unable-to-retrieve, .no-results-found),
+.button:hover {
+  background-color: #333;
+}
+
+.database-detail {
+  color: #777;
+}
+
+.annotationName {
+  display: block;
+  font-size: 14px;
+}
+
+.annotationDescription {
+  display: block;
+  font-size: 12px;
+  color: #989393;
+}
+
+.annotationEC {
+  display: block;
+  font-size: 12px;
+  color: #989393;
+}
+
+.ecLink:link {
+  color: #3090d5;
+}
+
+.ecLink:visited {
+  color:#0000EE;
+}
+
+/* .ecLink:link {
+  color: #30d5c8;
+} */
+
+ecLink:hover {
+  color:#272eb5;
+}
