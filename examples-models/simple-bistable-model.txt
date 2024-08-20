@@ -14,4 +14,4 @@ S1 = 0
 X0 = 0.1
 
 // Parameter initialization
-k1 = 3.2
+k1 = 3.2;

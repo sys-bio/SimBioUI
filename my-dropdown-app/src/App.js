@@ -158,6 +158,7 @@ export class App extends React.Component {
         try {
             libantimony().then((libantimony) => {
                 ant_wrap = new antimonyWrapper(libantimony);
+
                 console.log("libantimony loaded");
                 if (typeof callback === "function") {
                     callback(); // This ensures that the next step only happens after libantimony is fully loaded and ant_wrap is initialized
@@ -178,18 +179,25 @@ export class App extends React.Component {
     };
 
     // Process the SBML content once the library is loaded
-    processSBMLFile = (content) => {
-        var antCode;
-        if (content.trim() !== "") {
-            const res = ant_wrap.convertSBMLToAntimony(content);
-            if (res.isSuccess()) {
-                antCode = res.getResult();
-                this.setState({ sbmlCode: content, convertedAnt: antCode });
-            }
-        }
-        this.handleResetInApp();
-        this.handleResetParameters();
-    };
+   processSBMLFile = (content) => {
+       let antCode;
+       if (content.trim() !== "") {
+           const res = ant_wrap.convertSBMLToAntimony(content);
+           if (res.isSuccess()) {
+               antCode = res.getResult();
+
+               // Remove the notes section from the Antimony code
+               const notesRegex = /\/\/ Notes:[\s\S]*?(end|```\nend)/g;
+               antCode = antCode.replace(notesRegex, "end");
+               antCode = antCode.replace(/\.\w/g, "");
+
+               // Set the processed antCode without the notes
+               this.setState({ sbmlCode: content, convertedAnt: antCode });
+           }
+       }
+       this.handleResetInApp();
+       this.handleResetParameters();
+   };
 
     // In App.js
     handleExportSBML = (antimonyContent) => {

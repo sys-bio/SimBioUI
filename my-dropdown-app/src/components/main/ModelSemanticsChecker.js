@@ -386,7 +386,6 @@ export class AntimonyProgramAnalyzer {
           range: range,
           text: resultString
         }
-        console.log(range)
         model.pushEditOperations([], [replacementOperation], () => null)
         if (resultString === "") {
           this.deleteMultipleRanges(model, [

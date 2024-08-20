@@ -81,7 +81,8 @@ const CreateAnnotationModal = ({
   onClose,
   annotationAddPosition,
   editorInstance,
-  varToAnnotate
+  varToAnnotate,
+  setContent
 }) => {
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1)
@@ -255,6 +256,7 @@ const CreateAnnotationModal = ({
         text.length - spaces.length - comment.length + 2
       )
     )
+    setContent(editorInstance.getValue())
   }
 
   /**
@@ -357,9 +359,9 @@ const CreateAnnotationModal = ({
             </li>
           ))
         ) : (
-          annotationSearchResults.map(annotation => (
+          annotationSearchResults.map((annotation, index) => (
             <li
-              key={annotation.id}
+              key={annotation.id || index}
               className={annotation.id}
               onClick={e =>
                 annotation.id === "unable-to-retrieve" ||

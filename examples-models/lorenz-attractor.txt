@@ -14,4 +14,4 @@ w = 1.05
 // Parameter initializations
 sigma = 10
 rho = 28
-beta = 2.667
+beta = 2.667;

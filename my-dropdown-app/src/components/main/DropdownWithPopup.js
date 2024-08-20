@@ -18,6 +18,7 @@ import * as monaco from 'monaco-editor';
 import ModelSemanticsChecker from "./ModelSemanticsChecker";
 import CreateAnnotationModal from "./create-annotation/CreateAnnotationModal";
 import { SrcPosition, SrcRange } from "./Types";
+import { IDBPDatabase, DBSchema } from "idb";
 
 import { MdClose } from "react-icons/md";
 import MenuHeader from "./MenuHeader";
@@ -106,11 +107,12 @@ A = 10
      const [isModalVisible, setModalVisible] = useState(false);
      const [editorInstance, setEditorInstance] = useState(null);
      const [annotUnderlinedOn, setAnnotUnderlinedOn] = useState(false);
-     const [newContent, setNewContent] = useState(convertedAnt);
      const [annotationAddPosition, setAnnotationAddPosition] = useState(null);
      // Set highlight color for unannotated variables
      const [highlightColor, setHighlightColor] = useState("red");
      const [decorations, setDecorations] = useState([]);
+     const [content, setContent] = useState(initialTabData.textContent);
+     const contentRef = useRef(initialTabData.textContent);
 
     // Active Analysis Panel
     const [activeAnalysisPanel, setActiveAnalysisPanel] = useState("Time Course Simulation");
@@ -281,43 +283,6 @@ A = 10
 		setSizeOfInput(newFontSize);
 	};
 
-    useEffect(() => {
-        const handleResize = () => {
-            // Update the state based on the resized window dimensions
-            if (window.innerWidth < BREAKPOINT_WIDTH) {
-                setCenterSubPanelHeight((window.innerHeight - 100) / 2);
-            } else {
-                setCenterSubPanelHeight(window.innerHeight - 100);
-            }
-        };
-
-        // Add event listener for window resize
-        window.addEventListener("resize", handleResize);
-
-        // Remove event listener on cleanup
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    useEffect(() => {
-      if (editorInstance) {
-        ModelSemanticsChecker(editorInstance, annotUnderlinedOn, false, highlightColor, decorations);
-      }
-    }, [annotUnderlinedOn, editorInstance]);
-
-    useEffect(() => {
-      if (kOptions.length > 0 && kValues.length > 0) {
-            const newStateForSliders = createInitialState(kOptions, true);
-            const newSliderValues = createInitialSliderValues(kOptions, kValues); // Example default slider value of 50
-
-            const newMinMaxValues = createInitialMinMaxValues(kOptions, kValues);
-
-            set_kOptions_for_sliders(newStateForSliders);
-            setSliderValues(newSliderValues);
-            setMinMaxValues(newMinMaxValues);
-            setSelectedParameter(kOptions[0]);
-        }
-    }, [kOptions, kValues]);
-
     const handleSearchChange = async (e) => {
 		const queryText = e.target.value.trim();
 		setSearchTerm(queryText);
@@ -374,7 +339,6 @@ A = 10
         };
         // Parse the model whenever the user types
         editor.onDidChangeModelContent(() => {
-            setNewContent(editor.getValue());
             delayedModelParser(editor);
         });
         ModelSemanticsChecker(editor, annotUnderlinedOn, true, highlightColor, decorations);
@@ -553,7 +517,7 @@ A = 10
             monaco.editor.setTheme("WebIridiumTheme");
             // Initialize Monaco Editor
             const editor = monaco.editor.create(editorRef.current, {
-                value: initialTabData.textContent,
+                value: contentRef.current,
                 language: "antimony",
                 theme: "WebIridiumTheme",
                 automaticLayout: true,
@@ -568,10 +532,13 @@ A = 10
             addNavigateEditAnnotationOption(editor);
 
             handleEditorContentChange(editor);
+			editor.onDidChangeModelContent(() => {
+				contentRef.current = editor.getValue(); // Update contentRef without triggering re-render
+			});
 
             return () => editor.dispose();
         }
-    }, [annotUnderlinedOn]);
+    }, [annotUnderlinedOn, content]);
 
     useEffect(() => {
         if (chosenModel) {
@@ -607,15 +574,53 @@ A = 10
         }
     }, [chosenModel]);
 
+	useEffect(() => {
+		bioModelService.getBiomodels(setLoading, setChosenModel);
+	}, []);
+
     useEffect(() => {
         if (convertedAnt) {
             handleContentSelect(convertedAnt);
+            console.log(convertedAnt)
         }
     }, [convertedAnt]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
-    useEffect(() => {
-        bioModelService.getBiomodels(setLoading, setChosenModel);
-    }, []);
+   useEffect(() => {
+	   const handleResize = () => {
+		   // Update the state based on the resized window dimensions
+		   if (window.innerWidth < BREAKPOINT_WIDTH) {
+			   setCenterSubPanelHeight((window.innerHeight - 100) / 2);
+		   } else {
+			   setCenterSubPanelHeight(window.innerHeight - 100);
+		   }
+	   };
+
+	   // Add event listener for window resize
+	   window.addEventListener("resize", handleResize);
+
+	   // Remove event listener on cleanup
+	   return () => window.removeEventListener("resize", handleResize);
+   }, []);
+
+   useEffect(() => {
+	 if (editorInstance) {
+	   ModelSemanticsChecker(editorInstance, annotUnderlinedOn, false, highlightColor, decorations);
+	 }
+   }, [annotUnderlinedOn, editorInstance]);
+
+   useEffect(() => {
+	 if (kOptions.length > 0 && kValues.length > 0) {
+		   const newStateForSliders = createInitialState(kOptions, true);
+		   const newSliderValues = createInitialSliderValues(kOptions, kValues); // Example default slider value of 50
+
+		   const newMinMaxValues = createInitialMinMaxValues(kOptions, kValues);
+
+		   set_kOptions_for_sliders(newStateForSliders);
+		   setSliderValues(newSliderValues);
+		   setMinMaxValues(newMinMaxValues);
+		   setSelectedParameter(kOptions[0]);
+	   }
+   }, [kOptions, kValues]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -964,6 +969,7 @@ A = 10
                                   annotationAddPosition={annotationAddPosition}
                                   editorInstance={editorInstance}
                                   varToAnnotate={varToAnnotate}
+                                  setContent={setContent}
                               />
                             </div>
                         )}
