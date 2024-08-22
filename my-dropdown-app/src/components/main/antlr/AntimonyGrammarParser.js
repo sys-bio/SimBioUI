@@ -312,93 +312,91 @@ export class AntimonyGrammarParser extends Parser {
     this._interp = new ParserATNSimulator(AntimonyGrammarParser._ATN, this)
   }
   // @RuleVersion(0)
-  root() {
-    let _localctx = new RootContext(this._ctx, this.state)
-    this.enterRule(_localctx, 0, AntimonyGrammarParser.RULE_root)
-    let _la
+root() {
+    let _localctx = new RootContext(this._ctx, this.state);
+    this.enterRule(_localctx, 0, AntimonyGrammarParser.RULE_root);
+    let _la;
     try {
-      this.enterOuterAlt(_localctx, 1)
-      {
-        this.state = 104
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        while (
-          ((_la & ~0x1f) === 0 &&
-            ((1 << _la) &
-              ((1 << AntimonyGrammarParser.T__0) |
-                (1 << AntimonyGrammarParser.T__1) |
-                (1 << AntimonyGrammarParser.T__4) |
-                (1 << AntimonyGrammarParser.T__6) |
-                (1 << AntimonyGrammarParser.T__15) |
-                (1 << AntimonyGrammarParser.T__19) |
-                (1 << AntimonyGrammarParser.T__28) |
-                (1 << AntimonyGrammarParser.T__29))) !==
-              0) ||
-          (((_la - 33) & ~0x1f) === 0 &&
-            ((1 << (_la - 33)) &
-              ((1 << (AntimonyGrammarParser.ARROW - 33)) |
-                (1 << (AntimonyGrammarParser.NUMBER - 33)) |
-                (1 << (AntimonyGrammarParser.VAR_MODIFIER - 33)) |
-                (1 << (AntimonyGrammarParser.SUB_MODIFIER - 33)) |
-                (1 << (AntimonyGrammarParser.TYPE_MODIFIER - 33)) |
-                (1 << (AntimonyGrammarParser.COMMENT - 33)) |
-                (1 << (AntimonyGrammarParser.NAME - 33)) |
-                (1 << (AntimonyGrammarParser.NEWLINE - 33)))) !==
-              0)
-        ) {
-          {
-            this.state = 102
-            this._errHandler.sync(this)
-            switch (
-              this.interpreter.adaptivePredict(this._input, 0, this._ctx)
+        this.enterOuterAlt(_localctx, 1);
+        {
+            this.state = 104;
+            this._errHandler.sync(this);
+            _la = this._input.LA(1);
+            while (
+                ((_la & ~0x1f) === 0 &&
+                    ((1 << _la) &
+                        ((1 << AntimonyGrammarParser.T__0) |
+                        (1 << AntimonyGrammarParser.T__1) |
+                        (1 << AntimonyGrammarParser.T__4) |
+                        (1 << AntimonyGrammarParser.T__6) |
+                        (1 << AntimonyGrammarParser.T__15) |
+                        (1 << AntimonyGrammarParser.T__19) |
+                        (1 << AntimonyGrammarParser.T__28) |
+                        (1 << AntimonyGrammarParser.T__29) |
+                        (1 << AntimonyGrammarParser.DOT_IDENTIFIER) | // Added here
+                        (1 << AntimonyGrammarParser.BACKTICK))) !== 0) ||
+                (((_la - 33) & ~0x1f) === 0 &&
+                    ((1 << (_la - 33)) &
+                        ((1 << (AntimonyGrammarParser.ARROW - 33)) |
+                        (1 << (AntimonyGrammarParser.NUMBER - 33)) |
+                        (1 << (AntimonyGrammarParser.VAR_MODIFIER - 33)) |
+                        (1 << (AntimonyGrammarParser.SUB_MODIFIER - 33)) |
+                        (1 << (AntimonyGrammarParser.TYPE_MODIFIER - 33)) |
+                        (1 << (AntimonyGrammarParser.COMMENT - 33)) |
+                        (1 << (AntimonyGrammarParser.NAME - 33)) |
+                        (1 << (AntimonyGrammarParser.NEWLINE - 33)))) !== 0)
             ) {
-              case 1:
                 {
-                  this.state = 98
-                  this.simple_stmt()
-                }
-                break
+                    this.state = 102;
+                    this._errHandler.sync(this);
+                    switch (this.interpreter.adaptivePredict(this._input, 0, this._ctx)) {
+                        case 1:
+                            {
+                                this.state = 98;
+                                this.simple_stmt();
+                            }
+                            break;
 
-              case 2:
-                {
-                  this.state = 99
-                  this.model()
-                }
-                break
+                        case 2:
+                            {
+                                this.state = 99;
+                                this.model();
+                            }
+                            break;
 
-              case 3:
-                {
-                  this.state = 100
-                  this.function()
-                }
-                break
+                        case 3:
+                            {
+                                this.state = 100;
+                                this.function();
+                            }
+                            break;
 
-              case 4:
-                {
-                  this.state = 101
-                  this.modular_model()
+                        case 4:
+                            {
+                                this.state = 101;
+                                this.modular_model();
+                            }
+                            break;
+                    }
                 }
-                break
+                this.state = 106;
+                this._errHandler.sync(this);
+                _la = this._input.LA(1);
             }
-          }
-          this.state = 106
-          this._errHandler.sync(this)
-          _la = this._input.LA(1)
         }
-      }
     } catch (re) {
-      if (re instanceof RecognitionException) {
-        _localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
+        if (re instanceof RecognitionException) {
+            _localctx.exception = re;
+            this._errHandler.reportError(this, re);
+            this._errHandler.recover(this, re);
+        } else {
+            throw re;
+        }
     } finally {
-      this.exitRule()
+        this.exitRule();
     }
-    return _localctx
-  }
+    return _localctx;
+}
   // @RuleVersion(0)
   model() {
     let _localctx = new ModelContext(this._ctx, this.state)

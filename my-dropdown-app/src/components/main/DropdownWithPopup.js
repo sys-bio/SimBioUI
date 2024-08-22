@@ -581,7 +581,6 @@ A = 10
     useEffect(() => {
         if (convertedAnt) {
             handleContentSelect(convertedAnt);
-            console.log(convertedAnt)
         }
     }, [convertedAnt]); // eslint-disable-next-line react-hooks/exhaustive-deps
 

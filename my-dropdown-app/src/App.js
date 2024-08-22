@@ -186,11 +186,6 @@ export class App extends React.Component {
            if (res.isSuccess()) {
                antCode = res.getResult();
 
-               // Remove the notes section from the Antimony code
-               const notesRegex = /\/\/ Notes:[\s\S]*?(end|```\nend)/g;
-               antCode = antCode.replace(notesRegex, "end");
-               antCode = antCode.replace(/\.\w/g, "");
-
                // Set the processed antCode without the notes
                this.setState({ sbmlCode: content, convertedAnt: antCode });
            }

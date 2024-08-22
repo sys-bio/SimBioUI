@@ -1,76 +1,73 @@
 grammar AntimonyGrammar;
 
-// entry point for parser
+// Entry point for parser
 root : (simple_stmt | model | function | modular_model)*;
 
 model : NEWLINE? COMMENT? ('model' | 'module') '*'? NAME '()'? simple_stmt_list END;
 
-// end of model
+// End of model
 END : 'end';
 
+// Variable names and expressions
 var_name : ('$')? NAME;
 in_comp : 'in' var_name;
 namemaybein : var_name (in_comp)?;
 
-// event
+// Event handling
 event : reaction_name? 'at' event_delay? bool_exp event_trigger_list? ':' event_assignment_list;
 
 event_delay : bool_exp 'after';
 
 event_trigger_list : (',' event_trigger)*;
 
-// atom has to be changed to (NUMBER | var_name)
 event_trigger : 't0' '=' BOOLEAN
     | 'priority' '=' sum
     | 'fromTrigger' '=' BOOLEAN
     | 'persistent' '=' BOOLEAN;
 
-empty : ;
-// reactions
+// Reactions
 reaction_name : namemaybein ':';
 reaction : (reaction_name)? species_list ARROW (species_list)? ';' (sum)? (in_comp)?
     | (reaction_name)? (species_list)? ARROW species_list ';' (sum)? (in_comp)?;
 species_list : species ('+' species)*;
 species : (NUMBER)? ('$')? NAME;
-ARROW : '->' 
+ARROW : '->'
     | '=>';
 
-// interaction
+// Interaction
 interaction : (reaction_name)? species INTERACTION_SYMBOL namemaybein;
 INTERACTION_SYMBOL : '-o' | '-|' | '-(';
 
-// manual coding of import number from lark
-NUMBER: [0-9]+ ('.' [0-9]+)? | '.' [0-9]+;
+DOT_IDENTIFIER : '.' LETTER (LETTER | DIGIT)* ;
+BACKTICK : '`'+ -> skip;
 
-event_assignment_list : event_assignment (',' event_assignment)*;
-event_assignment : var_name '=' sum;
+// Numbers and literals
+NUMBER : [0-9]+ ('.' [0-9]+)? | '.' [0-9]+;
 
-// boolean
+// Boolean literals
 BOOLEAN : 'true' | 'false';
 
-// compare
+// Comparisons and logical operations
 COMPARE : '>=' | '<=' | '>' | '<' | '==';
-
-// logical
 LOGICAL : '&&' | '||';
 
-// sboterm
+// SBO Term
 sboterm: var_name '.sboTerm' '=' SBOTERM;
-SBOTERM: NUMBER
-    | 'SBO:' NUMBER;
+SBOTERM: NUMBER | 'SBO:' NUMBER;
 
-// assignment
+// Assignments
 assignment : namemaybein ('=' | AEQ) sum;
 AEQ : ':=';
 
-// apostrophe and rate rule
+// Apostrophe and rate rule
 apostrophe : '\'';
 rate_rule : NAME apostrophe '=' sum;
 
-// annotation
+// Annotations
 annotation : var_name ANNOT_KEYWORD ESCAPED_STRING (annot_list)?;
 annot_list : (new_annot)+;
 new_annot : ',' NEWLINE ESCAPED_STRING;
+
 ANNOT_KEYWORD: 'identity'
     | 'hasPart'
     | 'biological_entity_is'
@@ -100,7 +97,7 @@ ANNOT_KEYWORD: 'identity'
     | 'model_entity_is'
     | 'origin';
 
-// declaration
+// Declarations
 declaration : decl_modifiers decl_item (',' decl_item)*;
 decl_modifiers : VAR_MODIFIER
     | TYPE_MODIFIER
@@ -110,27 +107,20 @@ decl_modifiers : VAR_MODIFIER
 decl_item : namemaybein (decl_assignment)?;
 decl_assignment : '=' sum;
 
-// unit
-
-// unit
-// builtin_unit : ('liter' | 'mole' | 'second' | 'item' | 'meter' | 'liters' | 'moles' | 'seconds' | 'items' | 'meters')
-
+// Unit declarations
 unit : NAME;
-
 unit_declaration : 'unit' var_name '=' sum;
-
 unit_assignment : var_name 'has' sum;
 
-// model call, reaction name?
-// this should not be a reaction name, I'm just being lazy (Steve's comment from lark)
+// Model call
 mmodel_call : (reaction_name)? NAME '(' (init_params)? ')';
 
-// modifiers
+// Modifiers
 VAR_MODIFIER: ('var' | 'const');
 SUB_MODIFIER: 'substanceOnly';
 TYPE_MODIFIER: ('species' | 'compartment' | 'formula');
 
-// math
+// Mathematical expressions
 bool_exp : expressions
     | expressions (LOGICAL expressions)*;
 
@@ -157,24 +147,21 @@ atom : NUMBER
     | '(' sum ')'
     | func_call
     | '(' bool_exp ')'
-    | NUMBER 'e' ('-' | '+') NUMBER;
+    | NUMBER 'e' ('-' | '+') NUMBER
+    | DOT_IDENTIFIER;  // Added DOT_IDENTIFIER to atom rule
 
+// Function calls
 func_call : var_name '(' (parameters)? ')';
 
-// body of model
-// optimizations possible when there are multiple empty lines (Steve's comment from lark)
-// example: https://docs.python.org/3/reference/grammar.html (Steve's comment from lark)
-// Now note that NEWLINE is already doing that, but ';' is not (Steve's comment from lark)
+// Body of model
 simple_stmt : (small_stmt)? (';' | NEWLINE);
-
-small_stmt : reaction 
+small_stmt : reaction
     | assignment
     | declaration
     | annotation
     | unit_declaration
     | unit_assignment
     | mmodel_call
-    // | function_call
     | variable_in
     | is_assignment
     | import_
@@ -185,56 +172,41 @@ small_stmt : reaction
 
 simple_stmt_list : simple_stmt+;
 
-// import
+// Imports
 import_ : 'import' ESCAPED_STRING;
 
-// Modular Model
+// Modular model
 modular_model : 'model' ('*')? NAME '(' (init_params)? ')' simple_stmt_list END;
 
-// function
+// Functions
 function : 'function' NAME '(' (init_params)? ')' NEWLINE sum (';')? NEWLINE END;
 
-// parameters
+// Parameters
 parameters : (bool_exp) (',' (bool_exp))*;
 
-// init params
+// Initialization parameters
 init_params : (NAME | NUMBER) (',' (NAME | NUMBER))*;
 
-// var in
+// Variable in component
 variable_in : var_name in_comp;
 
-// is assignment
+// "is" assignments
 is_assignment : NAME 'is' ESCAPED_STRING;
 
-// comment
-// fix this later for the multiline comment and #
+// Comments
 COMMENT : '//' ~[\r\n]* NEWLINE -> skip;
 
-// name 
-NAME : ('species' | 'compartment' | 'var' | 'const' | 'formula' | 'function' | 'end' | 'model' | 'substanceOnly' | 'in')? CNAME;
-
-// manual coding of import cname from lark
+// Identifiers and names (allow dots in names)
+NAME : CNAME ('.' CNAME)*;
 CNAME: ('_' | LETTER) ('_' | LETTER | DIGIT)*;
 LETTER: UCASE_LETTER | LCASE_LETTER;
-WORD: LETTER+;
 LCASE_LETTER: [a-z];
 UCASE_LETTER: [A-Z];
 DIGIT: [0-9];
 
-// etc
-NEWLINE : [\r\n] ;
+// Miscellaneous
+NEWLINE : [\r\n];
 WS : [ \t]+ -> skip;
 
-// Lexer rules for STRING_INNER and STRING_ESC_INNER
-// STRING_INNER : ~'\''*; // Matches any character except single quotes
-// STRING_ESC_INNER : STRING_INNER ~('\\' STRING_INNER)*; // Matches STRING_INNER not preceded by a backslash
-
-// // Lexer rule for ESCAPED_STRING
-// ESCAPED_STRING : '\'' STRING_ESC_INNER '\''; // Matches a single-quoted string with escaped characters
-
-// STRING_INNER : .+?;
-// STRING_ESC_INNER : STRING_INNER ( ~('\\') | '\\' '\\')*?;
-
-// ESCAPED_STRING : '"' STRING_ESC_INNER '"';
-
+// Escaped strings
 ESCAPED_STRING : '"' (~[\r\n\\] | '\\' .)* '"';
