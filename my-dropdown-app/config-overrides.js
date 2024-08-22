@@ -14,17 +14,5 @@ module.exports = function override(config, env) {
     assert: require.resolve('assert/'), // Ensure 'assert' is resolved
   };
 
-  // Ensure .wasm files are handled correctly
-  config.module.rules.push({
-    test: /\.wasm$/,
-    type: 'asset/resource', // Handles .wasm as a resource to be served by Webpack
-  });
-
-  // Override output configuration to ensure the correct base URL is set
-  config.output = {
-    ...config.output,
-    publicPath: '/', // Set this according to your project needs
-  };
-
   return config;
 };
