@@ -12,7 +12,6 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "antlr4ts": "^0.5.0-alpha.4",
-    "assert": "^2.1.0",
     "express": "^4.19.2",
     "jspdf": "^2.5.1",
     "monaco-editor": "^0.50.0",
@@ -28,6 +27,7 @@
     "react-scripts": "^5.0.1",
     "react-spinners": "^0.14.1",
     "react-tooltip": "^5.28.0",
+    "sql.js": "^1.11.0",
     "web-vitals": "^2.1.4"
   },
   "browser": {
@@ -43,7 +43,6 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-  "proxy": "http://localhost:3000",
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -70,6 +69,7 @@
     ]
   },
   "devDependencies": {
+    "assert": "^2.1.0",
     "concurrently": "^8.2.2",
     "customize-cra": "^1.0.0",
     "monaco-editor-webpack-plugin": "^7.1.0",

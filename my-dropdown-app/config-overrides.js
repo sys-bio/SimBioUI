@@ -14,5 +14,17 @@ module.exports = function override(config, env) {
     assert: require.resolve('assert/'), // Ensure 'assert' is resolved
   };
 
+  // Add WebAssembly configuration
+  config.module.rules.push({
+    test: /\.wasm$/,
+    type: 'webassembly/async',
+  });
+
+  // Enable WebAssembly experiments
+  config.experiments = {
+    ...config.experiments, // In case there are existing experiments
+    asyncWebAssembly: true,
+  };
+
   return config;
 };
