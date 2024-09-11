@@ -1,0 +1,147 @@
+.more-options-popup-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #fad3b4;
+    width: 100%; /* Ensure the header takes up the full width */
+    margin-top: -10px;
+}
+
+/* Ensure the containers for the text have enough width */
+.more-options-popup-header-left, .more-options-popup-header-right {
+    width: 40%;
+}
+
+/* Flex layout for the popup body */
+.more-options-popup-body {
+    display: flex;
+    justify-content: space-between;
+    height: 85%; /* Use percentage height to allow for resizing */
+}
+
+.more-options-popup {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    border: 1px solid gray;
+    border-radius: 8px;
+    background-color: #2e2d2d; /* Change popup background to grey */
+    z-index: 1;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.more-options-popup-left {
+    flex: 1; /* Reduce the flex ratio to make the left panel smaller */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #3b3a39;
+    padding-right: 10px; /* Add some padding to separate it from the right panel */
+    height: 90%; /* Set height to 100% of the available space */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+.more-options-popup-right {
+    background: #3b3a39;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 20%;
+    margin-right: 1%;
+    height: 90%; /* Set height to 100% of the available space */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+.more-options-popup-top {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.more-options-popup-bottom {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.more-options-popup-species-options {
+    cursor: pointer;
+    padding-left: 10px;
+    color: white;
+}
+
+/* Style for small text in the right column */
+.more-options-small-text {
+    font-size: 14px;
+    margin-top: 8px;
+    color: white; /* Ensure the text color is visible */
+    margin-left: 3px;
+}
+
+.more-options-popup-buttons {
+    background: black;
+    color: white;
+    border: 1px solid gray;
+    border-radius: 5px;
+    width: 80px;
+}
+
+.more-options-popup-text-on-the-right {
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.floating-species-list {
+    margin-top: 2px; /* Adjust this value to change the space between options */
+}
+
+.resize-handle {
+    width: 10px !important;
+    height: 10px !important;
+    background: #2e2d2d !important;
+    z-index: 1000;
+    border-radius: 50%;
+}
+
+/* Top-left resize handle */
+.resize-handle-top-left {
+    top: 1px; /* Adjusted for smaller size */
+    left: 1px;
+    cursor: nwse-resize;
+}
+
+/* Top-right resize handle */
+.resize-handle-top-right {
+    top: 1px;
+    right: 1px;
+    cursor: nesw-resize;
+}
+
+/* Bottom-left resize handle */
+.resize-handle-bottom-left {
+    left: 1px;
+    cursor: nesw-resize;
+}
+
+/* Bottom-right resize handle */
+.resize-handle-bottom-right {
+    right: 1px;
+    cursor: nwse-resize;
+}

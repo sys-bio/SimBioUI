@@ -223,7 +223,7 @@ class PlotGraph extends PureComponent {
 
                         yaxis: {
                             title: {
-                                text: this.props.yAxisTitleIsShown ? (this.props.nameOfYAxisUserInput !== '' ? this.props.nameOfYAxisUserInput : 'Entities') : '',
+                                text: this.props.yAxisTitleIsShown ? (this.props.nameOfYAxisUserInput !== '' ? this.props.nameOfYAxisUserInput : 'Concentrations') : '',
                                 font: {
                                     color: 'black',
                                     size: dynamicFontSize,

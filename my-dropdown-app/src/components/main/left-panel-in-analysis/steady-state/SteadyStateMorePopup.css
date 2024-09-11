@@ -23,7 +23,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    position: relative;
+    position: relative; /* Ensure the tooltip is positioned relative to this container */
 }
 
 .steady-state-popup-buttons-container {
@@ -124,12 +124,28 @@
 }
 
 .custom-tooltip {
-    position: fixed;
+    position: absolute; /* Change to absolute positioning */
     padding: 5px;
     font-size: 12px;
     pointer-events: none;
     z-index: 1001;
     white-space: nowrap;
     white-space: pre-line;
-    text-align: left
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.75); /* Add some background color for visibility */
+    color: white;
+    border-radius: 3px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
+.resize-handle {
+    width: 20px;
+    height: 20px;
+    background-color: gray;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+}
+
+
+

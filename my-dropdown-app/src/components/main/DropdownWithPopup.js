@@ -42,7 +42,6 @@ const DropdownWithPopup = ({
     handleSBMLfile,
     handleKValuesChanges,
     handleLocalReset,
-    additionalElements = [],
     data,
     kOptions,
     kValues,
@@ -51,7 +50,15 @@ const DropdownWithPopup = ({
     eigenValues,
     jacobian,
     textareaContent,
-    sbmlCode
+    sbmlCode,
+	floatingSpecies,
+	boundarySpecies,
+	reactionRates,
+	handleMoreOptionsApply,
+	isNewOptionsAdded,
+	setIsNewOptionsAdded,
+	selectedOptions,
+	setSelectedOptions
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -86,7 +93,6 @@ A = 10
     const [rightPanelWidth, setRightPanelWidth] = useState(0); // Initial width of the right sub-panel
     const [sizeOfInput, setSizeOfInput] = useState(12);
     const [isDarkMode, setIsDarkMode] = useState(true);
-    const [selectedOptions, setSelectedOptions] = useState([]);
     const [xAxis_selected_option, set_xAxis_selected_option] = useState(null);
     const [kOptions_for_sliders, set_kOptions_for_sliders] = useState({});
     const [sliderValues, setSliderValues] = useState({});
@@ -508,6 +514,13 @@ A = 10
       }
     }
 
+    // Editor options
+    const editorOptions = {
+        minimap: {
+            enabled: false
+        }
+    };
+
     useEffect(() => {
         if (editorRef.current) {
             // Register the language and theme
@@ -519,6 +532,7 @@ A = 10
             const editor = monaco.editor.create(editorRef.current, {
                 value: contentRef.current,
                 language: "antimony",
+                ...editorOptions,
                 theme: "WebIridiumTheme",
                 automaticLayout: true,
             });
@@ -671,40 +685,6 @@ A = 10
                             marginLeft: "10px"
                         }}
                     >
-                        <div className="search-container">
-                            <input
-                                id="biomodel-browse"
-                                style={{
-                                    backgroundColor: isDarkMode ? "black" : "white",
-                                    color: isDarkMode ? "white" : "black",
-                                    border: isDarkMode ? "1px solid gray" : "1px solid black",
-                                    borderRadius: "5px",
-                                    width: "80%",
-                                    height: "30px"
-                                }}
-                                type="text"
-                                placeholder="Search Biomodels"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <div id="biomddropdown" className="suggestions-dropdown">
-                                <ul>
-                                    {suggestions.map((model) => (
-                                        <li
-                                            key={model.id}
-                                            onClick={() => setChosenModel(model.id)}
-                                            style={{ cursor: "pointer"}}
-                                        >
-                                            {model.title}
-                                            <div style={{ color: "#FD7F20"}}>
-                                                {model.journal}, {model.date} - {model.authors.join(", ")}
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            {loading && <Loader loading={loading} />}
-                        </div>
                         <div ref={editorRef} style={{ height: "100%", width: "100%" }} />
                     </div>
                     <div
@@ -998,13 +978,18 @@ A = 10
                 selectedOptions={selectedOptions} // For Parameter Scan
                 set_xAxis_selected_option={set_xAxis_selected_option}
                 onCheckboxChange={onCheckboxChange}
-                additionalElements={additionalElements}
                 isNewFileUploaded={isNewFileUploaded}
                 setIsNewFileUploaded={setIsNewFileUploaded}
                 isNewTabCreated={isNewTabCreated}
                 setIsResetInitialState={setIsResetInitialState}
                 isResetInitialState={isResetInitialState}
                 editorInstance={editorInstance}
+				floatingSpecies={floatingSpecies}
+				boundarySpecies={boundarySpecies}
+				reactionRates={reactionRates}
+				handleMoreOptionsApply={handleMoreOptionsApply}
+				isNewOptionsAdded={isNewOptionsAdded}
+				setIsNewOptionsAdded={setIsNewOptionsAdded}
                 // For Steady State
                 data={data}
                 computeSteadyState={computeSteadyState}

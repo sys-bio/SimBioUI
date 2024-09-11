@@ -10,9 +10,14 @@ export class App extends React.Component {
     constructor(props) {
         super(props);
         this.handleParametersChange = this.handleParametersChange.bind(this);
+        this.handleMoreOptionsApply = this.handleMoreOptionsApply.bind(this);
+        this.setIsNewOptionsAdded = this.setIsNewOptionsAdded.bind(this);
+        this.setSelectedOptions = this.setSelectedOptions.bind(this);
         this.state = {
             copasi: { version: "not loaded" },
             data: { columns: [], titles: [] },
+            isNewOptionsAdded: false,
+            selectedOptions: {},
             textareaContent: "",
             sbmlCode: "",
             sbmlExport: "",
@@ -31,7 +36,10 @@ export class App extends React.Component {
             kValues: [],
             steadyState: 0,
             eigenValues: [],
-            jacobian: []
+            jacobian: [],
+            floatingSpecies: [],
+            boundarySpecies: [],
+            reactionRates: []
         };
     }
     componentDidMount() {
@@ -58,11 +66,31 @@ export class App extends React.Component {
                 const kOptions = this.state.copasi.globalParameterNames;
                 this.setState({
                     kValues: kValues,
-                    kOptions: kOptions,
+                    kOptions: kOptions
                 });
             }
             this.state.copasi.reset();
             const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
+//            try {
+//                // Set selection list to get the rate of change of species 'A'
+//                const speciesRateSelection = this.state.copasi.floatingSpeciesNames.map((name) => `${name}.Rate`);
+//                this.state.copasi.selectionList = speciesRateSelection;
+//
+//                // Log the current selection list to verify
+//                console.log(this.state.copasi.selectionList);
+//            } catch (error) {
+//                console.error('Error setting selection list for species rates:', error);
+//            }
+//			try {
+//                // After setting the selection list, run the simulation
+//                const simResults = JSON.parse(this.state.copasi.Module.simulate());
+//
+//                // Process and display the results, including the species rates
+//                console.log('Simulation results:', simResults);
+//            } catch (error) {
+//                console.error('Error during simulation:', error);
+//            }
+
             this.setState({
                 data: {
                     columns: simResults.columns,
@@ -70,6 +98,9 @@ export class App extends React.Component {
                 },
                 initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
                 oldSBMLContent: this.state.sbmlCode,
+                floatingSpecies: this.state.copasi.floatingSpeciesNames,
+				boundarySpecies: this.state.copasi.boundarySpeciesNames,
+				reactionRates: this.state.copasi.reactionNames
             });
         } catch (err) {
             console.error(`Error in loadCopasi: ${err.message}`);
@@ -84,12 +115,13 @@ export class App extends React.Component {
         }
     };
     processTextChange = (content, isChecked, isNewFileUploaded) => {
-        // If "Always set back to initial" is on and content is the same as the current state
-        if (isChecked && content === this.state.textareaContent && isNewFileUploaded === false) {
-            this.state.copasi.reset();
-            this.loadCopasi();
-            return;
-        }
+//        // If "Always set back to initial" is on and content is the same as the current state
+//        if (isChecked && content === this.state.textareaContent && isNewFileUploaded === false) {
+//        	console.log("hi")
+//            this.state.copasi.reset();
+//            this.loadCopasi();
+//            return;
+//        }
 
         // If content has changed, handle the change
         if (content.trim() !== "") {
@@ -280,7 +312,7 @@ export class App extends React.Component {
             const steadyStateValue = this.state.copasi.steadyState();
             // Run the simulation from start to end
             const simResults = this.state.copasi.simulateEx(start, end, points);
-            if (typeof simResults === 'string') {
+            if (typeof simResults == 'string') {
                 // If it's a string, we assume it's JSON
                 const parsedResults = JSON.parse(simResults);
                 this.setState({
@@ -317,27 +349,44 @@ export class App extends React.Component {
         }
     };
 
+    handleMoreOptionsApply(selectedOptions) {
+        // Initialize speciesRateSelection with defaultList
+        this.setState({isNewOptionsAdded: true, data: { columns: [], titles: [] }});
+        let speciesRateSelection = [...this.state.copasi.selectionList];
+
+        // Iterate through the selectedOptions map
+        for (const [key, values] of Object.entries(selectedOptions)) {
+            if (key === "Rate of Changes") {
+                // Add ".Rate" to each value and append to speciesRateSelection
+                const rateValues = values.map((name) => `${name.replace(/'/g, '')}.Rate`);
+                speciesRateSelection = [...speciesRateSelection, ...rateValues];
+            }
+            if (key === "Reaction Rates") {
+            	const rateValues = values.map((name) => `${name}.Flux`);
+            	speciesRateSelection = [...speciesRateSelection, ...rateValues];
+            }
+        }
+		 const updatedOptions = speciesRateSelection.reduce((acc, item) => {
+			acc[item] = item === "Time" ? false : true;
+			return acc;
+		}, {});
+
+		// Update selectedOptions in the state
+		this.setSelectedOptions(updatedOptions);
+        // Update copasi selectionList with the new speciesRateSelection
+        this.state.copasi.selectionList = speciesRateSelection;
+    }
+
+	setIsNewOptionsAdded(isNewOptionsAdded) {
+		this.setState({isNewOptionsAdded: isNewOptionsAdded})
+	}
+
+	setSelectedOptions(selectedOptions) {
+		this.setState({selectedOptions: selectedOptions})
+	}
 
     render() {
         const simulationParameters = this.state;
-        const additionalElements = [
-            "[A]",
-            "[B]",
-            "[C]",
-            "S[2]",
-            "S[4]",
-            "S[6]",
-            "S[8]",
-            "S[10]",
-            "S[12]",
-            "S[14]",
-            "J_0",
-            "J_1",
-            "J_2",
-            "J_3",
-            "J_4",
-            "J_5",
-        ];
         return (
             <div className="App">
                 <DropdownWithPopup
@@ -351,7 +400,6 @@ export class App extends React.Component {
                     handleTextChange={this.handleTextChange}
                     handleResetInApp={this.handleResetInApp}
                     handleKValuesChanges={this.handleKValuesChanges}
-                    additionalElements={additionalElements}
                     data={this.state.data}
                     isChecked={this.state.isChecked}
                     onCheckboxChange={this.handleCheckboxChange}
@@ -364,6 +412,14 @@ export class App extends React.Component {
                     steadyState={this.state.steadyState}
                     eigenValues={this.state.eigenValues}
                     jacobian={this.state.jacobian}
+                    floatingSpecies={this.state.floatingSpecies}
+					boundarySpecies={this.state.boundarySpecies}
+					reactionRates={this.state.reactionRates}
+					handleMoreOptionsApply={this.handleMoreOptionsApply}
+					isNewOptionsAdded={this.state.isNewOptionsAdded}
+					setIsNewOptionsAdded={this.setIsNewOptionsAdded}
+					selectedOptions={this.state.selectedOptions}
+					setSelectedOptions={this.setSelectedOptions}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>

@@ -22,13 +22,18 @@ const LeftPanel = (props) => {
         selectedOptions,
         set_xAxis_selected_option,
         onCheckboxChange,
-        additionalElements,
         isNewFileUploaded,
         setIsNewFileUploaded,
         isNewTabCreated,
         activeAnalysisPanel,
         setIsResetInitialState,
         isResetInitialState,
+		floatingSpecies,
+		boundarySpecies,
+		reactionRates,
+		handleMoreOptionsApply,
+		isNewOptionsAdded,
+        setIsNewOptionsAdded,
         // For Steady State
         data,
         computeSteadyState,
@@ -61,13 +66,19 @@ const LeftPanel = (props) => {
                     selectedOptions={selectedOptions}
                     set_xAxis_selected_option={set_xAxis_selected_option}
                     onCheckboxChange={onCheckboxChange}
-                    additionalElements={additionalElements}
                     isNewFileUploaded={isNewFileUploaded}
                     setIsNewFileUploaded={setIsNewFileUploaded}
                     isNewTabCreated={isNewTabCreated}
                     setIsResetInitialState={setIsResetInitialState}
                     isResetInitialState={isResetInitialState}
                     editorInstance={editorInstance}
+                    floatingSpecies={floatingSpecies}
+					boundarySpecies={boundarySpecies}
+					reactionRates={reactionRates}
+					kOptions={kOptions}
+					handleMoreOptionsApply={handleMoreOptionsApply}
+					isNewOptionsAdded={isNewOptionsAdded}
+                    setIsNewOptionsAdded={setIsNewOptionsAdded}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState

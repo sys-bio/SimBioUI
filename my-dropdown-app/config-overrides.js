@@ -14,13 +14,13 @@ module.exports = function override(config, env) {
     assert: require.resolve('assert/'), // Ensure 'assert' is resolved
   };
 
-  // Add WebAssembly configuration
+  // Add WebAssembly configuration for async loading of .wasm files
   config.module.rules.push({
     test: /\.wasm$/,
     type: 'webassembly/async',
   });
 
-  // Enable WebAssembly experiments
+  // Enable WebAssembly experiments in Webpack
   config.experiments = {
     ...config.experiments, // In case there are existing experiments
     asyncWebAssembly: true,

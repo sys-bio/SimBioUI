@@ -4,6 +4,7 @@ import SimulationParameters from "../../SimulationParameters";
 import { FaBars } from "react-icons/fa";
 import DropdownContainers from "../../DropdownContainers";
 import "./TimeCourseSimulation.css";
+import MoreOptionsPopup from "./MoreOptionsPopup";
 
 class TimeCourseSimulation extends Component {
     constructor(props) {
@@ -26,6 +27,12 @@ class TimeCourseSimulation extends Component {
             this.props.setIsResetInitialState(true);
         }
 
+        if (prevProps.selectedOptions !== this.props.selectedOptions) {
+			this.setState({
+				options: this.props.selectedOptions,
+			});
+		}
+
         if (this.props.initialOptions !== prevProps.initialOptions) {
             const modifiedInitialOptions = { ...this.props.initialOptions };
             const keys = Object.keys(modifiedInitialOptions);
@@ -47,9 +54,12 @@ class TimeCourseSimulation extends Component {
 
     handleSimulateButtonClick = () => {
         // Ensure that you have access to the Monaco Editor instance
-        const editorContent = this.props.editorInstance?.getValue(); // Get the current value from the Monaco Editor
+        const editorContent = this.props.editorInstance?.getValue();
 
-        if (editorContent !== this.state.previousContent) {
+        if (editorContent !== this.state.previousContent || this.props.isNewOptionsAdded) {
+        	if (this.props.isNewOptionsAdded) {
+        		this.props.setIsNewOptionsAdded(false);
+        	}
             this.props.setSelectedOptions([]);
             this.props.handleTextChange(editorContent, this.props.isResetInitialState, true); // Pass the editor content here
             this.setState({ shouldUpdateSelectedOptions: true });
@@ -78,8 +88,8 @@ class TimeCourseSimulation extends Component {
     };
 
     updateSelectedOptions = (newOptions) => {
-        this.props.setSelectedOptions(newOptions);
-    };
+		this.props.setSelectedOptions(newOptions);
+	};
 
     selectAllOptions = () => {
         const newOptions = Object.keys(this.state.options).reduce((acc, key) => {
@@ -99,13 +109,6 @@ class TimeCourseSimulation extends Component {
         this.props.setSelectedOptions(newOptions);
     };
 
-    applySelectedElements = () => {
-        this.state.selectedElements.forEach((element) => {
-            this.toggleOption(element);
-        });
-        this.setState({ selectedElements: [], showMoreOptions: false });
-    };
-
     closePopup = () => {
         this.setState({ selectedElements: [], showMoreOptions: false });
     };
@@ -116,25 +119,12 @@ class TimeCourseSimulation extends Component {
         }));
     };
 
-    addAllElements = () => {
-        this.setState({ selectedElements: this.props.additionalElements });
-    };
-
     clearAllElements = () => {
         this.setState({ selectedElements: [] });
     };
 
-    toggleOption = (optionValue) => {
-        this.setState((prevState) => ({
-            options: {
-                ...prevState.options,
-                [optionValue]: true,
-            },
-        }));
-    };
-
     render() {
-        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, additionalElements, isResetInitialState } = this.props;
+        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, isResetInitialState } = this.props;
         const { options, selectedXOption, showDropdown, showXDropdown, showDropdownButtons, showMoreOptions, selectedElements } = this.state;
 
         const dropdownXAxisButtonStyle = {
@@ -315,8 +305,8 @@ class TimeCourseSimulation extends Component {
                                 {showDropdown && (
                                     <DropdownContainers
                                         key={JSON.stringify(options)}
-                                        updateOptions={this.updateSelectedOptions}
                                         className={"dropdown-container"}
+                                        updateOptions={this.updateSelectedOptions}
                                         isDarkMode={isDarkMode}
                                         withCheckboxes={true}
                                         options={this.props.selectedOptions}
@@ -368,31 +358,20 @@ class TimeCourseSimulation extends Component {
                 </div>
 
                 {showMoreOptions && (
-                    <div className="popup">
-                        <div className="popup-left">
-                            {additionalElements.map((element) => (
-                                <button key={element} onClick={() => this.addElementToSelected(element)}>
-                                    {element}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="popup-right">
-                            <div className={"small-text"}>
-                                {selectedElements.map((element) => (
-                                    <div key={element}>{element}</div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="popup-top">
-                            <button onClick={this.addAllElements}>Add All</button>
-                            <button onClick={this.clearAllElements}>Clear All</button>
-                        </div>
-                        <div className="popup-bottom">
-                            <button onClick={this.applySelectedElements}>Apply</button>
-                            <button onClick={this.closePopup}>Close</button>
-                        </div>
-                    </div>
-                )}
+                    <MoreOptionsPopup
+						selectedElements={selectedElements}
+						addElementToSelected={this.addElementToSelected}
+						addAllElements={this.addAllElements}
+						clearAllElements={this.clearAllElements}
+						applySelectedElements={this.applySelectedElements}
+						closePopup={this.closePopup}
+						floatingSpecies={this.props.floatingSpecies}
+						boundarySpecies={this.props.boundarySpecies}
+						reactionRates={this.props.reactionRates}
+						kOptions={this.props.kOptions}
+						handleMoreOptionsApply={this.props.handleMoreOptionsApply}
+					/>
+				)}
             </>
         );
     }

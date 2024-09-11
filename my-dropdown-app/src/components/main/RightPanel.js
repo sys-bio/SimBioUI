@@ -141,6 +141,7 @@ const RightPanel = (props, ref) => {
     // ALL ELEMENTS FOR RIGHT SUBPANEL
     const rightPanelRef = useRef(null);
     const rightResizingRef = useRef(false);
+
     useEffect(() => {
         if (isNewTabCreated) {
             setIsXAutoscaleChecked(false);

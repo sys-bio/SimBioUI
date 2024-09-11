@@ -31,7 +31,7 @@ const AxisProperties = ({
                 <input
                     type="text"
                     value={nameOfAxisUserInput}
-                    placeholder={axisType === 'Y' ? 'Entities' : (axis_selected_option === null ? "Time" : axis_selected_option)}
+                    placeholder={axisType === 'Y' ? 'Concentrations' : (axis_selected_option === null ? "Time" : axis_selected_option)}
                     onChange={(e) => setNameOfAxisUserInput(e.target.value)}
                     style={{
                         width: '80%',
