@@ -41,3 +41,9 @@
     background-color: #0056b3; /* Darker blue on hover */
 }
 
+.container-for-compute-and-icon {
+	 display: flex;
+	 justify-content: space-between;
+	 align-items: center
+}
+

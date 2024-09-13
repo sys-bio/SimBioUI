@@ -71,26 +71,6 @@ export class App extends React.Component {
             }
             this.state.copasi.reset();
             const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
-//            try {
-//                // Set selection list to get the rate of change of species 'A'
-//                const speciesRateSelection = this.state.copasi.floatingSpeciesNames.map((name) => `${name}.Rate`);
-//                this.state.copasi.selectionList = speciesRateSelection;
-//
-//                // Log the current selection list to verify
-//                console.log(this.state.copasi.selectionList);
-//            } catch (error) {
-//                console.error('Error setting selection list for species rates:', error);
-//            }
-//			try {
-//                // After setting the selection list, run the simulation
-//                const simResults = JSON.parse(this.state.copasi.Module.simulate());
-//
-//                // Process and display the results, including the species rates
-//                console.log('Simulation results:', simResults);
-//            } catch (error) {
-//                console.error('Error during simulation:', error);
-//            }
-
             this.setState({
                 data: {
                     columns: simResults.columns,
@@ -146,10 +126,20 @@ export class App extends React.Component {
         this.state.copasi.reset();
     };
 
-    handleKValuesChanges = (option, value) => {
+    handleKValuesChanges = (option, value, isEigenvaluesRecalculated) => {
         try {
             this.state.copasi.setValue(option, value);
             this.loadCopasi();
+            if (isEigenvaluesRecalculated) {
+            	const steadyStateValue = this.state.copasi.steadyState();
+            	const eigenValuesRes = this.state.copasi.eigenValues2D;
+				const jacobianRes = this.state.copasi.jacobian;
+				this.setState({
+					steadyState: steadyStateValue,
+					eigenValues: eigenValuesRes,
+					jacobian: jacobianRes
+				});
+            }
         } catch (err) {
             console.error(`Error in handleKValuesChanges: ${err.message}`);
         }
@@ -343,7 +333,7 @@ export class App extends React.Component {
                 },
                 eigenValues: eigenValuesRes,
                 jacobian: jacobianRes
-            }); // Update the state with the new steadyState value
+            });
         } else {
             alert("Run Simulation to perform this feature");
         }

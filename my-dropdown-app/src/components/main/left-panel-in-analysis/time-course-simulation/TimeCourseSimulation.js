@@ -194,7 +194,7 @@ class TimeCourseSimulation extends Component {
                                     <button
                                         className={"simulate-style"}
                                         style={{
-                                            marginLeft: "-10px",
+
                                             marginTop: '10px',
                                             color: isDarkMode ? "white" : "black",
                                         }}
@@ -202,7 +202,9 @@ class TimeCourseSimulation extends Component {
                                     >
                                         Reset
                                     </button>
-                                    <button style={{ marginTop: '10px' }} onClick={this.handleSlideButtonClick}>Slider</button>
+                                    <button style={{backgroundColor: "#2d2d2d"}} onClick={this.handleSlideButtonClick}>
+										<img src={`${process.env.PUBLIC_URL}/slider.png`} style={{ width: '35px', height: '35px'}} />
+									</button>
                                 </div>
                             </div>
                             <div className="text-checkbox-input">

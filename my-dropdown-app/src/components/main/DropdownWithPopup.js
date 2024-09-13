@@ -26,6 +26,7 @@ import LeftPanel from "./left-panel-in-analysis/LeftPanel";
 import { getPanelStyles } from "../../utils/common";
 import { MIN_PANEL_WIDTH, BREAKPOINT_WIDTH, LEFT_PANEL_FIXED_WIDTH } from "../../constants/const";
 import RightPanel from "./RightPanel";
+import SliderPopup from './SliderPopup'; // Import the new component
 
 const DropdownWithPopup = ({
     initialOptions,
@@ -203,10 +204,10 @@ A = 10
         }));
     };
 
-    const handleSliderChange = (option, value) => {
+    const handleSliderChange = (option, value, isEigenvaluesRecalculated) => {
         const roundedValue = Number(value).toFixed(2);
         setSliderValues((prev) => ({ ...prev, [option]: roundedValue }));
-        handleKValuesChanges(option, roundedValue);
+        handleKValuesChanges(option, roundedValue, isEigenvaluesRecalculated);
     };
 
     const handleLabelClick = (parameter) => {
@@ -671,7 +672,6 @@ A = 10
 
     const renderActiveTabContent = () => {
         if (showSplitView) {
-            // When split view is active, display text input on top and a blue box on bottom
             return (
                 <>
                     <div
@@ -691,238 +691,25 @@ A = 10
                         style={{
                             height: `${(centerSubPanelHeight - 50) / 2}px`,
                             width: `${centerPanelWidth - 22}px`,
-                            backgroundColor: isDarkMode ? "#2e2d2d" : "white", // Set the background color to blue for the bottom half
-                            border: isDarkMode ? "1px solid white" : "1px solid black",
-                            color: "white", // Set the text color to white if needed
                             marginLeft: "10px",
                             marginTop: "10px",
-                            display: "flex", // Use flexbox to layout children side by side
-                            flexDirection: "row", // Align children horizontally
-                            alignItems: "flex-start", // Align items at the start of the flex container
                         }}
                     >
-
-                        <div
-                            style={{
-                                height: "90%", // Set to 90% of the parent div's height
-                                width: "150px", // Adjusted width to make space for sliders
-                                marginTop: "15px",
-                                backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-                                display: "flex", // Further nest flexbox for internal layout
-                                flexDirection: "column", // Stack children vertically
-                                overflowY: "auto", // Add overflow-y property to enable vertical scrolling
-                                boxSizing: "border-box", // Include border width in the total width calculation
-                            }}
-                        >
-                            <p
-                                style={{
-                                    fontSize: "12px",
-                                    marginLeft: "25px",
-                                    color: isDarkMode ? "white" : "black", // Ensure text is white for visibility on dark backgrounds
-                                    marginTop: "20px",
-                                }}
-                            >
-                                Add slider
-                            </p>
-                            <div className={isDarkMode ? "custom-scrollbar-dark-mode" : "custom-scrollbar-light-mode"}
-                                style={{
-                                    height: "70%", // Set height to fit content
-                                    width: "70%", // Adjust width to fill parent
-                                    backgroundColor: isDarkMode ? "black" : "white", // Set the background color to blue for the bottom half
-                                    border: isDarkMode ? "1px solid gray" : "1px solid black",
-                                    marginLeft: "25px",
-                                    overflowY: "auto", // Add overflow-y property to enable vertical scrolling
-                                }}
-                            >
-                                {kOptions.map((option) => (
-                                    <div
-                                        key={option}
-                                        style={{
-                                            color: isDarkMode ? "white" : "black",
-                                            padding: "5px",
-                                            fontSize: "12px",
-                                        }}
-                                    >
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={kOptions_for_sliders[option]}
-                                                onChange={() => handleCheckboxChange(option)}
-                                            />
-                                            {option}
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div
-                            style={{
-                                height: "100%", // Set to 90% of the parent div's height
-                                width: "80%", // Set to 50% to fit next to checkboxes
-                                backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-                                display: "flex", // Use flexbox to layout sliders
-                                flexDirection: "column", // Stack sliders vertically
-                                justifyContent: "center", // Center sliders vertically within the container
-                                padding: "40px", // Padding around sliders
-                                boxSizing: "border-box", // Include border width in the total width calculation
-                            }}
-                        >
-                             <MdClose
-                                onClick={() => setShowSplitView(!showSplitView)}
-                                style={{
-                                    cursor: "pointer",
-                                    marginLeft: "100%",
-                                    marginTop: "-40px",
-                                    fontSize: "20px",
-                                    color: isDarkMode ? "white" : "black",
-                                }}
-                            />
-                            <div
-                                style={{
-                                    height: "15%", // Set to 20% of the parent div's height
-                                    width: "100%",
-                                    display: "flex", // Use flexbox to layout controls horizontally
-                                    flexDirection: "row", // Align controls horizontally
-                                    justifyContent: "space-between", // Space controls evenly within the subpanel
-                                    alignItems: "center", // Align controls vertically at the center
-                                    marginTop: "-10px",
-                                }}
-                            >
-                                {selectedParameter && (
-                                    <div>
-                                        <span
-                                            style={{
-                                                fontSize: "12px",
-                                                marginRight: "10px",
-                                                color: isDarkMode ? 'white' : 'black'
-                                            }}
-                                        >
-                                            {selectedParameter}
-                                        </span>
-                                        <div className="minMaxInputContainer">
-                                            <label style={{color: isDarkMode ? 'white' : 'black'}}>Min Value:</label>
-                                            <input
-                                                style={{backgroundColor: isDarkMode ? 'black' : 'white', color: isDarkMode ? 'white' : 'black'}}
-                                                type="number"
-                                                value={
-                                                    minMaxValues[selectedParameter]
-                                                        ? minMaxValues[selectedParameter]?.min || 0
-                                                        : 0
-                                                }
-                                                onChange={handleMinValueChange}
-                                            />
-                                        </div>
-                                        <div className="minMaxInputContainer">
-                                            <label style={{color: isDarkMode ? 'white' : 'black'}}>Max Value:</label>
-                                            <input
-                                                style={{backgroundColor: isDarkMode ? 'black' : 'white', color: isDarkMode ? 'white' : 'black'}}
-                                                type="number"
-                                                value={minMaxValues[selectedParameter]?.max || 100}
-                                                onChange={handleMaxValueChange}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                            <div className={isDarkMode ? "custom-scrollbar-sliders-dark-mode" : "custom-scrollbar-light-mode"}
-                                style={{
-                                        height: "85%", // Set to 85% of the parent div's height
-                                        width: "100%",
-                                        backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-                                        display: "flex", // Use flexbox to layout sliders
-                                        flexDirection: "column", // Stack sliders vertically
-                                        justifyContent: "flex-start", // Align items at the start of the container
-                                        marginTop: "2%",
-                                        boxSizing: "border-box",
-                                        overflowY: "auto", // Add scrollbar when content overflows vertically
-                                    }}
-                            >
-                                {kOptions.map((option) => {
-                                    if (kOptions_for_sliders[option]) {
-                                        const range = minMaxValues[option].max - minMaxValues[option].min;
-                                        const stepSize = range / 100;
-                                        const currentVal =
-                                            sliderValues[option] === minMaxValues[option].min
-                                                ? 0
-                                                : sliderValues[option];
-
-                                        return (
-                                            <div
-                                                key={option + "-slider"}
-                                                style={{
-                                                    width: "100%",
-                                                    marginTop: "5%",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        flex: 1,
-                                                        position: "relative",
-                                                    }}
-                                                >
-                                                    <input
-                                                        type="range"
-                                                        min={minMaxValues[option].min}
-                                                        max={minMaxValues[option].max}
-                                                        value={sliderValues[option]}
-                                                        step={stepSize} // Use the computed stepSize here
-                                                        onChange={(e) => handleSliderChange(option, e.target.value)}
-                                                        style={{
-                                                            width: "100%",
-                                                            background: `linear-gradient(to right, #2273f5 0%, blue ${
-                                                                ((sliderValues[option] - minMaxValues[option].min) /
-                                                                    (minMaxValues[option].max - minMaxValues[option].min)) *
-                                                                100
-                                                            }%, ${"#9b9a9c"} ${
-                                                                ((sliderValues[option] - minMaxValues[option].min) /
-                                                                    (minMaxValues[option].max - minMaxValues[option].min)) *
-                                                                100
-                                                            }%, ${"#9b9a9c"} 100%, transparent 100%)`,
-                                                        }}
-
-                                                        className="slider"
-                                                    />
-                                                    <div
-                                                        style={{
-                                                            position: "absolute",
-                                                            top: "-10px",
-                                                            left: "20px",
-                                                            transform: "translateX(-50%)",
-                                                            fontSize: "12px",
-                                                            color: isDarkMode ? 'white' : 'black'
-                                                        }}
-                                                    >
-                                                        {currentVal}
-                                                    </div>
-                                                </div>
-                                                <div className="labelContainer">
-                                                    <label
-                                                        className="sliderLabel"
-                                                        style={{
-                                                            marginLeft: "15px",
-                                                            fontSize: "12px",
-                                                            marginTop: "7px",
-                                                            cursor: 'pointer',
-                                                        }}
-                                                        onClick={() => handleLabelClick(option)}
-                                                    >
-                                                        <span style={{color: isDarkMode ? 'white' : 'black'}}>
-                                                            {option} [{minMaxValues[option]?.min || 0},{" "}
-                                                            {minMaxValues[option]?.max || 0}]
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        );
-                                    } else {
-                                        return;
-                                    }
-                                })}
-                            </div>
-                        </div>
+                        {/* Use the SliderPopup component */}
+                        <SliderPopup
+                            kOptions={kOptions}
+                            kOptionsForSliders={kOptions_for_sliders}
+                            minMaxValues={minMaxValues}
+                            sliderValues={sliderValues}
+                            isDarkMode={isDarkMode}
+                            selectedParameter={selectedParameter}
+                            handleCheckboxChange={handleCheckboxChange}
+                            handleSliderChange={handleSliderChange}
+                            handleMinValueChange={handleMinValueChange}
+                            handleMaxValueChange={handleMaxValueChange}
+                            handleLabelClick={handleLabelClick}
+                            setShowSplitView={setShowSplitView}
+                        />
                     </div>
                 </>
             );
@@ -943,13 +730,13 @@ A = 10
                         <div ref={editorRef} style={{ height: "100%", width: "100%" }} />
                         {isModalVisible && (
                             <div ref={modalRef}>
-                              <CreateAnnotationModal
-                                  onClose={() => setModalVisible(false)}
-                                  annotationAddPosition={annotationAddPosition}
-                                  editorInstance={editorInstance}
-                                  varToAnnotate={varToAnnotate}
-                                  setContent={setContent}
-                              />
+                                <CreateAnnotationModal
+                                    onClose={() => setModalVisible(false)}
+                                    annotationAddPosition={annotationAddPosition}
+                                    editorInstance={editorInstance}
+                                    varToAnnotate={varToAnnotate}
+                                    setContent={setContent}
+                                />
                             </div>
                         )}
                     </div>
@@ -996,6 +783,15 @@ A = 10
                 steadyState={steadyState}
                 eigenValues={eigenValues}
                 jacobian={jacobian}
+				kOptionsForSliders={kOptions_for_sliders}
+				minMaxValues={minMaxValues}
+				sliderValues={sliderValues}
+				selectedParameter={selectedParameter}
+				handleCheckboxChange={handleCheckboxChange}
+				handleSliderChange={handleSliderChange}
+				handleMinValueChange={handleMinValueChange}
+				handleMaxValueChange={handleMaxValueChange}
+				handleLabelClick={handleLabelClick}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}
@@ -1023,6 +819,7 @@ A = 10
                         style={{
                             height: `${centerSubPanelHeight * 0.1}px`,
                             marginLeft: "10px",
+                            marginTop: "1%"
                         }}
                     >
                         <label

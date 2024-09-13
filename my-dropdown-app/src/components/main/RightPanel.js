@@ -2,6 +2,7 @@ import React, { forwardRef, useRef, useState, useEffect } from "react";
 import ResizingHandle from "./ResizingHandle";
 import PlotGraph from "./PlotGraph";
 import NumberInput from "./NumberInput";
+import DataTablePopup from "./DataTablePopup";
 import GraphEditFeatures from "./edit-graph-popup/GraphEditFeatures";
 import AxesEditFeatures from "./edit-graph-popup/AxesEditFeatures";
 import GridEditFeatures from "./edit-graph-popup/GridEditFeatures";
@@ -45,6 +46,9 @@ const RightPanel = (props, ref) => {
 
     // When click on Edit Graph, there is a popup shown up
     const [showEditGraphPopup, setShowEditGraphPopup] = useState(false);
+
+    // When click on "Show More Data", all data from the graph will be shown up in popup window
+    const [showMoreDataPopup, setShowMoreDataPopup] = useState(false);
 
     // Make the popup draggable
     const [popupPosition, setPopupPosition] = useState({ x: 750, y: 450 });
@@ -233,6 +237,10 @@ const RightPanel = (props, ref) => {
         setShowMainTitleColorDropdown(false);
         setShowGraphBorderColorDropdown(false);
     }
+
+    const handleShowMoreData = () => {
+        setShowMoreDataPopup(true);
+    };
 
     // There are 5 buttons in Edit Graph: Graph, Axes, Grid, Series, Legend
     // first func is true, rest is false to show which panel shoul
@@ -495,11 +503,29 @@ const RightPanel = (props, ref) => {
                                     {" "}
                                     Export To PDF
                                 </button>
+                                <button
+									className={"edit-export-style"}
+									style={{
+										color: isDarkMode ? "white" : "black",
+										marginTop: "10px"
+									}}
+									onClick={handleShowMoreData}
+								>
+									{" "}
+									Show Data
+								</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            {showMoreDataPopup && (
+				<DataTablePopup
+					data={data}
+					onClose={() => setShowMoreDataPopup(false)}
+					isDarkMode={isDarkMode}
+				/>
+			)}
             {showEditGraphPopup && (
                 <div className="modal-overlay">
                     <div className="popup-edit-graph"

@@ -40,6 +40,15 @@ const LeftPanel = (props) => {
         steadyState,
         eigenValues,
         jacobian,
+		kOptionsForSliders,
+		minMaxValues,
+		sliderValues,
+		selectedParameter,
+		handleCheckboxChange,
+		handleSliderChange,
+		handleMinValueChange,
+		handleMaxValueChange,
+		handleLabelClick,
         // For Parameter Scan
         kOptions,
         isShowLegendChecked,
@@ -93,6 +102,17 @@ const LeftPanel = (props) => {
                     isResetInitialState={isResetInitialState}
                     eigenValues={eigenValues}
                     jacobian={jacobian}
+                    kOptions={kOptions}
+					kOptionsForSliders={kOptionsForSliders}
+					minMaxValues={minMaxValues}
+					sliderValues={sliderValues}
+					selectedParameter={selectedParameter}
+					handleCheckboxChange={handleCheckboxChange}
+					handleSliderChange={handleSliderChange}
+					handleMinValueChange={handleMinValueChange}
+					handleMaxValueChange={handleMaxValueChange}
+					handleLabelClick={handleLabelClick}
+					setShowSplitView={setShowSplitView}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan

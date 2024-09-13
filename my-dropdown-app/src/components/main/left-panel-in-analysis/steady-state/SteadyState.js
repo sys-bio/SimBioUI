@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { MIN_PANEL_WIDTH } from "../../../../constants/const";
 import { FaBars } from "react-icons/fa";
 import "./SteadyState.css";
-import SteadyStateMorePopup from "./SteadyStateMorePopup"; // Import the new popup component
+import SteadyStateMorePopup from "./SteadyStateMorePopup";
+import SliderPopupWindow from "./SliderPopupWindow"; // Import the SliderPopup component
 
 class SteadyState extends Component {
     constructor(props) {
@@ -10,7 +11,8 @@ class SteadyState extends Component {
         this.state = {
             showData: sessionStorage.getItem('showData') === 'true' || false,
             isSteadyStateComputed: sessionStorage.getItem('isSteadyStateComputed') === 'true' || false,
-            showMorePopup: false // State to control the visibility of the More popup
+            showMorePopup: false,
+            showSliderPopup: false // State to control the visibility of the Slider popup
         };
     }
 
@@ -41,6 +43,15 @@ class SteadyState extends Component {
 
     handleCloseMorePopup = () => {
         this.setState({ showMorePopup: false });
+    }
+
+    // Handle the popup for the Slider
+    handleSliderPopupClick = () => {
+        this.setState({ showSliderPopup: true });
+    }
+
+    handleCloseSliderPopup = () => {
+        this.setState({ showSliderPopup: false });
     }
 
     renderTable = (dataSource, label_of_first_column, label_of_second_columns, isEigenvalues) => {
@@ -96,8 +107,8 @@ class SteadyState extends Component {
     }
 
     render() {
-        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, selectedOptions, steadyState, eigenValues } = this.props;
-        const { showData, isSteadyStateComputed, showMorePopup } = this.state;
+        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, selectedOptions, steadyState, eigenValues, kOptions, kOptionsForSliders, minMaxValues, sliderValues } = this.props;
+        const { showData, isSteadyStateComputed, showMorePopup, showSliderPopup } = this.state;
 
         return (
             <>
@@ -129,15 +140,23 @@ class SteadyState extends Component {
                                     >
                                         Config
                                     </button>
+
                                 </div>
                             </div>
-                            <div style={{ marginTop: '10px' }}>
+                            <div className={"container-for-compute-and-icon"}>
                                 <button
                                     className={"compute-steady-state-button"}
                                     style={this.generalStyle(isDarkMode, "black", "white")}
                                     onClick={this.handleComputeClick}
                                 >
                                     Compute the Steady-State
+                                </button>
+                                <button
+                                    style={{ backgroundColor: "#2d2d2d" }}
+                                    onClick={this.handleSliderPopupClick}>
+                                    <img src={`${process.env.PUBLIC_URL}/slider.png`}
+                                    	style={{marginTop:'-5px', width: '35px', height: '35px' }}
+                                    />
                                 </button>
                             </div>
                             <div style={{ marginTop: '10px', color: isDarkMode ? "white" : "black", fontSize: "12px" }}>
@@ -175,12 +194,29 @@ class SteadyState extends Component {
                         </div>
                     )}
                 </div>
+                {/* Conditionally render SliderPopup */}
+                {showSliderPopup &&
+                    <SliderPopupWindow
+                        kOptions={this.props.kOptions}
+                        kOptionsForSliders={this.props.kOptionsForSliders}
+                        minMaxValues={this.props.minMaxValues}
+                        sliderValues={this.props.sliderValues}
+                        isDarkMode={this.props.isDarkMode}
+                        selectedParameter={this.props.selectedParameter}
+                        handleCheckboxChange={this.props.handleCheckboxChange}
+                        handleSliderChange={this.props.handleSliderChange}
+                        handleMinValueChange={this.props.handleMinValueChange}
+                        handleMaxValueChange={this.props.handleMaxValueChange}
+                        handleLabelClick={this.props.handleLabelClick}
+                        closeWindow={this.handleCloseSliderPopup} // Close the popup when clicked
+                    />
+                }
                 {showMorePopup &&
-                    <SteadyStateMorePopup
-                        onClose={this.handleCloseMorePopup}
-                        isDarkMode={isDarkMode}
-                        jacobian={this.props.jacobian}
-                    />}
+				<SteadyStateMorePopup
+					onClose={this.handleCloseMorePopup}
+					isDarkMode={isDarkMode}
+					jacobian={this.props.jacobian}
+				/>}
             </>
         );
     }
