@@ -2,7 +2,7 @@ import React, { PureComponent, forwardRef } from 'react';
 import Plot from 'react-plotly.js';
 import Plotly from 'plotly.js-basic-dist';
 import jsPDF from 'jspdf';
-import DraggableLegend from '../draggable/DraggableLegend';
+import DraggableLegend from '../../draggable/DraggableLegend';
 
 class PlotGraph extends PureComponent {
     constructor(props) {

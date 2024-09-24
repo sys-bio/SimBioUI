@@ -1,7 +1,7 @@
 import {
   Modular_modelContext,
   Species_listContext
-} from "./antlr/AntimonyGrammarParser"
+} from ".././antlr/AntimonyGrammarParser"
 import { Variable } from "./Variable"
 import { getTypeFromString, isSubtTypeOf, varTypes } from "./Types"
 import {

@@ -1,15 +1,15 @@
 import React, { forwardRef, useRef, useState, useEffect } from "react";
 import ResizingHandle from "./ResizingHandle";
 import PlotGraph from "./PlotGraph";
-import NumberInput from "./NumberInput";
-import DataTablePopup from "./DataTablePopup";
-import GraphEditFeatures from "./edit-graph-popup/GraphEditFeatures";
-import AxesEditFeatures from "./edit-graph-popup/AxesEditFeatures";
-import GridEditFeatures from "./edit-graph-popup/GridEditFeatures";
-import SeriesEditFeatures from "./edit-graph-popup/series-edit-features/SeriesEditFeatures";
-import LegendEditFeatures from "./edit-graph-popup/LegendEditFeatures";
-import { INITIAL_GRAPH_STATE, colorOptions } from "../../constants/const";
-import "../../styles/rightSubPanel/right-subpanel-edit-graph.css";
+import NumberInput from "../NumberInput";
+import DataTablePopup from "./data-table-popup/DataTablePopup";
+import GraphEditFeatures from "../edit-graph-popup/GraphEditFeatures";
+import AxesEditFeatures from "../edit-graph-popup/AxesEditFeatures";
+import GridEditFeatures from "../edit-graph-popup/GridEditFeatures";
+import SeriesEditFeatures from "../edit-graph-popup/series-edit-features/SeriesEditFeatures";
+import LegendEditFeatures from "../edit-graph-popup/LegendEditFeatures";
+import { INITIAL_GRAPH_STATE, colorOptions } from "../../../constants/const";
+import "../../../styles/rightSubPanel/right-subpanel-edit-graph.css";
 
 const RightPanel = (props, ref) => {
     const {
@@ -238,9 +238,13 @@ const RightPanel = (props, ref) => {
         setShowGraphBorderColorDropdown(false);
     }
 
-    const handleShowMoreData = () => {
-        setShowMoreDataPopup(true);
-    };
+	const handleShowMoreData = () => {
+		if (!data || data.columns.length === 0) {
+			window.alert("Run Simulate to show more data");
+		} else {
+			setShowMoreDataPopup(true);
+		}
+	};
 
     // There are 5 buttons in Edit Graph: Graph, Axes, Grid, Series, Legend
     // first func is true, rest is false to show which panel shoul

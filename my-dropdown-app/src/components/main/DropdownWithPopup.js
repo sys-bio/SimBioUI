@@ -10,22 +10,22 @@ import "../../styles/rightSubPanel/right-subpanel.css";
 import "../../styles/leftTopCorner/left-top-corner.css";
 
 // Monaco text editor
-import BioModelsService from "./BioModelsService";
+import BioModelsService from "./center-panel/BioModelsService";
 import Loader from "./Loader";
-import { WebIridiumTheme } from "./WebIridiumTheme";
-import { WebIridiumLanguage } from "./WebIridiumLanguage";
+import { WebIridiumTheme } from "./center-panel/WebIridiumTheme";
+import { WebIridiumLanguage } from "./center-panel/WebIridiumLanguage";
 import * as monaco from 'monaco-editor';
-import ModelSemanticsChecker from "./ModelSemanticsChecker";
+import ModelSemanticsChecker from "./center-panel/ModelSemanticsChecker";
 import CreateAnnotationModal from "./create-annotation/CreateAnnotationModal";
-import { SrcPosition, SrcRange } from "./Types";
+import { SrcPosition, SrcRange } from "./center-panel/Types";
 import { IDBPDatabase, DBSchema } from "idb";
 
 import { MdClose } from "react-icons/md";
 import MenuHeader from "./MenuHeader";
-import LeftPanel from "./left-panel-in-analysis/LeftPanel";
+import LeftPanel from "./left-panel/LeftPanel";
 import { getPanelStyles } from "../../utils/common";
 import { MIN_PANEL_WIDTH, BREAKPOINT_WIDTH, LEFT_PANEL_FIXED_WIDTH } from "../../constants/const";
-import RightPanel from "./RightPanel";
+import RightPanel from "./right-panel/RightPanel";
 import SliderPopup from './SliderPopup'; // Import the new component
 
 const DropdownWithPopup = ({
@@ -59,7 +59,8 @@ const DropdownWithPopup = ({
 	isNewOptionsAdded,
 	setIsNewOptionsAdded,
 	selectedOptions,
-	setSelectedOptions
+	setSelectedOptions,
+	selectedValues
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -792,6 +793,7 @@ A = 10
 				handleMinValueChange={handleMinValueChange}
 				handleMaxValueChange={handleMaxValueChange}
 				handleLabelClick={handleLabelClick}
+				selectedValues={selectedValues}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}

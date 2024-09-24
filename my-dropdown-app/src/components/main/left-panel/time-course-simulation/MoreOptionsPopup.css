@@ -30,7 +30,7 @@
     height: 600px;
     border: 1px solid gray;
     border-radius: 8px;
-    background-color: #2e2d2d; /* Change popup background to grey */
+    background-color: #242323; /* Change popup background to grey */
     z-index: 1;
     padding: 10px;
     box-sizing: border-box;
@@ -112,36 +112,10 @@
     margin-top: 2px; /* Adjust this value to change the space between options */
 }
 
-.resize-handle {
+.resize-handle-more-options-popup {
     width: 10px !important;
     height: 10px !important;
-    background: #2e2d2d !important;
+    background: #242323 !important;
     z-index: 1000;
     border-radius: 50%;
-}
-
-/* Top-left resize handle */
-.resize-handle-top-left {
-    top: 1px; /* Adjusted for smaller size */
-    left: 1px;
-    cursor: nwse-resize;
-}
-
-/* Top-right resize handle */
-.resize-handle-top-right {
-    top: 1px;
-    right: 1px;
-    cursor: nesw-resize;
-}
-
-/* Bottom-left resize handle */
-.resize-handle-bottom-left {
-    left: 1px;
-    cursor: nesw-resize;
-}
-
-/* Bottom-right resize handle */
-.resize-handle-bottom-right {
-    right: 1px;
-    cursor: nwse-resize;
 }

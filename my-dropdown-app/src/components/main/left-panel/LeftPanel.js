@@ -34,6 +34,7 @@ const LeftPanel = (props) => {
 		handleMoreOptionsApply,
 		isNewOptionsAdded,
         setIsNewOptionsAdded,
+        selectedValues,
         // For Steady State
         data,
         computeSteadyState,
@@ -113,6 +114,10 @@ const LeftPanel = (props) => {
 					handleMaxValueChange={handleMaxValueChange}
 					handleLabelClick={handleLabelClick}
 					setShowSplitView={setShowSplitView}
+					selectedValues={selectedValues}
+					editorInstance={editorInstance}
+					initialOptions={initialOptions}
+					setSelectedOptions={setSelectedOptions}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan

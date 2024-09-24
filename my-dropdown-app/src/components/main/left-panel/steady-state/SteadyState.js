@@ -16,6 +16,20 @@ class SteadyState extends Component {
         };
     }
 
+	componentDidUpdate(prevProps) {
+		if (prevProps.initialOptions !== this.props.initialOptions) {
+			const modifiedInitialOptions = { ...this.props.initialOptions };
+			const keys = Object.keys(modifiedInitialOptions);
+			if (keys.length > 0) {
+				modifiedInitialOptions[keys[0]] = false;
+			}
+			this.setState({
+				options: modifiedInitialOptions,
+			});
+			this.props.setSelectedOptions(modifiedInitialOptions);
+		}
+	}
+
     generalStyle = (isDarkMode, darkBackground, lightBackGround) => ({
         backgroundColor: isDarkMode ? darkBackground : lightBackGround,
         color: isDarkMode ? "white" : "black",
@@ -23,7 +37,7 @@ class SteadyState extends Component {
     });
 
     handleComputeClick = () => {
-        this.props.computeSteadyState();
+        this.props.computeSteadyState(this.props.editorInstance?.getValue());
         this.setState({
             showData: true,
             isSteadyStateComputed: true
@@ -86,14 +100,20 @@ class SteadyState extends Component {
                             );
                         } else {
                             const [key] = item;
-                            const index = data.titles.indexOf(key);
-                            const value = index !== -1 ? parseFloat(data.columns[index][0]).toFixed(8) : "N/A";
-                            return (
-                                <tr key={key}>
-                                    <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>[{key}]</td>
-                                    <td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{value.toString()}</td>
-                                </tr>
-                            );
+							// Check if data.titles is not empty
+							let value = "N/A";
+							if (data.columns.length > 0 && this.props.selectedValues.length > 0) {
+								const index = data.titles.indexOf(key);
+								if (index !== -1) {
+									value = parseFloat(this.props.selectedValues[index]).toFixed(8);
+								}
+							}
+							return (
+								<tr key={key}>
+									<td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>[{key}]</td>
+									<td style={this.generalStyle(isDarkMode, "black", "#dedcdc")}>{value}</td>
+								</tr>
+							);
                         }
                     }) : (
                         <tr>

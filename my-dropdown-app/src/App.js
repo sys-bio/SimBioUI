@@ -39,12 +39,15 @@ export class App extends React.Component {
             jacobian: [],
             floatingSpecies: [],
             boundarySpecies: [],
-            reactionRates: []
+            reactionRates: [],
+            selectedValues: []
         };
     }
+
     componentDidMount() {
         this.loadCopasiAPI();
     }
+
     loadCopasiAPI = async () => {
         try {
             const cps = await createCpsModule();
@@ -57,71 +60,78 @@ export class App extends React.Component {
         }
     };
 
-    loadCopasi = async () => {
-        try {
-            const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
-            if (this.state.sbmlCode !== this.state.oldSBMLContent) {
-                this.state.copasi.loadModel(this.state.sbmlCode);
-                const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
-                const kOptions = this.state.copasi.globalParameterNames;
+    // Update loadCopasi to return a Promise
+    loadCopasi = () => {
+        return new Promise((resolve, reject) => {
+            try {
+                const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
+                if (this.state.sbmlCode !== this.state.oldSBMLContent) {
+                    this.state.copasi.loadModel(this.state.sbmlCode);
+                    const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
+                    const kOptions = this.state.copasi.globalParameterNames;
+                    this.setState({
+                        kValues: kValues,
+                        kOptions: kOptions
+                    });
+                }
+                this.state.copasi.reset();
+                const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
                 this.setState({
-                    kValues: kValues,
-                    kOptions: kOptions
+                    data: {
+                        columns: simResults.columns,
+                        titles: simResults.titles,
+                    },
+                    initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
+                    oldSBMLContent: this.state.sbmlCode,
+                    floatingSpecies: this.state.copasi.floatingSpeciesNames,
+                    boundarySpecies: this.state.copasi.boundarySpeciesNames,
+                    reactionRates: this.state.copasi.reactionNames,
+                    jacobian: this.state.copasi.jacobian,
+                    selectedValues: this.state.copasi.selectedValues
+                }, () => {
+                    resolve();
                 });
+            } catch (err) {
+                console.error(`Error in loadCopasi: ${err.message}`);
+                reject(err);
             }
-            this.state.copasi.reset();
-            const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
-            this.setState({
-                data: {
-                    columns: simResults.columns,
-                    titles: simResults.titles,
-                },
-                initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
-                oldSBMLContent: this.state.sbmlCode,
-                floatingSpecies: this.state.copasi.floatingSpeciesNames,
-				boundarySpecies: this.state.copasi.boundarySpeciesNames,
-				reactionRates: this.state.copasi.reactionNames
-            });
-        } catch (err) {
-            console.error(`Error in loadCopasi: ${err.message}`);
-        }
+        });
     };
 
     handleTextChange = (content, isChecked) => {
         if (!ant_wrap) {
-            this.loadAntimonyLib(() => this.processTextChange(content, isChecked));
+            return this.loadAntimonyLib().then(() => this.processTextChange(content, isChecked));
         } else {
-            this.processTextChange(content, isChecked);
+            return this.processTextChange(content, isChecked);
         }
     };
-    processTextChange = (content, isChecked, isNewFileUploaded) => {
-//        // If "Always set back to initial" is on and content is the same as the current state
-//        if (isChecked && content === this.state.textareaContent && isNewFileUploaded === false) {
-//        	console.log("hi")
-//            this.state.copasi.reset();
-//            this.loadCopasi();
-//            return;
-//        }
 
-        // If content has changed, handle the change
-        if (content.trim() !== "") {
-            const result = ant_wrap.convertAntimonyToSBML(content);
-            if (result.isSuccess()) {
-                const sbml = result.getResult();
-                this.setState(
-                    {
-                        sbmlCode: sbml,
-                        convertedAnt: "",
-                    },
-                    () => {
-                        this.loadCopasi();
-                    },
-                );
+    // Update processTextChange to return a Promise
+    processTextChange = (content, isChecked) => {
+        return new Promise((resolve, reject) => {
+            if (content.trim() !== "") {
+                const result = ant_wrap.convertAntimonyToSBML(content);
+                if (result.isSuccess()) {
+                    const sbml = result.getResult();
+                    this.setState(
+                        {
+                            sbmlCode: sbml,
+                            convertedAnt: "",
+                        },
+                        () => {
+                            this.loadCopasi().then(resolve).catch(reject);
+                        },
+                    );
+                } else {
+                    alert("Antimony syntax is not valid.");
+                    reject(new Error("Antimony syntax is not valid."));
+                }
             } else {
-                alert("Antimony syntax is not valid.");
+                resolve();
             }
-        }
+        });
     };
+
     handleLocalReset = () => {
         this.state.copasi.reset();
     };
@@ -131,14 +141,14 @@ export class App extends React.Component {
             this.state.copasi.setValue(option, value);
             this.loadCopasi();
             if (isEigenvaluesRecalculated) {
-            	const steadyStateValue = this.state.copasi.steadyState();
-            	const eigenValuesRes = this.state.copasi.eigenValues2D;
-				const jacobianRes = this.state.copasi.jacobian;
-				this.setState({
-					steadyState: steadyStateValue,
-					eigenValues: eigenValuesRes,
-					jacobian: jacobianRes
-				});
+                const steadyStateValue = this.state.copasi.steadyState();
+                const eigenValuesRes = this.state.copasi.eigenValues2D;
+                const jacobianRes = this.state.copasi.jacobian;
+                this.setState({
+                    steadyState: steadyStateValue,
+                    eigenValues: eigenValuesRes,
+                    jacobian: jacobianRes
+                });
             }
         } catch (err) {
             console.error(`Error in handleKValuesChanges: ${err.message}`);
@@ -176,50 +186,52 @@ export class App extends React.Component {
         }));
     };
 
-    loadAntimonyLib(callback) {
-        try {
-            libantimony().then((libantimony) => {
-                ant_wrap = new antimonyWrapper(libantimony);
+    // Update loadAntimonyLib to return a Promise
+    loadAntimonyLib() {
+        return new Promise((resolve, reject) => {
+            try {
+                libantimony().then((libantimony) => {
+                    ant_wrap = new antimonyWrapper(libantimony);
 
-                console.log("libantimony loaded");
-                if (typeof callback === "function") {
-                    callback(); // This ensures that the next step only happens after libantimony is fully loaded and ant_wrap is initialized
-                }
-            });
-        } catch (err) {
-            console.log("Load libantimony Error: ", err);
-        }
+                    console.log("libantimony loaded");
+                    resolve();
+                });
+            } catch (err) {
+                console.log("Load libantimony Error: ", err);
+                reject(err);
+            }
+        });
     }
 
     handleSBMLfile = (content) => {
         // Check if ant_wrap is ready, if not, load and then process
         if (!ant_wrap) {
-            this.loadAntimonyLib(() => this.processSBMLFile(content));
+            this.loadAntimonyLib().then(() => this.processSBMLFile(content));
         } else {
             this.processSBMLFile(content);
         }
     };
 
     // Process the SBML content once the library is loaded
-   processSBMLFile = (content) => {
-       let antCode;
-       if (content.trim() !== "") {
-           const res = ant_wrap.convertSBMLToAntimony(content);
-           if (res.isSuccess()) {
-               antCode = res.getResult();
+    processSBMLFile = (content) => {
+        let antCode;
+        if (content.trim() !== "") {
+            const res = ant_wrap.convertSBMLToAntimony(content);
+            if (res.isSuccess()) {
+                antCode = res.getResult();
 
-               // Set the processed antCode without the notes
-               this.setState({ sbmlCode: content, convertedAnt: antCode });
-           }
-       }
-       this.handleResetInApp();
-       this.handleResetParameters();
-   };
+                // Set the processed antCode without the notes
+                this.setState({ sbmlCode: content, convertedAnt: antCode });
+            }
+        }
+        this.handleResetInApp();
+        this.handleResetParameters();
+    };
 
     // In App.js
     handleExportSBML = (antimonyContent) => {
         if (typeof ant_wrap === 'undefined') {
-            alert("Run \"Simulation\" to export SBML")
+            alert("Run \"Simulate\" to export SBML")
             return;
         }
         if (antimonyContent.trim() !== "") {
@@ -268,22 +280,24 @@ export class App extends React.Component {
 
     handleResetParameters = () => {
         this.setState({
-        sbmlExport: "",
-        isChecked: false,
-        changeValues: "",
-        simulationParameters: {
-           timeStart: 0.0,
-           timeEnd: 20.0,
-           numPoints: 200,
-        },
-        initialOptions: [],
-        simulationParameterChanges: false,
-        oldSBMLContent: "",
-        kOptions: [],
-        kValues: [],})
+            sbmlExport: "",
+            isChecked: false,
+            changeValues: "",
+            simulationParameters: {
+                timeStart: 0.0,
+                timeEnd: 20.0,
+                numPoints: 200,
+            },
+            initialOptions: [],
+            simulationParameterChanges: false,
+            oldSBMLContent: "",
+            kOptions: [],
+            kValues: [],
+        })
     }
-    computeSteadyState = () => {
-        if (ant_wrap) {
+
+    computeSteadyState = (content) => {
+        const proceedWithComputation = () => {
             const parameters = this.state.simulationParameters;
             const start = parameters.timeStart;
             const end = parameters.timeEnd;
@@ -302,46 +316,37 @@ export class App extends React.Component {
             const steadyStateValue = this.state.copasi.steadyState();
             // Run the simulation from start to end
             const simResults = this.state.copasi.simulateEx(start, end, points);
-            if (typeof simResults == 'string') {
-                // If it's a string, we assume it's JSON
-                const parsedResults = JSON.parse(simResults);
-                this.setState({
-                    steadyState: steadyStateValue,
-                    data: {
-                        columns: parsedResults.columns,
-                        titles: parsedResults.titles,
-                    },
-                });
-            } else {
-                // If it's an object, use it directly
-                this.setState({
-                    steadyState: steadyStateValue,
-                    data: {
-                        columns: simResults.columns,
-                        titles: simResults.titles,
-                    },
-                });
-            }
+            const parsedResults = typeof simResults === 'string' ? JSON.parse(simResults) : simResults;
 
             const eigenValuesRes = this.state.copasi.eigenValues2D;
             const jacobianRes = this.state.copasi.jacobian;
+
             this.setState({
                 steadyState: steadyStateValue,
                 data: {
-                    columns: simResults.columns,
-                    titles: simResults.titles,
+                    columns: parsedResults.columns,
+                    titles: parsedResults.titles,
                 },
                 eigenValues: eigenValuesRes,
-                jacobian: jacobianRes
+                jacobian: jacobianRes,
+                selectedValues: this.state.copasi.selectedValues,
             });
+        };
+
+        if (!ant_wrap) {
+            this.handleTextChange(content, this.state.isChecked)
+                .then(proceedWithComputation)
+                .catch((err) => {
+                    console.error("Error during computation:", err);
+                });
         } else {
-            alert("Run Simulation to perform this feature");
+            proceedWithComputation();
         }
     };
 
     handleMoreOptionsApply(selectedOptions) {
         // Initialize speciesRateSelection with defaultList
-        this.setState({isNewOptionsAdded: true, data: { columns: [], titles: [] }});
+        this.setState({ isNewOptionsAdded: true, data: { columns: [], titles: [] } });
         let speciesRateSelection = [...this.state.copasi.selectionList];
 
         // Iterate through the selectedOptions map
@@ -352,28 +357,28 @@ export class App extends React.Component {
                 speciesRateSelection = [...speciesRateSelection, ...rateValues];
             }
             if (key === "Reaction Rates") {
-            	const rateValues = values.map((name) => `${name}.Flux`);
-            	speciesRateSelection = [...speciesRateSelection, ...rateValues];
+                const rateValues = values.map((name) => `${name}.Flux`);
+                speciesRateSelection = [...speciesRateSelection, ...rateValues];
             }
         }
-		 const updatedOptions = speciesRateSelection.reduce((acc, item) => {
-			acc[item] = item === "Time" ? false : true;
-			return acc;
-		}, {});
+        const updatedOptions = speciesRateSelection.reduce((acc, item) => {
+            acc[item] = item === "Time" ? false : true;
+            return acc;
+        }, {});
 
-		// Update selectedOptions in the state
-		this.setSelectedOptions(updatedOptions);
+        // Update selectedOptions in the state
+        this.setSelectedOptions(updatedOptions);
         // Update copasi selectionList with the new speciesRateSelection
         this.state.copasi.selectionList = speciesRateSelection;
     }
 
-	setIsNewOptionsAdded(isNewOptionsAdded) {
-		this.setState({isNewOptionsAdded: isNewOptionsAdded})
-	}
+    setIsNewOptionsAdded(isNewOptionsAdded) {
+        this.setState({ isNewOptionsAdded: isNewOptionsAdded })
+    }
 
-	setSelectedOptions(selectedOptions) {
-		this.setState({selectedOptions: selectedOptions})
-	}
+    setSelectedOptions(selectedOptions) {
+        this.setState({ selectedOptions: selectedOptions })
+    }
 
     render() {
         const simulationParameters = this.state;
@@ -403,13 +408,14 @@ export class App extends React.Component {
                     eigenValues={this.state.eigenValues}
                     jacobian={this.state.jacobian}
                     floatingSpecies={this.state.floatingSpecies}
-					boundarySpecies={this.state.boundarySpecies}
-					reactionRates={this.state.reactionRates}
-					handleMoreOptionsApply={this.handleMoreOptionsApply}
-					isNewOptionsAdded={this.state.isNewOptionsAdded}
-					setIsNewOptionsAdded={this.setIsNewOptionsAdded}
-					selectedOptions={this.state.selectedOptions}
-					setSelectedOptions={this.setSelectedOptions}
+                    boundarySpecies={this.state.boundarySpecies}
+                    reactionRates={this.state.reactionRates}
+                    handleMoreOptionsApply={this.handleMoreOptionsApply}
+                    isNewOptionsAdded={this.state.isNewOptionsAdded}
+                    setIsNewOptionsAdded={this.setIsNewOptionsAdded}
+                    selectedOptions={this.state.selectedOptions}
+                    selectedValues={this.state.selectedValues}
+                    setSelectedOptions={this.setSelectedOptions}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>

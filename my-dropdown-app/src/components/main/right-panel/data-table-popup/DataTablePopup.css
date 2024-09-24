@@ -1,0 +1,46 @@
+.data-table-popup {
+    position: fixed;
+    top: 25%;
+    left: 25%;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    z-index: 1001;
+}
+
+.resize-handle {
+    width: 10px !important;
+    height: 10px !important;
+    background: #242323 !important;
+    z-index: 1000;
+    border-radius: 50%;
+    position: absolute;
+}
+
+/* Top-left resize handle */
+.resize-handle-top-left {
+    top: 1px;
+    left: 1px;
+    cursor: nwse-resize;
+}
+
+/* Top-right resize handle */
+.resize-handle-top-right {
+    top: 1px;
+    right: 1px;
+    cursor: nesw-resize;
+}
+
+/* Bottom-left resize handle */
+.resize-handle-bottom-left {
+    left: 1px;
+    cursor: nesw-resize;
+}
+
+/* Bottom-right resize handle */
+.resize-handle-bottom-right {
+    right: 1px;
+    cursor: nwse-resize;
+}
