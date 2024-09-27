@@ -60,12 +60,6 @@ class ParameterScan extends Component {
             isTable: false,
             valuesSeparatedBySpace: "",
             showModal: false,
-            minValue: '0.1', // Initial min value
-            maxValue: '1.0', // Initial max value
-            numValues: '16', // Initial number of values
-            timeStart: '0.0', // Initial time start
-            timeEnd: '10.0', // Initial time end
-            numPoints: '100', // Initial number of points
             pythonContent: '', // To store the generated Python content
             selectedPalette: 'Default', // Default selection
             selectedPaletteColors: colorPalettes.Default, // Store the colors
@@ -182,7 +176,33 @@ if showLegend:
     };
 
     handleInputChange = (key, value) => {
-        this.setState({ [key]: value || '' });
+        this.props.handleParameterScansUpdate(key, value, this.state.selectedParameter);
+    };
+
+    componentDidMount() {
+        this.updateSelectedParameter();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.kOptions !== this.props.kOptions || prevProps.selectedOptions !== this.props.selectedOptions) {
+            this.updateSelectedParameter();
+        }
+    }
+
+    updateSelectedParameter = () => {
+        const { kOptions, selectedOptions } = this.props;
+        const allOptions = [...kOptions];
+        Object.entries(selectedOptions).forEach(([key, value]) => {
+            if (value) {
+                allOptions.push(`Init([${key}])`);
+            }
+        });
+
+        if (allOptions.length > 0 && (!this.state.selectedParameter || !allOptions.includes(this.state.selectedParameter))) {
+            const firstOption = allOptions[0];
+            this.setState({ selectedParameter: firstOption });
+            this.props.handleParameterScansUpdate('parameterName', firstOption);
+        }
     };
 
     renderDropdown = () => {
@@ -197,7 +217,11 @@ if showLegend:
         return (
             <select
                 value={this.state.selectedParameter}
-                onChange={this.handleParameterChange}
+                onChange={(event) => {
+					const selectedParameter = event.target.value;
+					this.handleParameterChange(event); // Call handleParameterChange
+					this.handleInputChange('parameterName', selectedParameter); // Call handleInputChange with key and value
+				}}
                 style={{
                     ...generalStyle(isDarkMode, "black", "white", "gray", "black"),
                     borderRadius: "4px",
@@ -276,6 +300,9 @@ if showLegend:
             selectedOptions,
             simulationParam,
             isShowLegendChecked,
+            handleParameterScansUpdate,
+            parametersScanType,
+            firstParameter
         } = this.props;
         const {
             isTimeCourse,
@@ -288,7 +315,6 @@ if showLegend:
             showModal,
             pythonContent,
         } = this.state;
-
         return (
             <>
                 <div
@@ -336,6 +362,7 @@ if showLegend:
                                 <button
                                     className={"text"}
                                     style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
+                                    onClick={() => this.props.handleScanButton(this.props.editorInstance?.getValue())} // Change to a function call
                                 >
                                     Scan
                                 </button>
@@ -389,21 +416,21 @@ if showLegend:
                                 >
                                     {this.renderNumberInput(
                                         "Time Start:",
-                                        this.state.timeStart,
+                                        parametersScanType.timeStart,
                                         !isTimeCourse,
                                         "60px",
                                         (e) => this.handleInputChange("timeStart", e.target.value)
                                     )}
                                     {this.renderNumberInput(
                                         "Time End:",
-                                        this.state.timeEnd,
+                                        parametersScanType.timeEnd,
                                         !isTimeCourse,
                                         "60px",
                                         (e) => this.handleInputChange("timeEnd", e.target.value)
                                     )}
                                     {this.renderNumberInput(
                                         "Num Of Points:",
-                                        this.state.numPoints,
+                                        parametersScanType.numPoints,
                                         !isTimeCourse,
                                         "60px",
                                         (e) => this.handleInputChange("numPoints", e.target.value)
@@ -439,21 +466,21 @@ if showLegend:
                                         <>
                                             {this.renderNumberInput(
                                                 "Min:",
-                                                this.state.minValue,
+                                                firstParameter.minValue,
                                                 false,
                                                 "60px",
                                                 (e) => this.handleInputChange("minValue", e.target.value)
                                             )}
                                             {this.renderNumberInput(
                                                 "Max:",
-                                                this.state.maxValue,
+                                                firstParameter.maxValue,
                                                 false,
                                                 "60px",
                                                 (e) => this.handleInputChange("maxValue", e.target.value)
                                             )}
                                             {this.renderNumberInput(
                                                 "Num Of Values:",
-                                                this.state.numValues,
+                                                firstParameter.numValues,
                                                 false,
                                                 "60px",
                                                 (e) => this.handleInputChange("numValues", e.target.value)

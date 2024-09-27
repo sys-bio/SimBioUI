@@ -52,6 +52,7 @@ const DropdownWithPopup = ({
     jacobian,
     textareaContent,
     sbmlCode,
+    isChecked,
 	floatingSpecies,
 	boundarySpecies,
 	reactionRates,
@@ -60,7 +61,11 @@ const DropdownWithPopup = ({
 	setIsNewOptionsAdded,
 	selectedOptions,
 	setSelectedOptions,
-	selectedValues
+	selectedValues,
+	handleParameterScansUpdate,
+	parametersScanType,
+	firstParameter,
+	handleScanButton
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -680,7 +685,6 @@ A = 10
                         style={{
                             height: `${(centerSubPanelHeight - 80) / 2}px`,
                             width: `${centerPanelWidth - 42}px`,
-                            backgroundColor: isDarkMode ? "#1e1e1e" : "white",
                             border: isDarkMode ? "white" : "black",
                             outline: isDarkMode ? "1px solid white" : "1px solid black",
                             marginLeft: "10px"
@@ -722,7 +726,6 @@ A = 10
                         style={{
                             height: `${centerSubPanelHeight - 50}px`,
                             width: `${centerPanelWidth - 42}px`,
-                            backgroundColor: isDarkMode ? "#1e1e1e" : "white",
                             border: isDarkMode ? "white" : "black",
                             outline: isDarkMode ? "1px solid white" : "1px solid black",
                             marginLeft: "10px",
@@ -799,6 +802,11 @@ A = 10
                 isShowLegendChecked={isShowLegendChecked}
                 setIsShowLegendChecked={setIsShowLegendChecked}
                 setPaletteColor={setPaletteColor}
+                handleParameterScansUpdate={handleParameterScansUpdate}
+                parametersScanType={parametersScanType}
+                firstParameter={firstParameter}
+                handleScanButton={handleScanButton}
+			    showSplitView={showSplitView}
             />
 
             <div

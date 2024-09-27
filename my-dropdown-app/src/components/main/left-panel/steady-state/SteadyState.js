@@ -61,11 +61,16 @@ class SteadyState extends Component {
 
     // Handle the popup for the Slider
     handleSliderPopupClick = () => {
-        this.setState({ showSliderPopup: true });
+        this.setState({ showSliderPopup: true});
+        this.props.setShowSplitView(false);
     }
 
     handleCloseSliderPopup = () => {
         this.setState({ showSliderPopup: false });
+    }
+
+    setShowSliderPopup = (value) => {
+    	this.setState({showSliderPopup: value})
     }
 
     renderTable = (dataSource, label_of_first_column, label_of_second_columns, isEigenvalues) => {
@@ -229,6 +234,10 @@ class SteadyState extends Component {
                         handleMaxValueChange={this.props.handleMaxValueChange}
                         handleLabelClick={this.props.handleLabelClick}
                         closeWindow={this.handleCloseSliderPopup} // Close the popup when clicked
+                        setShowSplitView={this.props.setShowSplitView}
+						showSplitView={this.props.showSplitView}
+						showSliderPopup={this.state.showSliderPopup}
+						setShowSliderPopup={this.setShowSliderPopup}
                     />
                 }
                 {showMorePopup &&

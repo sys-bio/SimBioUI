@@ -1,17 +1,61 @@
+/* Ensure that the popup floats above other content */
 .slider-popup-window {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 40%;
-	height: 50%;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	z-index: 1000;
-	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
-	overflow: hidden;
-	box-sizing: border-box;
-	border: 1px solid gray;
+    position: fixed;
+    top: 25%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    height: 50%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid gray;
+    background-color: rgba(255, 255, 255, 0.95); /* Slight transparency */
 }
+
+/* Other content on the page */
+.other-content {
+    pointer-events: auto; /* Allow interaction with background content */
+}
+
+.resize-handle-slider-popup {
+    width: 12px;
+    height: 12px;
+    background-color: #242323; /* Make handles visible */
+    position: absolute;
+    z-index: 1002; /* Ensure they are above other content */
+    cursor: nwse-resize; /* Use the correct resize cursor */
+}
+
+/* Top-left handle */
+.resize-handle-top-left-slider-popup {
+    top: 0;
+    left: 0;
+    cursor: nwse-resize;
+}
+
+/* Top-right handle */
+.resize-handle-top-right-slider-popup {
+    top: 0;
+    right: 0;
+    cursor: nesw-resize;
+}
+
+/* Bottom-left handle */
+.resize-handle-bottom-left-slider-popup {
+    bottom: 0;
+    left: 0;
+    cursor: nesw-resize;
+}
+
+/* Bottom-right handle */
+.resize-handle-bottom-right-slider-popup {
+    bottom: 0;
+    right: 0;
+    cursor: nwse-resize;
+}
+

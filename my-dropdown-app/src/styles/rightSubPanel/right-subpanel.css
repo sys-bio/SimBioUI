@@ -10,6 +10,12 @@
     flex-shrink: 0;
 }
 
+.graphs-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
 .plot-box{
     width: 100%;
     margin-top: 20px

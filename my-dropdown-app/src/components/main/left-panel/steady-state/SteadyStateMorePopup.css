@@ -1,21 +1,23 @@
-/* General popup styling */
+/* Keep the overlay non-interactive but let the popup content be interactive */
 .steady-state-popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     z-index: 1000;
-    background: rgba(0, 0, 0, 0.5);
+    pointer-events: none; /* Overlay will not block clicks */
 }
 
+/* Ensure popup content remains interactive */
 .steady-state-popup-content {
+    position: fixed; /* Keep the popup fixed on the screen */
+    top: 20%; /* Set a default top position */
+    left: 20%; /* Set a default left position */
     width: 700px;
     height: 400px;
     padding: 20px;
+    z-index: 1001; /* Ensure it's on top of other content */
     border-radius: 10px;
     text-align: center;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
@@ -23,7 +25,23 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    position: relative; /* Ensure the tooltip is positioned relative to this container */
+    background-color: white;
+    pointer-events: auto; /* Popup content will be interactive */
+}
+
+/* Ensure tooltips are interactive as well */
+.custom-tooltip {
+    position: absolute;
+    padding: 5px;
+    font-size: 12px;
+    pointer-events: none; /* Tooltips should not block any interactions */
+    z-index: 1002; /* Ensure tooltips are above the popup */
+    white-space: pre-line;
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.75); /* Add some background color for visibility */
+    color: white;
+    border-radius: 3px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .steady-state-popup-buttons-container {
@@ -123,29 +141,43 @@
     background-color: #e0e0e0;
 }
 
-.custom-tooltip {
-    position: absolute; /* Change to absolute positioning */
-    padding: 5px;
-    font-size: 12px;
-    pointer-events: none;
-    z-index: 1001;
-    white-space: nowrap;
-    white-space: pre-line;
-    text-align: left;
-    background-color: rgba(0, 0, 0, 0.75); /* Add some background color for visibility */
-    color: white;
-    border-radius: 3px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
-.resize-handle {
-    width: 20px;
-    height: 20px;
-    background-color: gray;
+.resize-handle-steady-state-popup {
+    width: 10px !important;
+    height: 10px !important;
+    background: #242323 !important;
+    z-index: 1000;
+    border-radius: 50%;
     position: absolute;
-    bottom: 0;
-    right: 0;
-    cursor: se-resize;
 }
+
+/* Top-left resize handle */
+.resize-handle-top-left-steady-state-popup {
+    top: 1px;
+    left: 1px;
+    cursor: nwse-resize;
+}
+
+/* Top-right resize handle */
+.resize-handle-top-right-steady-state-popup {
+    top: 1px;
+    right: 1px;
+    cursor: nesw-resize;
+}
+
+/* Bottom-left resize handle */
+.resize-handle-bottom-left-steady-state-popup {
+    bottom: 1px;
+    left: 1px;
+    cursor: nesw-resize;
+}
+
+/* Bottom-right resize handle */
+.resize-handle-bottom-right-steady-state-popup {
+    bottom: 1px;
+    right: 1px;
+    cursor: nwse-resize;
+}
+
 
 
 

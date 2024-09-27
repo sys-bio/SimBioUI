@@ -1,0 +1,6 @@
+.vertical-resizer {
+  height: 5px;
+  background-color: grey;
+  cursor: row-resize;
+  width: 100%;
+}

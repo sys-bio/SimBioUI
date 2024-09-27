@@ -15,7 +15,6 @@ const LeftPanel = (props) => {
         onParametersChange,
         handleIconClick,
         simulationParam,
-        setShowSplitView,
         handleTextChange,
         initialOptions,
         setSelectedOptions,
@@ -55,7 +54,13 @@ const LeftPanel = (props) => {
         isShowLegendChecked,
         setIsShowLegendChecked,
         setPaletteColor,
-        editorInstance
+        editorInstance,
+        handleParameterScansUpdate,
+        parametersScanType,
+        firstParameter,
+        handleScanButton,
+        showSplitView,
+        setShowSplitView
     } = props;
 
     return (
@@ -113,11 +118,12 @@ const LeftPanel = (props) => {
 					handleMinValueChange={handleMinValueChange}
 					handleMaxValueChange={handleMaxValueChange}
 					handleLabelClick={handleLabelClick}
-					setShowSplitView={setShowSplitView}
 					selectedValues={selectedValues}
 					editorInstance={editorInstance}
 					initialOptions={initialOptions}
 					setSelectedOptions={setSelectedOptions}
+					showSplitView={showSplitView}
+                    setShowSplitView={setShowSplitView}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan
@@ -133,6 +139,11 @@ const LeftPanel = (props) => {
                     setIsShowLegendChecked={setIsShowLegendChecked}
                     editorInstance={editorInstance}
                     onPaletteChange={(colors) => setPaletteColor(colors)}
+                    handleParameterScansUpdate={handleParameterScansUpdate}
+                    parametersScanType={parametersScanType}
+                    firstParameter={firstParameter}
+                    editorInstance={editorInstance}
+                    handleScanButton={handleScanButton}
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation

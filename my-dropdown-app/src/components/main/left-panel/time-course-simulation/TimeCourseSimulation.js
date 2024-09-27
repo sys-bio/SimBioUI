@@ -61,12 +61,12 @@ class TimeCourseSimulation extends Component {
         		this.props.setIsNewOptionsAdded(false);
         	}
             this.props.setSelectedOptions([]);
-            this.props.handleTextChange(editorContent, this.props.isResetInitialState, true); // Pass the editor content here
+            this.props.handleTextChange(editorContent, this.props.isResetInitialState, false); // Pass the editor content here
             this.setState({ shouldUpdateSelectedOptions: true });
         } else {
             this.setState({ shouldUpdateSelectedOptions: false });
             if (this.props.isNewFileUploaded) {
-                this.props.handleTextChange(editorContent, this.props.isResetInitialState, true); // Use editor content here
+                this.props.handleTextChange(editorContent, this.props.isResetInitialState, false); // Use editor content here
                 this.props.setIsNewFileUploaded(false);
             } else {
                 this.props.onCheckboxChange(this.props.isResetInitialState);
