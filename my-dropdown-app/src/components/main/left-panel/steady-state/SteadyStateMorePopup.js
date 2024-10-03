@@ -7,8 +7,7 @@ class SteadyStateMorePopup extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isVisible: false,
-            isResizing: false, // Add resizing flag
+            isResizing: false,
             showJacobian: true,
             showFluxControl: false,
             showConcentrationControl: false,
@@ -17,15 +16,10 @@ class SteadyStateMorePopup extends Component {
             tooltipPosition: { top: 0, left: 0 },
             size: { width: 700, height: 400 }
         };
-        this.nodeRef = createRef(); // Create a ref
-    }
-
-    componentDidMount() {
-        this.setState({ isVisible: true });
+        this.nodeRef = createRef();
     }
 
     closePopup = () => {
-        this.setState({ isVisible: false });
         this.props.onClose();
     };
 
@@ -37,6 +31,7 @@ class SteadyStateMorePopup extends Component {
     });
 
     showTooltip = (event, rowLabel, colLabel, value) => {
+        if (!this.nodeRef.current) return; // Add this null check
         const tooltipContent = `Row: [${rowLabel}]\nColumn: [${colLabel}]\nValue: ${value.toFixed(8)}`;
         const popupRect = this.nodeRef.current.getBoundingClientRect(); // Get the position of the popup
         this.setState({
@@ -140,7 +135,7 @@ class SteadyStateMorePopup extends Component {
         let csvContent = "";
 
         // Add headers
-        csvContent += jacobian.columns.map(col => `[${col}]`).join(",") + "\n";
+        csvContent += "," + jacobian.columns.map(col => `[${col}]`).join(",") + "\n";
 
         // Add rows
         jacobian.rows.forEach((row, rIndex) => {
@@ -160,83 +155,186 @@ class SteadyStateMorePopup extends Component {
         document.body.removeChild(link);
     };
 
-	handleResize = (corner, e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		this.setState({ isResizing: true });
+    handleResize = (corner, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ isResizing: true });
 
-		const startX = e.clientX;
-		const startY = e.clientY;
-		const startWidth = this.nodeRef.current.offsetWidth; // Use offsetWidth for exact width
-		const startHeight = this.nodeRef.current.offsetHeight; // Use offsetHeight for exact height
-		const startLeft = this.nodeRef.current.offsetLeft;
-		const startTop = this.nodeRef.current.offsetTop;
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startWidth = this.nodeRef.current.offsetWidth; // Use offsetWidth for exact width
+        const startHeight = this.nodeRef.current.offsetHeight; // Use offsetHeight for exact height
+        const startLeft = this.nodeRef.current.offsetLeft;
+        const startTop = this.nodeRef.current.offsetTop;
 
-		const handleMouseMove = (e) => {
-			let newWidth = startWidth;
-			let newHeight = startHeight;
-			let newLeft = startLeft;
-			let newTop = startTop;
+        const handleMouseMove = (e) => {
+            let newWidth = startWidth;
+            let newHeight = startHeight;
+            let newLeft = startLeft;
+            let newTop = startTop;
 
-			if (corner.includes("right")) {
-				newWidth = startWidth + (e.clientX - startX);
-			} else if (corner.includes("left")) {
-				newWidth = startWidth - (e.clientX - startX);
-				newLeft = startLeft + (e.clientX - startX); // Only update left if resizing from the left
-			}
+            if (corner.includes("right")) {
+                newWidth = startWidth + (e.clientX - startX);
+            } else if (corner.includes("left")) {
+                newWidth = startWidth - (e.clientX - startX);
+                newLeft = startLeft + (e.clientX - startX); // Only update left if resizing from the left
+            }
 
-			if (corner.includes("bottom")) {
-				newHeight = startHeight + (e.clientY - startY);
-			} else if (corner.includes("top")) {
-				newHeight = startHeight - (e.clientY - startY);
-				newTop = startTop + (e.clientY - startY); // Only update top if resizing from the top
-			}
+            if (corner.includes("bottom")) {
+                newHeight = startHeight + (e.clientY - startY);
+            } else if (corner.includes("top")) {
+                newHeight = startHeight - (e.clientY - startY);
+                newTop = startTop + (e.clientY - startY); // Only update top if resizing from the top
+            }
 
-			// Apply the minimum width/height constraints
-			if (newWidth >= 400) {
-				this.nodeRef.current.style.width = `${newWidth}px`;
-			}
+            // Apply the minimum width/height constraints
+            if (newWidth >= 400) {
+                this.nodeRef.current.style.width = `${newWidth}px`;
+            }
 
-			// Only update left when resizing from the left, otherwise leave it unchanged
-			if (corner.includes("left") && newWidth >= 400) {
-				this.nodeRef.current.style.left = `${newLeft}px`;
-			}
+            // Only update left when resizing from the left, otherwise leave it unchanged
+            if (corner.includes("left") && newWidth >= 400) {
+                this.nodeRef.current.style.left = `${newLeft}px`;
+            }
 
-			if (newHeight >= 400) {
-				this.nodeRef.current.style.height = `${newHeight}px`;
-			}
+            if (newHeight >= 400) {
+                this.nodeRef.current.style.height = `${newHeight}px`;
+            }
 
-			// Only update top when resizing from the top, otherwise leave it unchanged
-			if (corner.includes("top") && newHeight >= 400) {
-				this.nodeRef.current.style.top = `${newTop}px`;
-			}
-		};
+            // Only update top when resizing from the top, otherwise leave it unchanged
+            if (corner.includes("top") && newHeight >= 400) {
+                this.nodeRef.current.style.top = `${newTop}px`;
+            }
+        };
 
-		const handleMouseUp = () => {
-			this.setState({ isResizing: false });
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("mouseup", handleMouseUp);
-		};
+        const handleMouseUp = () => {
+            this.setState({ isResizing: false });
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+        };
 
-		window.addEventListener("mousemove", handleMouseMove);
-		window.addEventListener("mouseup", handleMouseUp);
-	};
+        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mouseup", handleMouseUp);
+    };
 
     render() {
-        const { isVisible, isResizing } = this.state;
+        const { isResizing } = this.state;
+        const { isDocked, isDarkMode } = this.props;
 
-        if (!isVisible) return null;
+        if (isDocked) {
+            // Docked version
+            return (
+                <div
+                    ref={this.nodeRef} // Assign ref here
+                    className="steady-state-docked"
+                    style={{
+                        backgroundColor: isDarkMode ? "#242323" : "white",
+                        border: isDarkMode ? "1px solid grey" : "1px solid black",
+                        display: "flex",
+                        flexDirection: "column",
+                        height: "100%",
+                    }}
+                >
+					<div className="steady-state-popup-buttons-container"
+						style={this.generalStyle("#9e9b9b", "white", "white", "black", "gray", "black", "8px")}>
+						<button
+							className="steady-state-popup-buttons"
+							style={{
+								backgroundColor: this.props.isDarkMode ? (this.state.showJacobian ? "black" : "#2e2d2d") : "white",
+								color: this.props.isDarkMode ? "white" : "black",
+								border: "1px solid gray"
+							}}
+							onClick={() => this.setState({ showJacobian: true, showFluxControl: false, showConcentrationControl: false, showElasticities: false })}
+						>
+							Jacobian
+						</button>
+						<button
+							className="steady-state-popup-buttons"
+							style={{
+								backgroundColor: this.props.isDarkMode ? (this.state.showFluxControl ? "black" : "#2e2d2d") : "white",
+								color: this.props.isDarkMode ? "white" : "black",
+								border: "1px solid gray"
+							}}
+							onClick={() => this.setState({ showJacobian: false, showFluxControl: true, showConcentrationControl: false, showElasticities: false })}
+						>
+							Flux Control
+						</button>
+						<button
+							className="steady-state-popup-buttons"
+							style={{
+								backgroundColor: this.props.isDarkMode ? (this.state.showConcentrationControl ? "black" : "#2e2d2d") : "white",
+								color: this.props.isDarkMode ? "white" : "black",
+								border: "1px solid gray"
+							}}
+							onClick={() => this.setState({ showJacobian: false, showFluxControl: false, showConcentrationControl: true, showElasticities: false })}
+						>
+							Concentration Control
+						</button>
+						<button
+							className="steady-state-popup-buttons"
+							style={{
+								backgroundColor: this.props.isDarkMode ? (this.state.showElasticities ? "black" : "#2e2d2d") : "white",
+								color: this.props.isDarkMode ? "white" : "black",
+								border: "1px solid gray"
+							}}
+							onClick={() => this.setState({ showJacobian: false, showFluxControl: false, showConcentrationControl: false, showElasticities: true })}
+						>
+							Elasticities
+						</button>
+					</div>
+                    {/* Scrollable container for table */}
+                    <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+                        {this.state.showJacobian && this.renderTable()}
+                    </div>
 
-        return (
-            <div className="steady-state-popup-overlay">
-                <Draggable nodeRef={this.nodeRef} disabled={isResizing}>
-                    <div ref={this.nodeRef}
-                        className="steady-state-popup-content"
-                        style={this.generalStyle("#242323", "white", "white", "black", "gray", "black", "8px")}
-                        onClick={(e) => e.stopPropagation()}>
-                        <div className="steady-state-popup-buttons-container"
-                            style={this.generalStyle("#9e9b9b", "white", "white", "black", "gray", "black", "8px")}>
+                    {/* Fixed container for buttons */}
+                    <div
+                        style={{
+                            padding: "10px",
+                            borderTop: isDarkMode ? "1px solid #2d2d2d" : "1px solid white",
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div style={{ marginLeft: "auto" }}>
                             <button
+                                onClick={this.saveAsCSV}
+                                style={{
+                                    padding: "5px 10px",
+                                    backgroundColor: isDarkMode ? "black" : "white",
+                                    border: isDarkMode ? "1px solid grey" : "1px solid black",
+                                    color: isDarkMode ? "white" : "black",
+                                    marginRight: "10px",
+                                }}
+                            >
+                                Save as CSV
+                            </button>
+                            <button
+                                onClick={this.props.onUndock}
+                                style={{
+                                    backgroundColor: isDarkMode ? "black" : "white",
+                                    border: isDarkMode ? "1px solid grey" : "1px solid black",
+                                    color: isDarkMode ? "white" : "black",
+                                }}
+                            >
+                                Undock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        } else {
+            // Undocked (popup) version
+            return (
+                <div className="steady-state-popup-overlay">
+                    <Draggable nodeRef={this.nodeRef} disabled={isResizing}>
+                        <div ref={this.nodeRef}
+							className="steady-state-popup-content"
+							style={this.generalStyle("#242323", "white", "white", "black", "gray", "black", "8px")}
+							onClick={(e) => e.stopPropagation()}>
+							<div className="steady-state-popup-buttons-container"
+								style={this.generalStyle("#9e9b9b", "white", "white", "black", "gray", "black", "8px")}>
+							<button
 								className="steady-state-popup-buttons"
 								style={{
 									backgroundColor: this.props.isDarkMode ? (this.state.showJacobian ? "black" : "#2e2d2d") : "white",
@@ -281,35 +379,43 @@ class SteadyStateMorePopup extends Component {
 								Elasticities
 							</button>
                         </div>
-                        <div className="steady-state-popup-jacobian-table-container"
-                            style={this.generalStyle("#242323", "white", "", "", "#242323", "white", "0px")}>
-                            {this.state.showJacobian && this.renderTable()}
-                        </div>
-                        <div className="steady-state-popup-bottom"
-                            style={this.generalStyle("#9e9b9b", "white", "white", "black", "gray", "black", "8px")}>
-                            <button
-                                className="steady-state-popup-close-button"
-                                style={this.generalStyle("black", "white", "white", "black", "gray", "black", "8px")}
-                                onClick={this.saveAsCSV}>
-                                Save as CSV
-                            </button>
-                            <button
-                                className="steady-state-popup-close-button"
-                                style={this.generalStyle("black", "white", "white", "black", "gray", "black", "8px")}
-                                onClick={this.closePopup}>Close
-                            </button>
-                        </div>
-                        {this.state.tooltipContent && (
-                            <div
-                                className="custom-tooltip"
-                                style={{ ...this.generalStyle("#242323", "gray", "white", "black", "gray", "black", "5px"),
-                                    top: `${this.state.tooltipPosition.top}px`,
-                                    left: `${this.state.tooltipPosition.left}px` }}
-                            >
-                                {this.state.tooltipContent}
-                            </div>
-                        )}
-                        <div
+						<div className="steady-state-popup-jacobian-table-container"
+							style={this.generalStyle("#242323", "white", "", "", "#242323", "white", "0px")}>
+							{this.state.showJacobian && this.renderTable()}
+						</div>
+						<div className="steady-state-popup-bottom"
+							style={this.generalStyle("#9e9b9b", "white", "white", "black", "gray", "black", "8px")}>
+							<button
+								className="steady-state-popup-close-button"
+								style={this.generalStyle("black", "white", "white", "black", "gray", "black", "8px")}
+								onClick={this.props.onDock}>
+								Dock
+							</button>
+							<button
+								className="steady-state-popup-close-button"
+								style={this.generalStyle("black", "white", "white", "black", "gray", "black", "8px")}
+								onClick={this.saveAsCSV}>
+								Save as CSV
+							</button>
+							<button
+								className="steady-state-popup-close-button"
+								style={this.generalStyle("black", "white", "white", "black", "gray", "black", "8px")}
+								onClick={this.closePopup}>Close
+							</button>
+						</div>
+						{this.state.tooltipContent && (
+							<div
+								className="custom-tooltip"
+								style={{
+									...this.generalStyle("#242323", "gray", "white", "black", "gray", "black", "5px"),
+									top: `${this.state.tooltipPosition.top}px`,
+									left: `${this.state.tooltipPosition.left}px`
+								}}
+							>
+								{this.state.tooltipContent}
+							</div>
+						)}
+						<div
 							className="resize-handle-steady-state-popup resize-handle-top-left-steady-state-popup"
 							onMouseDown={(e) => this.handleResize("top-left", e)}
 						/>
@@ -325,11 +431,12 @@ class SteadyStateMorePopup extends Component {
 							className="resize-handle-steady-state-popup resize-handle-bottom-right-steady-state-popup"
 							onMouseDown={(e) => this.handleResize("bottom-right", e)}
 						/>
-                    </div>
-                </Draggable>
-            </div>
-        );
-    }
+						</div>
+					</Draggable>
+				</div>
+			);
+		}
+	}
 }
 
 export default SteadyStateMorePopup;

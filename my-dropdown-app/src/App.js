@@ -76,15 +76,13 @@ export class App extends React.Component {
         return new Promise((resolve, reject) => {
             try {
                 const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
-                if (this.state.sbmlCode !== this.state.oldSBMLContent) {
-                    this.state.copasi.loadModel(this.state.sbmlCode);
-                    const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
-                    const kOptions = this.state.copasi.globalParameterNames;
-                    this.setState({
-                        kValues: kValues,
-                        kOptions: kOptions
-                    });
-                }
+				this.state.copasi.loadModel(this.state.sbmlCode);
+				const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
+				const kOptions = this.state.copasi.globalParameterNames;
+				this.setState({
+					kValues: kValues,
+					kOptions: kOptions
+				});
                 this.state.copasi.reset();
 //                const kValues = this.state.kValues;
 //                const kOptions = this.state.kOptions;
@@ -163,8 +161,33 @@ export class App extends React.Component {
 
     handleKValuesChanges = (option, value, isEigenvaluesRecalculated) => {
         try {
+            // Set the new parameter value
             this.state.copasi.setValue(option, value);
-            this.loadCopasi();
+
+            // Retrieve simulation parameters
+            const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
+
+            // Reset the model to ensure it starts from initial conditions
+            this.state.copasi.reset();
+
+            // Run the simulation with the updated parameter
+            const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
+
+            // Update the state with the new simulation results
+            this.setState({
+                data: {
+                    columns: simResults.columns,
+                    titles: simResults.titles,
+                },
+                initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
+                floatingSpecies: this.state.copasi.floatingSpeciesNames,
+                boundarySpecies: this.state.copasi.boundarySpeciesNames,
+                reactionRates: this.state.copasi.reactionNames,
+                jacobian: this.state.copasi.jacobian,
+                selectedValues: this.state.copasi.selectedValues,
+            });
+
+            // If eigenvalues need to be recalculated
             if (isEigenvaluesRecalculated) {
                 const steadyStateValue = this.state.copasi.steadyState();
                 const eigenValuesRes = this.state.copasi.eigenValues2D;
@@ -172,7 +195,7 @@ export class App extends React.Component {
                 this.setState({
                     steadyState: steadyStateValue,
                     eigenValues: eigenValuesRes,
-                    jacobian: jacobianRes
+                    jacobian: jacobianRes,
                 });
             }
         } catch (err) {
@@ -429,52 +452,91 @@ export class App extends React.Component {
 				},
 			}));
 		} else if (['parameterName'].includes(key)) {
-			this.setState((prevState) => ({
-				firstParameter: {
-					...prevState.firstParameter,
-					[key]:value
-				}
-			}));
+			 if (value.startsWith('init([') && value.endsWith('])')) {
+				// Use regex to extract the content between the square brackets
+				const extractedValue = value.match(/\[([^\]]+)\]/)[1];
+				this.setState((prevState) => ({
+					firstParameter: {
+						...prevState.firstParameter,
+						[key]: `[${extractedValue}]` // Set the value to 'A' only
+					}
+				}));
+			} else {
+				this.setState((prevState) => ({
+					firstParameter: {
+						...prevState.firstParameter,
+						[key]: value
+					}
+				}));
+			}
 		}
 	};
 
-	handleScanButton = (content) => {
+	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace) => {
 		const proceedWithScan = () => {
 			if (this.state.sbmlCode !== this.state.oldSBMLContent) {
 				this.state.copasi.loadModel(this.state.sbmlCode);
-				const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
+				const kValues = this.state.copasi.globalParameterValues;
 				const kOptions = this.state.copasi.globalParameterNames;
+				const floatingSpecies = this.state.copasi.floatingSpeciesNames;
 				this.setState({
 					kValues: kValues,
-					kOptions: kOptions
+					kOptions: kOptions,
+					floatingSpecies: floatingSpecies
 				});
 			}
 			const parameterName = this.state.firstParameter.parameterName === '' ?
-							this.state.copasi.globalParameterNames[0] : this.state.firstParameter.parameterName;
+				this.state.copasi.globalParameterNames[0] : this.state.firstParameter.parameterName;
 			const parameters = this.state.parametersScanType;
 			const start = parseFloat(parameters.timeStart);
 			const end = parseFloat(parameters.timeEnd);
 			const points = parseFloat(parameters.numPoints);
 
-            const minValueStr = this.state.firstParameter.minValue;
-            const maxValueStr = this.state.firstParameter.maxValue;
-            const numValuesStr = this.state.firstParameter.numValues;
+			let parameterValues = [];
 
-            const minValue = parseFloat(minValueStr);
-            const maxValue = parseFloat(maxValueStr);
-            const numValues = parseFloat(numValuesStr);
+			if (isUseListOfNumbers) {
+				const specialSeparatorRegex = /[,;:]/;
+				if (specialSeparatorRegex.test(valuesSeparatedBySpace)) {
+					alert("Values should be separated by spaces.");
+					return;
+				}
+				// Use valuesSeparatedBySpace to get parameterValues
+				const valuesStrArray = valuesSeparatedBySpace.trim().split(/\s+/);
+				for (let i = 0; i < valuesStrArray.length; i++) {
+					const valueStr = valuesStrArray[i];
+					const value = parseFloat(valueStr);
+					if (isNaN(value)) {
+						alert("Invalid number '" + valueStr + "' in the list of values.");
+						return;
+					}
+					parameterValues.push(value);
+				}
+				if (parameterValues.length === 0) {
+					alert("No valid values provided in the list.");
+					return;
+				}
+			} else {
+				// Use minValue, maxValue, numValues to compute parameterValues
+				const minValueStr = this.state.firstParameter.minValue;
+				const maxValueStr = this.state.firstParameter.maxValue;
+				const numValuesStr = this.state.firstParameter.numValues;
 
-			if (numValues < 2) {
-				alert("Number of values must be at least 2.");
-				return;
+				const minValue = parseFloat(minValueStr);
+				const maxValue = parseFloat(maxValueStr);
+				const numValues = parseFloat(numValuesStr);
+
+				if (numValues < 2) {
+					alert("Number of values must be at least 2.");
+					return;
+				}
+
+				const stepSize = (maxValue - minValue) / (numValues - 1);
+				for (let i = 0; i < numValues; i++) {
+					const value = minValue + i * stepSize;
+					parameterValues.push(value);
+				}
 			}
 
-			const stepSize = (maxValue - minValue) / (numValues - 1);
-			const parameterValues = [];
-			for (let i = 0; i < numValues; i++) {
-				const value = minValue + i * stepSize;
-				parameterValues.push(value);
-			}
 			// Arrays to hold results
 			const allSimResults = [];
 			let titles = [];
@@ -533,14 +595,22 @@ export class App extends React.Component {
 			}
 
 			// Update initialOptions and selectedOptions
-			const initialOptions = combinedData.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {});
+			const initialOptions = combinedData.titles.reduce((acc, title) => {
+				return {
+					...acc,
+					[title]: title === "Time" ? false : true // Set to false if title is "Time", otherwise true
+				};
+			}, {});
+
 			this.setState({
 				data: combinedData,
 				initialOptions: initialOptions,
 				selectedOptions: initialOptions,
 			});
 		};
-		if (!ant_wrap) {
+
+		// Check if content needs to be processed
+		if (content) {
 			this.handleTextChange(content, this.state.isChecked, true)
 				.then(proceedWithScan)
 				.catch((err) => {
@@ -592,6 +662,7 @@ export class App extends React.Component {
                     parametersScanType={this.state.parametersScanType}
                     firstParameter={this.state.firstParameter}
                     handleScanButton={this.handleScanButton}
+
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>

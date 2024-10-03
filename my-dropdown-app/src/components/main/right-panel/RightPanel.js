@@ -11,6 +11,7 @@ import LegendEditFeatures from "../edit-graph-popup/LegendEditFeatures";
 import { INITIAL_GRAPH_STATE } from "../../../constants/const";
 import "../../../styles/rightSubPanel/right-subpanel-edit-graph.css";
 import VerticalResizer from "./VerticalResizer";
+import SteadyStateMorePopup from "../left-panel/steady-state/SteadyStateMorePopup"
 
 const RightPanel = (props, ref) => {
   const {
@@ -37,6 +38,18 @@ const RightPanel = (props, ref) => {
     lineWidthMap,
     setLineStyleMap,
     lineStyleMap,
+    showSteadyStatePopup,
+    jacobian,
+    handleSteadyStateUndock,
+    handleSteadyStateDock,
+    handleCloseSteadyStatePopup,
+    setShowSteadyStatePopup,
+    isSteadyStateDocked,
+    setIsDataTableDocked,
+	isDataTableDocked,
+	showMoreDataPopup,
+	setShowMoreDataPopup,
+	setIsSteadyStateDocked
   } = props;
 
   const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
@@ -47,9 +60,6 @@ const RightPanel = (props, ref) => {
 
   // When click on Edit Graph, there is a popup shown up
   const [showEditGraphPopup, setShowEditGraphPopup] = useState(false);
-
-  // When click on "Show Data", the data table will be shown
-  const [showMoreDataPopup, setShowMoreDataPopup] = useState(false);
 
   // Make the popup draggable
   const [popupPosition, setPopupPosition] = useState({ x: 750, y: 450 });
@@ -149,15 +159,13 @@ const RightPanel = (props, ref) => {
   const rightPanelRef = useRef(null);
   const rightResizingRef = useRef(false);
 
-  // Docking state
-  const [isDataTableDocked, setIsDataTableDocked] = useState(false);
-  // Heights for graph and data table when data table is docked
-	const [graphHeight, setGraphHeight] = useState(window.innerHeight * 0.5);
-	const [dataTableHeight, setDataTableHeight] = useState(window.innerHeight * 0.5);
 
-	// Adjust plotHeight based on docking state
-	const plotHeight = isDataTableDocked ? graphHeight - 150 : window.innerHeight * 0.55;
-	const isResizing = useRef(false);
+  // Heights for graph and data table when data table is docked
+  const [graphHeight, setGraphHeight] = useState(window.innerHeight * 0.5);
+  const [dataTableHeight, setDataTableHeight] = useState(window.innerHeight * 0.5);
+  // Adjust plotHeight based on docking state
+  const plotHeight = isDataTableDocked ? graphHeight - 150 : window.innerHeight * 0.55;
+  const isResizing = useRef(false);
 
 //	const plotHeight = isDataTableDocked
 //	  ? window.innerHeight * 0.35 // Adjust this value as needed
@@ -292,12 +300,16 @@ const RightPanel = (props, ref) => {
     }
   };
 
-  const handleDock = () => {
+  const handleDataTableDock = () => {
     setIsDataTableDocked(true);
     setShowMoreDataPopup(false);
+    if (isSteadyStateDocked) {
+    	setShowSteadyStatePopup(true);
+    	setIsSteadyStateDocked(false);
+    }
   };
 
-  const handleUndock = () => {
+  const handleDataTableUndock = () => {
     setIsDataTableDocked(false);
     setShowMoreDataPopup(true);
   };
@@ -437,6 +449,7 @@ const RightPanel = (props, ref) => {
             setLineStyleMap={setLineStyleMap}
             lineStyleMap={lineStyleMap}
             plotHeight={plotHeight}
+            setSelectedOptions={setSelectedOptions}
           />
           <div>
             <div style={{ display: "flex", marginTop: "10px" }}>
@@ -598,26 +611,37 @@ const RightPanel = (props, ref) => {
             </div>
           </div>
         </div>
-        {isDataTableDocked && (
-		  <>
-			<VerticalResizer onResizeStart={handleResizeStart} />
-			<div
-			  style={{
-				flex: "0 0 auto",
-				height: `${dataTableHeight}px`,
-				overflowY: "auto",
-			  }}
-			>
-			  <DataTablePopup
-				data={data}
-				isDarkMode={isDarkMode}
-				isDocked={true}
-				onUndock={handleUndock}
-				onClose={handleCloseDataTable}
-			  />
-			</div>
-		  </>
-		)}
+        {(isDataTableDocked || isSteadyStateDocked) && (
+			<>
+			  <VerticalResizer onResizeStart={handleResizeStart} />
+			  <div
+				style={{
+				  flex: "0 0 auto",
+				  height: `${dataTableHeight}px`,
+				  overflowY: "auto",
+				}}
+			  >
+				{isDataTableDocked && (
+				  <DataTablePopup
+					data={data}
+					isDarkMode={isDarkMode}
+					isDocked={true}
+					onUndock={handleDataTableUndock}
+					onClose={handleCloseDataTable}
+				  />
+				)}
+				{isSteadyStateDocked && (
+				  <SteadyStateMorePopup
+					isDarkMode={isDarkMode}
+					isDocked={true}
+					onUndock={handleSteadyStateUndock}
+					onClose={handleCloseSteadyStatePopup}
+					jacobian={jacobian}
+				  />
+				)}
+			  </div>
+			</>
+		  )}
       </div>
       {showMoreDataPopup && !isDataTableDocked && (
         <DataTablePopup
@@ -626,10 +650,19 @@ const RightPanel = (props, ref) => {
             setShowMoreDataPopup(false);
           }}
           isDarkMode={isDarkMode}
-          onDock={handleDock}
+          onDock={handleDataTableDock}
           isDocked={false}
         />
       )}
+      {showSteadyStatePopup && !isSteadyStateDocked &&
+		<SteadyStateMorePopup
+			onClose={() => {setShowSteadyStatePopup(false)}}
+			isDarkMode={isDarkMode}
+			jacobian={jacobian}
+			isDock={false}
+			onDock={handleSteadyStateDock}
+			onUndock={handleSteadyStateUndock}
+		/>}
 		{showEditGraphPopup && (
 			<div className="modal-overlay">
 				<div className="popup-edit-graph"

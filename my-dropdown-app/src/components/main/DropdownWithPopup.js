@@ -121,6 +121,7 @@ A = 10
      const [editorInstance, setEditorInstance] = useState(null);
      const [annotUnderlinedOn, setAnnotUnderlinedOn] = useState(false);
      const [annotationAddPosition, setAnnotationAddPosition] = useState(null);
+
      // Set highlight color for unannotated variables
      const [highlightColor, setHighlightColor] = useState("red");
      const [decorations, setDecorations] = useState([]);
@@ -150,6 +151,13 @@ A = 10
         setIsNewTabCreated(true);
     };
     const [isResetInitialState, setIsResetInitialState] = useState(true);
+    const [showSteadyStatePopup, setShowSteadyStatePopup] = useState(false);
+    const [isSteadyStateDocked, setIsSteadyStateDocked] = useState(false);
+    const [isDataTableDocked, setIsDataTableDocked] = useState(false);
+    const [showMoreDataPopup, setShowMoreDataPopup] = useState(false);
+
+    // Show more options for x and y
+    const [showMoreOptions, setShowMoreOptions] = useState(false);
 
     // Initial setup
 	const toggleDarkMode = () => {
@@ -528,6 +536,25 @@ A = 10
         }
     };
 
+    const handleSteadyStateDock = () => {
+      setIsSteadyStateDocked(true);
+      setShowSteadyStatePopup(false)
+      if (isDataTableDocked) {
+      	 setShowMoreDataPopup(true);
+         setIsDataTableDocked(false);
+      }
+    };
+
+    const handleSteadyStateUndock = () => {
+      setIsSteadyStateDocked(false);
+      setShowSteadyStatePopup(true);
+    };
+
+	const handleCloseSteadyStatePopup = () => {
+	  setIsSteadyStateDocked(false);
+	  setShowSteadyStatePopup(false);
+	};
+
     useEffect(() => {
         if (editorRef.current) {
             // Register the language and theme
@@ -781,6 +808,8 @@ A = 10
 				handleMoreOptionsApply={handleMoreOptionsApply}
 				isNewOptionsAdded={isNewOptionsAdded}
 				setIsNewOptionsAdded={setIsNewOptionsAdded}
+				showMoreOptions={showMoreOptions}
+				setShowMoreOptions={setShowMoreOptions}
                 // For Steady State
                 data={data}
                 computeSteadyState={computeSteadyState}
@@ -797,6 +826,7 @@ A = 10
 				handleMaxValueChange={handleMaxValueChange}
 				handleLabelClick={handleLabelClick}
 				selectedValues={selectedValues}
+				setShowSteadyStatePopup={setShowSteadyStatePopup}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}
@@ -881,6 +911,18 @@ A = 10
                     lineWidthMap={lineWidthMap}
                     setLineStyleMap={setLineStyleMap}
                     lineStyleMap={lineStyleMap}
+                    showSteadyStatePopup={showSteadyStatePopup}
+                    jacobian={jacobian}
+                    handleSteadyStateDock={handleSteadyStateDock}
+                    handleSteadyStateUndock={handleSteadyStateUndock}
+                    handleCloseSteadyStatePopup={handleCloseSteadyStatePopup}
+                    setShowSteadyStatePopup={setShowSteadyStatePopup}
+                    isSteadyStateDocked={isSteadyStateDocked}
+                    setIsSteadyStateDocked={setIsSteadyStateDocked}
+                    setIsDataTableDocked={setIsDataTableDocked}
+                    isDataTableDocked={isDataTableDocked}
+                    showMoreDataPopup={showMoreDataPopup}
+                    setShowMoreDataPopup={setShowMoreDataPopup}
                 />
             </div>
 

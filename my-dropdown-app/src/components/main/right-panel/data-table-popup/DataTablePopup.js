@@ -200,7 +200,7 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
                       style={{
                         backgroundColor: isDarkMode ? "#242323" : "white",
                         border: isDarkMode ? "1px solid grey" : "1px solid black",
-                        color: "black",
+                        color: isDarkMode ? "white" : "black",
                         padding: "5px",
                         fontSize: "12px",
                       }}
@@ -263,7 +263,7 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
             <label
               style={{
                 marginLeft: "10px",
-                color: "black",
+                color: isDarkMode ? "white" : "black",
                 display: "flex",
                 alignItems: "center",
                 fontSize: "12px",

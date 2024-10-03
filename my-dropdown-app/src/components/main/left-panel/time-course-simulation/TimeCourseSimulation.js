@@ -17,8 +17,7 @@ class TimeCourseSimulation extends Component {
             showXDropdown: false,
             showDropdownButtons: false,
             shouldUpdateSelectedOptions: false,
-            selectedElements: [],
-            showMoreOptions: false,
+            selectedElements: []
         };
     }
 
@@ -110,7 +109,8 @@ class TimeCourseSimulation extends Component {
     };
 
     closePopup = () => {
-        this.setState({ selectedElements: [], showMoreOptions: false });
+        this.setState({ selectedElements: []});
+        this.props.setShowMoreOptions(false);
     };
 
     addElementToSelected = (element) => {
@@ -124,8 +124,8 @@ class TimeCourseSimulation extends Component {
     };
 
     render() {
-        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, isResetInitialState } = this.props;
-        const { options, selectedXOption, showDropdown, showXDropdown, showDropdownButtons, showMoreOptions, selectedElements } = this.state;
+        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, isResetInitialState, showMoreOptions } = this.props;
+        const { options, selectedXOption, showDropdown, showXDropdown, showDropdownButtons, selectedElements } = this.state;
 
         const dropdownXAxisButtonStyle = {
             backgroundColor: isDarkMode ? "#242323" : "white",
@@ -339,7 +339,7 @@ class TimeCourseSimulation extends Component {
                                             style={{
                                                 color: isDarkMode ? "white" : "black",
                                             }}
-                                            onClick={() => this.setState({ showMoreOptions: true })}
+                                            onClick={() => this.props.setShowMoreOptions(true)}
                                         >
                                             More options
                                         </button>
@@ -359,7 +359,7 @@ class TimeCourseSimulation extends Component {
                     )}
                 </div>
 
-                {showMoreOptions && (
+                {this.props.showMoreOptions && (
                     <MoreOptionsPopup
 						selectedElements={selectedElements}
 						addElementToSelected={this.addElementToSelected}

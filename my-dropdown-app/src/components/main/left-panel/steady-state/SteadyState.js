@@ -51,7 +51,7 @@ class SteadyState extends Component {
         if (this.props.jacobian.length === 0) {
             alert("Compute Steady State to show more information")
         } else {
-            this.setState({ showMorePopup: true });
+            this.props.setShowSteadyStatePopup(true);
         }
     }
 
@@ -240,12 +240,7 @@ class SteadyState extends Component {
 						setShowSliderPopup={this.setShowSliderPopup}
                     />
                 }
-                {showMorePopup &&
-				<SteadyStateMorePopup
-					onClose={this.handleCloseMorePopup}
-					isDarkMode={isDarkMode}
-					jacobian={this.props.jacobian}
-				/>}
+
             </>
         );
     }

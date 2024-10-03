@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 function DraggableLegend({
     data,
     selectedOptions,
+    setSelectedOptions, // Add a setter for selected options
     colors, // colors is a map from title to color
     lineStyles, // lineStyles is a map from title to line style
     lineWidths, // lineWidths is a map from title to line width
@@ -55,6 +56,14 @@ function DraggableLegend({
         longdashdot: '10,5,2,5',
     };
 
+    // Handle removing an item when clicked
+    const handleItemRemove = (title) => {
+        // Update the selectedOptions map
+        const updatedOptions = { ...selectedOptions };
+        updatedOptions[title] = false; // Remove the clicked item from selectedOptions
+        setSelectedOptions(updatedOptions); // Update the state in the parent component
+    };
+
     // Generate legend items based on plot data
     const legendItems = (data.titles || []).map((title, index) => {
         if (selectedOptions && selectedOptions[title]) {
@@ -72,7 +81,9 @@ function DraggableLegend({
                         padding: '5px',
                         display: 'flex',
                         alignItems: 'center',
+                        cursor: 'pointer', // Add pointer cursor to show it's clickable
                     }}
+                    onClick={() => handleItemRemove(title)} // Add click handler
                 >
                     <svg
                         width={legendFrameLineLength}

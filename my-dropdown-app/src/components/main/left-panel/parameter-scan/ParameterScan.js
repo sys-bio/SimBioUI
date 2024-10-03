@@ -176,7 +176,7 @@ if showLegend:
     };
 
     handleInputChange = (key, value) => {
-        this.props.handleParameterScansUpdate(key, value, this.state.selectedParameter);
+        this.props.handleParameterScansUpdate(key, value);
     };
 
     componentDidMount() {
@@ -194,7 +194,7 @@ if showLegend:
         const allOptions = [...kOptions];
         Object.entries(selectedOptions).forEach(([key, value]) => {
             if (value) {
-                allOptions.push(`Init([${key}])`);
+                allOptions.push(`init([${key}])`);
             }
         });
 
@@ -206,11 +206,11 @@ if showLegend:
     };
 
     renderDropdown = () => {
-        const { kOptions, selectedOptions, isDarkMode } = this.props;
+        const { kOptions, floatingSpecies, isDarkMode } = this.props;
         const allOptions = [...kOptions];
-        Object.entries(selectedOptions).forEach(([key, value]) => {
+        Object.values(floatingSpecies).forEach((value) => {
             if (value) {
-                allOptions.push(`Init([${key}])`);
+                allOptions.push(`init([${value}])`);
             }
         });
 
@@ -230,7 +230,7 @@ if showLegend:
                 }}
             >
                 {allOptions.map((option, index) => (
-                    <option key={index} value={option}>
+                    <option key={index}>
                         {option}
                     </option>
                 ))}
@@ -346,6 +346,7 @@ if showLegend:
                                 <button
                                     className={"text"}
                                     style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
+                                    onClick={() => this.props.setShowMoreOptions(true)}
                                 >
                                     What to plot
                                 </button>
@@ -362,7 +363,9 @@ if showLegend:
                                 <button
                                     className={"text"}
                                     style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
-                                    onClick={() => this.props.handleScanButton(this.props.editorInstance?.getValue())} // Change to a function call
+                                    onClick={() =>
+                                    this.props.handleScanButton(this.props.editorInstance?.getValue(),
+                                    this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace)} // Change to a function call
                                 >
                                     Scan
                                 </button>

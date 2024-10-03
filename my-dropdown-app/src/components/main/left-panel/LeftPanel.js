@@ -34,6 +34,8 @@ const LeftPanel = (props) => {
 		isNewOptionsAdded,
         setIsNewOptionsAdded,
         selectedValues,
+        showMoreOptions,
+        setShowMoreOptions,
         // For Steady State
         data,
         computeSteadyState,
@@ -49,6 +51,9 @@ const LeftPanel = (props) => {
 		handleMinValueChange,
 		handleMaxValueChange,
 		handleLabelClick,
+		handleSteadyStateDock,
+		handleSteadyStateUndock,
+		setShowSteadyStatePopup,
         // For Parameter Scan
         kOptions,
         isShowLegendChecked,
@@ -94,6 +99,8 @@ const LeftPanel = (props) => {
 					handleMoreOptionsApply={handleMoreOptionsApply}
 					isNewOptionsAdded={isNewOptionsAdded}
                     setIsNewOptionsAdded={setIsNewOptionsAdded}
+                    showMoreOptions={showMoreOptions}
+                    setShowMoreOptions={setShowMoreOptions}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState
@@ -124,6 +131,7 @@ const LeftPanel = (props) => {
 					setSelectedOptions={setSelectedOptions}
 					showSplitView={showSplitView}
                     setShowSplitView={setShowSplitView}
+                    setShowSteadyStatePopup={setShowSteadyStatePopup}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan
@@ -144,6 +152,8 @@ const LeftPanel = (props) => {
                     firstParameter={firstParameter}
                     editorInstance={editorInstance}
                     handleScanButton={handleScanButton}
+                    floatingSpecies={floatingSpecies}
+                    setShowMoreOptions={setShowMoreOptions}
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation
