@@ -4,7 +4,6 @@ import SimulationParameters from "../../SimulationParameters";
 import { FaBars } from "react-icons/fa";
 import DropdownContainers from "../../DropdownContainers";
 import "./TimeCourseSimulation.css";
-import MoreOptionsPopup from "./MoreOptionsPopup";
 
 class TimeCourseSimulation extends Component {
     constructor(props) {
@@ -16,8 +15,7 @@ class TimeCourseSimulation extends Component {
             showDropdown: false,
             showXDropdown: false,
             showDropdownButtons: false,
-            shouldUpdateSelectedOptions: false,
-            selectedElements: []
+            shouldUpdateSelectedOptions: false
         };
     }
 
@@ -108,24 +106,9 @@ class TimeCourseSimulation extends Component {
         this.props.setSelectedOptions(newOptions);
     };
 
-    closePopup = () => {
-        this.setState({ selectedElements: []});
-        this.props.setShowMoreOptions(false);
-    };
-
-    addElementToSelected = (element) => {
-        this.setState((prevState) => ({
-            selectedElements: [...prevState.selectedElements, element],
-        }));
-    };
-
-    clearAllElements = () => {
-        this.setState({ selectedElements: [] });
-    };
-
     render() {
         const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, isResetInitialState, showMoreOptions } = this.props;
-        const { options, selectedXOption, showDropdown, showXDropdown, showDropdownButtons, selectedElements } = this.state;
+        const { options, selectedXOption, showDropdown, showXDropdown, showDropdownButtons } = this.state;
 
         const dropdownXAxisButtonStyle = {
             backgroundColor: isDarkMode ? "#242323" : "white",
@@ -311,7 +294,7 @@ class TimeCourseSimulation extends Component {
                                         updateOptions={this.updateSelectedOptions}
                                         isDarkMode={isDarkMode}
                                         withCheckboxes={true}
-                                        options={this.props.selectedOptions}
+                                        options={this.props.selectionList}
                                     />
                                 )}
                                 {showDropdownButtons && (
@@ -358,22 +341,6 @@ class TimeCourseSimulation extends Component {
                         </div>
                     )}
                 </div>
-
-                {this.props.showMoreOptions && (
-                    <MoreOptionsPopup
-						selectedElements={selectedElements}
-						addElementToSelected={this.addElementToSelected}
-						addAllElements={this.addAllElements}
-						clearAllElements={this.clearAllElements}
-						applySelectedElements={this.applySelectedElements}
-						closePopup={this.closePopup}
-						floatingSpecies={this.props.floatingSpecies}
-						boundarySpecies={this.props.boundarySpecies}
-						reactionRates={this.props.reactionRates}
-						kOptions={this.props.kOptions}
-						handleMoreOptionsApply={this.props.handleMoreOptionsApply}
-					/>
-				)}
             </>
         );
     }

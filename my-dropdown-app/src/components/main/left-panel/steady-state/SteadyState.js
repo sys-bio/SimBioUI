@@ -81,7 +81,7 @@ class SteadyState extends Component {
         if (isEigenvalues) {
             filteredOptions = dataSource;
         } else {
-            filteredOptions = Object.entries(dataSource).filter(([key, value]) => value === true);
+            filteredOptions = Object.keys(dataSource).filter((key) => dataSource[key] === true);
         }
 
         return (
@@ -104,13 +104,13 @@ class SteadyState extends Component {
                                 </tr>
                             );
                         } else {
-                            const [key] = item;
+                            const key = item;
 							// Check if data.titles is not empty
 							let value = "N/A";
-							if (data.columns.length > 0 && this.props.selectedValues.length > 0) {
-								const index = data.titles.indexOf(key);
-								if (index !== -1) {
-									value = parseFloat(this.props.selectedValues[index]).toFixed(8);
+							if (filteredOptions.length > 0 && this.props.selectedValues.length > 0) {
+								const index = filteredOptions.indexOf(key);
+								if (index !== -1 && this.props.selectedValues.length > index + 1) {
+									value = parseFloat(this.props.selectedValues[index + 1]).toFixed(8);
 								}
 							}
 							return (
@@ -190,7 +190,7 @@ class SteadyState extends Component {
                             {isSteadyStateComputed && (
                                 <>
                                     <div style={{ marginTop: '20px' }}>
-                                        {this.renderTable(selectedOptions, "Symbol", "Value", false)}
+                                        {this.renderTable(this.props.selectionList, "Symbol", "Value", false)}
                                     </div>
                                     <div style={{ marginTop: '20px' }}>
                                         <h3 style={{ color: isDarkMode ? "white" : "black", fontSize: "12px" }}>Eigenvalues:</h3>

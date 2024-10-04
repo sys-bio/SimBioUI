@@ -14,6 +14,7 @@ function DraggableLegend({
     legendFrameLineLength,
     legendFrameInteriorColor,
     rightPanelWidth,
+    plotHeight
 }) {
     const [position, setPosition] = useState({ x: rightPanelWidth - 200, y: 50 });
     const [dragging, setDragging] = useState(false);
@@ -119,6 +120,9 @@ function DraggableLegend({
                     : 'none',
                 padding: `${legendFrameGap}px`,
                 cursor: 'move',
+                zIndex: 3000,
+				maxHeight: "300px", // Ensure the height doesn't exceed 400px
+				overflowY: 'auto',
             }}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}

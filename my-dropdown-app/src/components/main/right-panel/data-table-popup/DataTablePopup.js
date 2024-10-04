@@ -322,6 +322,7 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
               border: isDarkMode ? "1px solid grey" : "1px solid black",
               width: `${size.width}px`,
               height: `${size.height}px`,
+              zIndex: 2000,
             }}
           >
             {/* Scrollable container for table */}

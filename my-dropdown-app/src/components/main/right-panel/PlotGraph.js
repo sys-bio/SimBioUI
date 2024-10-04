@@ -439,6 +439,7 @@ class PlotGraph extends PureComponent {
                         legendFrameLineLength={this.props.legendFrameLineLength}
                         legendFrameInteriorColor={this.props.legendFrameInteriorColor}
                         rightPanelWidth={rightPanelWidth}
+                        plotHeight={plotHeight}
                     />
                 )}
             </div>

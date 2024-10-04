@@ -13,6 +13,8 @@ export class App extends React.Component {
         this.handleMoreOptionsApply = this.handleMoreOptionsApply.bind(this);
         this.setIsNewOptionsAdded = this.setIsNewOptionsAdded.bind(this);
         this.setSelectedOptions = this.setSelectedOptions.bind(this);
+        this.setSelectionList = this.setSelectionList.bind(this);
+        this.setIsDataTableDocked = this.setIsDataTableDocked.bind(this);
         this.state = {
             copasi: { version: "not loaded" },
             data: { columns: [], titles: [] },
@@ -52,6 +54,8 @@ export class App extends React.Component {
 				maxValue: 1.0,
 				numValues: 16
 			},
+			selectionList: [],
+			isDataTableDocked: false
         };
     }
 
@@ -76,24 +80,31 @@ export class App extends React.Component {
         return new Promise((resolve, reject) => {
             try {
                 const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
-				this.state.copasi.loadModel(this.state.sbmlCode);
-				const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
-				const kOptions = this.state.copasi.globalParameterNames;
-				this.setState({
-					kValues: kValues,
-					kOptions: kOptions
-				});
+                if (this.state.sbmlCode !== this.state.oldSBMLContent) {
+                    this.state.copasi.loadModel(this.state.sbmlCode);
+                    const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
+                    const kOptions = this.state.copasi.globalParameterNames;
+                    this.setState({
+                        kValues: kValues,
+                        kOptions: kOptions
+                    });
+                }
                 this.state.copasi.reset();
-//                const kValues = this.state.kValues;
-//                const kOptions = this.state.kOptions;
-//				if (kValues) {
-//					for (let i = 0; i < kOptions.length; i++) {
-//						const option = kOptions[i];
-//						const value = kValues[i];
-//						this.state.copasi.setValue(option, value);
-//					}
-//				}
+                const kValues = this.state.kValues;
+                const kOptions = this.state.kOptions;
+				if (kValues) {
+					for (let i = 0; i < kOptions.length; i++) {
+						const option = kOptions[i];
+						const value = kValues[i];
+						this.state.copasi.setValue(option, value);
+					}
+				}
                 const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
+                const selectionList = simResults.titles.reduce((acc, title) => ({
+                    ...acc,
+                    [title]: title === 'Time' ? false : true, // If the title is "Time", set it to false
+                }), {});
+
                 this.setState({
                     data: {
                         columns: simResults.columns,
@@ -105,7 +116,8 @@ export class App extends React.Component {
                     boundarySpecies: this.state.copasi.boundarySpeciesNames,
                     reactionRates: this.state.copasi.reactionNames,
                     jacobian: this.state.copasi.jacobian,
-                    selectedValues: this.state.copasi.selectedValues
+                    selectedValues: this.state.copasi.selectedValues,
+                    selectionList: selectionList,
                 }, () => {
                     resolve();
                 });
@@ -373,11 +385,14 @@ export class App extends React.Component {
 
             const steadyStateValue = this.state.copasi.steadyState();
             // Run the simulation from start to end
-            const simResults = this.state.copasi.simulateEx(start, end, points);
-            const parsedResults = typeof simResults === 'string' ? JSON.parse(simResults) : simResults;
 
             const eigenValuesRes = this.state.copasi.eigenValues2D;
             const jacobianRes = this.state.copasi.jacobian;
+            const selectedValues = this.state.copasi.selectedValues
+
+            this.state.copasi.reset();
+            const simResults = this.state.copasi.simulateEx(start, end, points);
+            const parsedResults = typeof simResults === 'string' ? JSON.parse(simResults) : simResults;
 
             this.setState({
             	initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
@@ -389,7 +404,7 @@ export class App extends React.Component {
                 },
                 eigenValues: eigenValuesRes,
                 jacobian: jacobianRes,
-                selectedValues: this.state.copasi.selectedValues,
+                selectedValues: selectedValues,
             });
         };
 
@@ -407,15 +422,20 @@ export class App extends React.Component {
 
         // Iterate through the selectedOptions map
         for (const [key, values] of Object.entries(selectedOptions)) {
-            if (key === "Rate of Changes") {
-                // Add ".Rate" to each value and append to speciesRateSelection
-                const rateValues = values.map((name) => `${name.replace(/'/g, '')}.Rate`);
-                speciesRateSelection = [...speciesRateSelection, ...rateValues];
-            }
-            if (key === "Reaction Rates") {
-                const rateValues = values.map((name) => `${name}.Flux`);
-                speciesRateSelection = [...speciesRateSelection, ...rateValues];
-            }
+        	if (key === "Floating Species") {
+				const rateValues = values.map((name) => `${name}`);
+				// Only add values that are not already in speciesRateSelection
+				speciesRateSelection = [...speciesRateSelection, ...rateValues.filter(value => !speciesRateSelection.includes(value))];
+			}
+			if (key === "Rate of Changes") {
+				// Add ".Rate" to each value and append to speciesRateSelection if not already present
+				const rateValues = values.map((name) => `${name.replace(/'/g, '')}.Rate`);
+				speciesRateSelection = [...speciesRateSelection, ...rateValues.filter(value => !speciesRateSelection.includes(value))];
+			}
+			if (key === "Reaction Rates") {
+				const rateValues = values.map((name) => `${name}.Flux`);
+				speciesRateSelection = [...speciesRateSelection, ...rateValues.filter(value => !speciesRateSelection.includes(value))];
+			}
         }
         const updatedOptions = speciesRateSelection.reduce((acc, item) => {
             acc[item] = item === "Time" ? false : true;
@@ -426,6 +446,7 @@ export class App extends React.Component {
         this.setSelectedOptions(updatedOptions);
         // Update copasi selectionList with the new speciesRateSelection
         this.state.copasi.selectionList = speciesRateSelection;
+        this.setState({selectionList: updatedOptions})
     }
 
     setIsNewOptionsAdded(isNewOptionsAdded) {
@@ -434,6 +455,14 @@ export class App extends React.Component {
 
     setSelectedOptions(selectedOptions) {
         this.setState({ selectedOptions: selectedOptions })
+    }
+
+    setSelectionList(selectionList) {
+    	this.setState({selectionList: selectionList})
+    }
+
+    setIsDataTableDocked(isDocked) {
+    	this.setState({isDataTableDocked: isDocked})
     }
 
 	handleParameterScansUpdate = (key, value) => {
@@ -472,8 +501,11 @@ export class App extends React.Component {
 		}
 	};
 
-	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace) => {
+	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, optionsList, isDataTableDocked) => {
 		const proceedWithScan = () => {
+			if (isDataTableDocked) {
+				this.setIsDataTableDocked(true);
+			}
 			if (this.state.sbmlCode !== this.state.oldSBMLContent) {
 				this.state.copasi.loadModel(this.state.sbmlCode);
 				const kValues = this.state.copasi.globalParameterValues;
@@ -491,6 +523,13 @@ export class App extends React.Component {
 			const start = parseFloat(parameters.timeStart);
 			const end = parseFloat(parameters.timeEnd);
 			const points = parseFloat(parameters.numPoints);
+			if (Object.keys(optionsList).length > 0) {
+				// Filter optionsList to include keys where value is true, but always include "Time"
+				const selectionList = Object.keys(optionsList).filter(
+					(key) => key === 'Time' || optionsList[key] === true
+				);
+				this.state.copasi.selectionList = selectionList;
+			}
 
 			let parameterValues = [];
 
@@ -601,11 +640,21 @@ export class App extends React.Component {
 					[title]: title === "Time" ? false : true // Set to false if title is "Time", otherwise true
 				};
 			}, {});
+			const selectionList = this.state.copasi.selectionList.reduce((acc, title) => ({
+				...acc,
+				[title]: title === 'Time' ? false : true, // If the title is "Time", set it to false
+			}), {});
 
 			this.setState({
 				data: combinedData,
 				initialOptions: initialOptions,
 				selectedOptions: initialOptions,
+				selectionList: selectionList,
+				floatingSpecies: this.state.copasi.floatingSpeciesNames,
+				boundarySpecies: this.state.copasi.boundarySpeciesNames,
+				reactionRates: this.state.copasi.reactionNames,
+				jacobian: this.state.copasi.jacobian,
+				selectedValues: this.state.copasi.selectedValues,
 			});
 		};
 
@@ -662,6 +711,10 @@ export class App extends React.Component {
                     parametersScanType={this.state.parametersScanType}
                     firstParameter={this.state.firstParameter}
                     handleScanButton={this.handleScanButton}
+                    selectionList={this.state.selectionList}
+                    setSelectionList={this.setSelectionList}
+                    isDataTableDocked={this.state.isDataTableDocked}
+                    setIsDataTableDocked={this.setIsDataTableDocked}
 
                 />
                 <header className="App-header">

@@ -65,7 +65,11 @@ const DropdownWithPopup = ({
 	handleParameterScansUpdate,
 	parametersScanType,
 	firstParameter,
-	handleScanButton
+	handleScanButton,
+	selectionList,
+	setSelectionList,
+	isDataTableDocked,
+	setIsDataTableDocked
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -153,7 +157,7 @@ A = 10
     const [isResetInitialState, setIsResetInitialState] = useState(true);
     const [showSteadyStatePopup, setShowSteadyStatePopup] = useState(false);
     const [isSteadyStateDocked, setIsSteadyStateDocked] = useState(false);
-    const [isDataTableDocked, setIsDataTableDocked] = useState(false);
+    //const [isDataTableDocked, setIsDataTableDocked] = useState(false);
     const [showMoreDataPopup, setShowMoreDataPopup] = useState(false);
 
     // Show more options for x and y
@@ -810,6 +814,8 @@ A = 10
 				setIsNewOptionsAdded={setIsNewOptionsAdded}
 				showMoreOptions={showMoreOptions}
 				setShowMoreOptions={setShowMoreOptions}
+				selectionList={selectionList}
+				setSelectionList={setSelectionList}
                 // For Steady State
                 data={data}
                 computeSteadyState={computeSteadyState}

@@ -62,7 +62,7 @@ class ParameterScan extends Component {
             showModal: false,
             pythonContent: '', // To store the generated Python content
             selectedPalette: 'Default', // Default selection
-            selectedPaletteColors: colorPalettes.Default, // Store the colors
+            selectedPaletteColors: colorPalettes.Default
         };
     }
 
@@ -238,23 +238,33 @@ if showLegend:
         );
     };
 
-    renderOptions = (options) => {
-        const filteredOptions = Object.entries(options).filter(([key, value]) => value === true);
-        return (
-            <div>
-                {filteredOptions.map(([key, value]) => (
-                    <div
-                        key={key}
-                        className="option-item"
-                        style={generalStyle(this.props.isDarkMode, "black", "white", "gray", "black")}
-                        onClick={() => this.handleOptionClick(key, value)}
-                    >
-                        [{key}]
-                    </div>
-                ))}
-            </div>
-        );
-    };
+	renderOptions = () => {
+		const filteredOptions = Object.entries(this.props.selectionList).filter(([key, value]) => value === true);
+
+		const handleOptionClick = (key) => {
+			// Create a new copy of selectedOptions without the clicked option
+			const newSelectedOptions = { ...this.props.selectionList };
+			newSelectedOptions[key] = false; // Set the clicked option to false
+
+			// Update the state with the new selected options
+			this.props.setSelectionList(newSelectedOptions)
+		};
+
+		return (
+			<div>
+				{filteredOptions.map(([key, value]) => (
+					<div
+						key={key}
+						className="option-item"
+						style={generalStyle(this.props.isDarkMode, "black", "white", "gray", "black")}
+						onClick={() => handleOptionClick(key)}  // Handle click event
+					>
+						[{key}]
+					</div>
+				))}
+			</div>
+		);
+	};
 
     renderNumberInput = (label, value, disabled, width, onChange) => {
         const { isDarkMode } = this.props;
@@ -313,7 +323,7 @@ if showLegend:
             isTable,
             valuesSeparatedBySpace,
             showModal,
-            pythonContent,
+            pythonContent
         } = this.state;
         return (
             <>
@@ -357,7 +367,7 @@ if showLegend:
                                 }`}
                                 style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
                             >
-                                {this.renderOptions(selectedOptions)}
+                                {this.renderOptions()}
                             </div>
                             <div style={{marginTop: "10px", display: "flex", justifyContent: "space-between"}}>
                                 <button
@@ -365,7 +375,8 @@ if showLegend:
                                     style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
                                     onClick={() =>
                                     this.props.handleScanButton(this.props.editorInstance?.getValue(),
-                                    this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace)} // Change to a function call
+                                    this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace,
+                                    this.props.selectionList, this.state.isTable)} // Change to a function call
                                 >
                                     Scan
                                 </button>

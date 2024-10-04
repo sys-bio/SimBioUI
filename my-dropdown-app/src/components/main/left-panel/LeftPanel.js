@@ -4,6 +4,7 @@ import SteadyState from "./steady-state/SteadyState";
 import ParameterScan from "./parameter-scan/ParameterScan";
 import RealTimeSimulation from "./realtime-simulation/RealTimeSimulation";
 import StructureAnalysis from "./structure-analysis/StructureAnalysis";
+import MoreOptionsPopup from "./time-course-simulation/MoreOptionsPopup";
 
 const LeftPanel = (props) => {
     const {
@@ -36,6 +37,8 @@ const LeftPanel = (props) => {
         selectedValues,
         showMoreOptions,
         setShowMoreOptions,
+        selectionList,
+        setSelectionList,
         // For Steady State
         data,
         computeSteadyState,
@@ -67,6 +70,22 @@ const LeftPanel = (props) => {
         showSplitView,
         setShowSplitView
     } = props;
+    const [selectedElements, setSelectedElements] = useState([]);
+	const closePopup = () => {
+		setSelectedElements([]);
+		setShowMoreOptions(false);
+	};
+
+	const addElementToSelected = (element) => {
+		setSelectedElements((prevSelectedElements) => [
+			...prevSelectedElements,
+			element
+		]);
+	};
+
+	const clearAllElements = () => {
+		setSelectedElements([]);
+	};
 
     return (
         <>
@@ -101,6 +120,7 @@ const LeftPanel = (props) => {
                     setIsNewOptionsAdded={setIsNewOptionsAdded}
                     showMoreOptions={showMoreOptions}
                     setShowMoreOptions={setShowMoreOptions}
+                    selectionList={selectionList}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState
@@ -132,6 +152,7 @@ const LeftPanel = (props) => {
 					showSplitView={showSplitView}
                     setShowSplitView={setShowSplitView}
                     setShowSteadyStatePopup={setShowSteadyStatePopup}
+                    selectionList={selectionList}
                 />
             ) :  activeAnalysisPanel === "Parameter Scan" ? (
                 <ParameterScan
@@ -154,6 +175,8 @@ const LeftPanel = (props) => {
                     handleScanButton={handleScanButton}
                     floatingSpecies={floatingSpecies}
                     setShowMoreOptions={setShowMoreOptions}
+                    selectionList={selectionList}
+                    setSelectionList={setSelectionList}
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation
@@ -170,6 +193,19 @@ const LeftPanel = (props) => {
                     handleIconClick={handleIconClick}
                 />
             ) : null}
+            {showMoreOptions && (
+				<MoreOptionsPopup
+					selectedElements={selectedElements}
+					addElementToSelected={addElementToSelected}
+					clearAllElements={clearAllElements}
+					closePopup={closePopup}
+					floatingSpecies={floatingSpecies}
+					boundarySpecies={boundarySpecies}
+					reactionRates={reactionRates}
+					kOptions={kOptions}
+					handleMoreOptionsApply={handleMoreOptionsApply}
+				/>
+			)}
         </>
     );
 };

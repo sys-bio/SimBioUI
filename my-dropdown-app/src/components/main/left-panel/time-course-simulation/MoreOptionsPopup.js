@@ -6,7 +6,6 @@ const MoreOptionsPopup = ({
     selectedElements,
     addElementToSelected,
     closePopup,
-    addAllElements,
     clearAllElements,
     floatingSpecies = [], // Provide default values as empty arrays
     boundarySpecies = [],
