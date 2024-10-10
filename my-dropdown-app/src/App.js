@@ -471,9 +471,12 @@ export class App extends React.Component {
         this.setState({ selectedOptions: selectedOptions })
     }
 
-    setSelectionList(selectionList) {
-    	this.setState({selectionList: selectionList})
-    }
+	setSelectionList = (newSelectionList) => {
+		this.setState({ selectionList: newSelectionList }, () => {
+			// Call handleScanButton after the state is updated
+			this.handleScanButton(this.props.editorInstance?.getValue(), this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace, this.state.isDataTableDocked, this.state.linesStyle);
+		});
+	};
 
     setIsDataTableDocked(isDocked) {
     	this.setState({isDataTableDocked: isDocked})
@@ -495,40 +498,41 @@ export class App extends React.Component {
 				},
 			}));
 		} else if (['parameterName'].includes(key)) {
-			 if (value.startsWith('init([') && value.endsWith('])')) {
-				// Use regex to extract the content between the square brackets
-				const extractedValue = value.match(/\[([^\]]+)\]/)[1];
-				this.setState((prevState) => ({
-					firstParameter: {
-						...prevState.firstParameter,
-						[key]: `[${extractedValue}]` // Set the value to 'A' only
-					}
-				}));
-			} else {
-				this.setState((prevState) => ({
-					firstParameter: {
-						...prevState.firstParameter,
-						[key]: value
-					}
-				}));
-			}
+		 	this.setState((prevState) => ({
+				firstParameter: {
+					...prevState.firstParameter,
+					[key]: value
+				}
+			}));
 		}
 	};
 
-	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, optionsList, isDataTableDocked, linesStyle) => {
+	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, linesStyle) => {
 		const proceedWithScan = () => {
 			if (isDataTableDocked) {
 				this.setIsDataTableDocked(true);
 			}
+			this.state.copasi.loadModel(this.state.sbmlCode);
 			if (this.state.sbmlCode !== this.state.oldSBMLContent) {
-				this.state.copasi.loadModel(this.state.sbmlCode);
 				const kValues = this.state.copasi.globalParameterValues;
 				const kOptions = this.state.copasi.globalParameterNames;
 				const floatingSpecies = this.state.copasi.floatingSpeciesNames;
 				this.setState({
 					kValues: kValues,
 					kOptions: kOptions,
-					floatingSpecies: floatingSpecies
+					floatingSpecies: floatingSpecies,
+					selectionList: [],
+					firstParameter: {
+						parameterName: "",
+						minValue: 0.1,
+						maxValue: 1.0,
+						numValues: 16
+					},
+					parametersScanType: {
+						timeStart: 0.0,
+						timeEnd: 10.0,
+						numPoints: 100,
+					},
 				});
 			}
 			const parameterName = this.state.firstParameter.parameterName === '' ?
@@ -537,10 +541,10 @@ export class App extends React.Component {
 			const start = parseFloat(parameters.timeStart);
 			const end = parseFloat(parameters.timeEnd);
 			const points = parseFloat(parameters.numPoints);
-			if (Object.keys(optionsList).length > 0) {
+			if (Object.keys(this.state.selectionList).length > 0) {
 				// Filter optionsList to include keys where value is true, but always include "Time"
-				const selectionList = Object.keys(optionsList).filter(
-					(key) => key === 'Time' || optionsList[key] === true
+				const selectionList = Object.keys(this.state.selectionList).filter(
+					(key) => key === 'Time' || this.state.selectionList[key] === true
 				);
 				this.state.copasi.selectionList = selectionList;
 			}

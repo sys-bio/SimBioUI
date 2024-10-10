@@ -44,12 +44,15 @@
     z-index: 1000; /* Ensure it's above other content */
 }
 
-.dropdown-options-container {
+.dropdown-help-container {
 	margin-top: -22px;
 }
 .dropdown-examples-container,
-.dropdown-analysis-container {
+.dropdown-options-container {
 	margin-top: -27px;
+}
+.dropdown-analysis-container {
+	margin-top: -32px;
 }
 
 .dropdown-toolbar-button-file,

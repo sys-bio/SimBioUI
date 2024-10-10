@@ -190,7 +190,7 @@ const MenuHeader = (props) => {
                         src={`${process.env.PUBLIC_URL}/NewFileIcon.png`}
                         alt="New File Icon"
                         style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
-                        backgroundColor: "#747875"}}
+                        filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
                         onClick={() => {
 							if (editorInstance) {
 								// Set the new content in the editor
@@ -224,15 +224,15 @@ const MenuHeader = (props) => {
                 	<img
 						src={`${process.env.PUBLIC_URL}/SaveIcon.png`}
 						alt="Save Icon"
-						style={{ width: "25px", height: "25px", marginTop: "-4px",
-						backgroundColor: "#747875"}}
+						style={{ width: "30px", height: "45px", marginTop: "-14px",
+						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={onExportAntSelected}
 					/>
 					<img
 						src={`${process.env.PUBLIC_URL}/OpenIcon.png`}
 						alt="Open"
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
-						backgroundColor: "#747875"}}
+						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={handleOpenFile}
 					/>
 
@@ -277,14 +277,14 @@ const MenuHeader = (props) => {
 						src={`${process.env.PUBLIC_URL}/TimeCourseSimulation.png`}
 						alt="Time Course Simulation"
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
-						backgroundColor: "#747875"}}
+						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={() => setActiveAnalysisPanel("Time Course Simulation")}
 					/>
 					<img
 						src={`${process.env.PUBLIC_URL}/SteadyState.svg`}
 						alt="Steady State"
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
-						backgroundColor: "#747875"}}
+						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={() => setActiveAnalysisPanel("Steady-State")}
 					/>
 				</div>
@@ -318,7 +318,7 @@ const MenuHeader = (props) => {
 						src={`${process.env.PUBLIC_URL}/ParameterScanIcon.png`}
 						alt="ParameterScan"
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
-						backgroundColor: "#747875",  }}
+						filter: "brightness(0) invert(1)", backgroundColor: "transparent" }}
 						onClick={() => setActiveAnalysisPanel("Parameter Scan")}
 					/>
 					<div
@@ -362,7 +362,7 @@ const MenuHeader = (props) => {
 						src={`${process.env.PUBLIC_URL}/example.png`}
 						alt="Example"
 						style={{ width: "25px", height: "25px", marginLeft: "-15px", marginTop: "-4px",
-						backgroundColor: "#747875"}}
+						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={() => {
 							if (setShowExamplePopup) {
 								setShowExamplePopup(true);

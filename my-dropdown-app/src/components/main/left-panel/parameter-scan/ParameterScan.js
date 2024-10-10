@@ -67,10 +67,6 @@ class ParameterScan extends Component {
         };
     }
 
-    handleOptionClick = (key, value) => {
-        console.log(`Option clicked: ${key} with value ${value}`);
-    };
-
     handleFirstParameterCheckboxChange = (key) => {
         this.setState((prevState) => ({
             [key]: !prevState[key],
@@ -102,7 +98,10 @@ class ParameterScan extends Component {
     };
 
     handleParameterChange = (event) => {
-        this.setState({ selectedParameter: event.target.value });
+        const selectedParameter = event.target.value;
+		this.setState({ selectedParameter }, () => {
+			this.handleInputChange('parameterName', selectedParameter);
+		});
     };
 
     handleShowLegendChange = (event) => {
@@ -195,15 +194,14 @@ if showLegend:
         const allOptions = [...kOptions];
         Object.entries(selectedOptions).forEach(([key, value]) => {
             if (value) {
-                allOptions.push(`init([${key}])`);
+                allOptions.push(`[${key}]_0`);
             }
         });
-
-        if (allOptions.length > 0 && (!this.state.selectedParameter || !allOptions.includes(this.state.selectedParameter))) {
-            const firstOption = allOptions[0];
-            this.setState({ selectedParameter: firstOption });
-            this.props.handleParameterScansUpdate('parameterName', firstOption);
-        }
+//        if (allOptions.length > 0 && (!this.state.selectedParameter || !allOptions.includes(this.state.selectedParameter))) {
+//            const firstOption = allOptions[0];
+//            this.setState({ selectedParameter: firstOption });
+//            this.props.handleParameterScansUpdate('parameterName', firstOption);
+//        }
     };
 
     renderDropdown = () => {
@@ -211,31 +209,26 @@ if showLegend:
         const allOptions = [...kOptions];
         Object.values(floatingSpecies).forEach((value) => {
             if (value) {
-                allOptions.push(`init([${value}])`);
+                allOptions.push(`[${value}]_0`);
             }
         });
 
         return (
             <select
                 value={this.state.selectedParameter}
-                onChange={(event) => {
-					const selectedParameter = event.target.value;
-					this.handleParameterChange(event); // Call handleParameterChange
-					this.handleInputChange('parameterName', selectedParameter); // Call handleInputChange with key and value
-				}}
+                onChange={this.handleParameterChange}  // Only handleParameterChange is needed here
                 style={{
                     ...generalStyle(isDarkMode, "black", "white", "gray", "black"),
                     borderRadius: "4px",
                     height: "25px",
                     marginLeft: "10px",
-                    width: "100%", // Make the dropdown take full width
-					maxWidth: "100%", // Ensure it doesn't exceed the panel width
-					boxSizing: "border-box", // Include padding and border in width calculation
-					marginLeft: "10px",
+                    width: "100%",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
                 }}
             >
                 {allOptions.map((option, index) => (
-                    <option key={index}>
+                    <option key={index} value={option}> {/* Ensure the option value is set correctly */}
                         {option}
                     </option>
                 ))}
@@ -243,17 +236,17 @@ if showLegend:
         );
     };
 
+	handleOptionClick = (key) => {
+		// Create a new copy of selectedOptions without the clicked option
+		const newSelectedOptions = { ...this.props.selectionList };
+		newSelectedOptions[key] = false; // Set the clicked option to false
+
+		// Update the state with the new selected options
+		this.props.setSelectionList(newSelectedOptions);
+	};
+
 	renderOptions = () => {
 		const filteredOptions = Object.entries(this.props.selectionList).filter(([key, value]) => value === true);
-
-		const handleOptionClick = (key) => {
-			// Create a new copy of selectedOptions without the clicked option
-			const newSelectedOptions = { ...this.props.selectionList };
-			newSelectedOptions[key] = false; // Set the clicked option to false
-
-			// Update the state with the new selected options
-			this.props.setSelectionList(newSelectedOptions)
-		};
 
 		return (
 			<div>
@@ -262,7 +255,7 @@ if showLegend:
 						key={key}
 						className="option-item"
 						style={generalStyle(this.props.isDarkMode, "black", "white", "gray", "black")}
-						onClick={() => handleOptionClick(key)}  // Handle click event
+						onClick={() => this.handleOptionClick(key)}  // Ensure the onClick is correctly placed
 					>
 						[{key}]
 					</div>
@@ -407,7 +400,7 @@ if showLegend:
                                     onClick={() =>
                                     this.props.handleScanButton(this.props.editorInstance?.getValue(),
                                     this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace,
-                                    this.props.selectionList, this.state.isTable)} // Change to a function call
+                                    this.state.isTable)} // Change to a function call
                                 >
                                     Scan
                                 </button>
