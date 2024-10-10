@@ -187,7 +187,7 @@ const MenuHeader = (props) => {
                 )}
                 <div style={{ display: 'flex'}}> {/* Only affects icons inside this container */}
                     <img
-                        src={`${process.env.PUBLIC_URL}/NewFileIcon.png`}
+                        src={`${process.env.PUBLIC_URL}/newFileIcon.png`}
                         alt="New File Icon"
                         style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
                         filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
@@ -222,7 +222,7 @@ const MenuHeader = (props) => {
                 </button>
                 <div style={{ display: 'flex'}}> {/* Only affects icons inside this container */}
                 	<img
-						src={`${process.env.PUBLIC_URL}/SaveIcon.png`}
+						src={`${process.env.PUBLIC_URL}/saveIcon.png`}
 						alt="Save Icon"
 						style={{ width: "30px", height: "45px", marginTop: "-14px",
 						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
