@@ -71,84 +71,105 @@ class PlotGraph extends PureComponent {
     };
 
     resetLineColorMap = (titles) => {
-        const variableNames = new Set();
-        titles.forEach((title) => {
-            // Extract variable name before the first parenthesis
-            const varName = title.split('(')[0].trim();
-            variableNames.add(varName);
-        });
+    	if (this.props.linesStyle === 'Cross Titles') {
+			const variableNames = new Set();
+			titles.forEach((title) => {
+				// Extract variable name before the first parenthesis
+				const varName = title.split('(')[0].trim();
+				variableNames.add(varName);
+			});
 
-        // Check if palette colors are provided
-        const { paletteColor } = this.props;
-        const colors = paletteColor?.length > 0
-            ? this.generateColorRange(paletteColor[0], paletteColor[1], variableNames.size)
-            : [
-                '#1f77b4',
-                '#ff7f0e',
-                '#2ca02c',
-                '#d62728',
-                '#9467bd',
-                '#8c564b',
-                '#e377c2',
-                '#7f7f7f',
-                '#bcbd22',
-                '#17becf',
-            ];
+			// Check if palette colors are provided
+			const { paletteColor } = this.props;
+			const colors = paletteColor?.length > 0
+				? this.generateColorRange(paletteColor[0], paletteColor[1], variableNames.size)
+				: [
+					'#1f77b4',
+					'#ff7f0e',
+					'#2ca02c',
+					'#d62728',
+					'#9467bd',
+					'#8c564b',
+					'#e377c2',
+					'#7f7f7f',
+					'#bcbd22',
+					'#17becf',
+				];
 
-        // Map variable names to colors, ensuring that all lines with the same base name share the same color
-        const variableColorMap = {};
-        Array.from(variableNames).forEach((varName, index) => {
-            variableColorMap[varName] = colors[index % colors.length];
-        });
+			// Map variable names to colors, ensuring that all lines with the same base name share the same color
+			const variableColorMap = {};
+			Array.from(variableNames).forEach((varName, index) => {
+				variableColorMap[varName] = colors[index % colors.length];
+			});
 
-        // Now assign colors to titles based on variable names
-        const newMap = {};
-        titles.forEach((title) => {
-            const varName = title.split('(')[0].trim();
-            newMap[title] = variableColorMap[varName];
-        });
+			// Now assign colors to titles based on variable names
+			const newMap = {};
+			titles.forEach((title) => {
+				const varName = title.split('(')[0].trim();
+				newMap[title] = variableColorMap[varName];
+			});
 
-        this.props.setLineColorMap(newMap);
+			this.props.setLineColorMap(newMap);
+		} else {
+			const { paletteColor } = this.props;
+			const plotsCount = titles.length;
+			const colors = paletteColor.length > 0 ? this.generateColorRange(paletteColor[0], paletteColor[1], plotsCount) : ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
+
+			const newMap = {};
+			titles.forEach((title, index) => {
+				newMap[title] = colors[index % colors.length];
+			});
+
+			this.props.setLineColorMap(newMap);
+		};
     };
 
 
     resetLineStyleMap = (titles) => {
-        const lineStyles = [
-            'solid',
-            'dash',
-            'dot',
-            'dashdot',
-            'longdash',
-            'longdashdot',
-        ];
+    	if (this.props.linesStyle === "Cross Titles") {
+			const lineStyles = [
+				'solid',
+				'dash',
+				'dot',
+				'dashdot',
+				'longdash',
+				'longdashdot',
+			];
 
-        const paramValues = new Set();
-        titles.forEach((title) => {
-            const match = title.match(/\((.*?)\)/);
-            if (match && match[1]) {
-                const paramValue = match[1]; // e.g., 'k=0.100'
-                paramValues.add(paramValue);
-            }
-        });
+			const paramValues = new Set();
+			titles.forEach((title) => {
+				const match = title.match(/\((.*?)\)/);
+				if (match && match[1]) {
+					const paramValue = match[1]; // e.g., 'k=0.100'
+					paramValues.add(paramValue);
+				}
+			});
 
-        const paramValueArray = Array.from(paramValues);
-        const paramStyleMap = {};
-        paramValueArray.forEach((paramValue, index) => {
-            paramStyleMap[paramValue] = lineStyles[index % lineStyles.length];
-        });
+			const paramValueArray = Array.from(paramValues);
+			const paramStyleMap = {};
+			paramValueArray.forEach((paramValue, index) => {
+				paramStyleMap[paramValue] = lineStyles[index % lineStyles.length];
+			});
 
-        // Now assign line styles to titles based on parameter values
-        const newMap = {};
-        titles.forEach((title) => {
-            const match = title.match(/\((.*?)\)/);
-            let paramValue = '';
-            if (match && match[1]) {
-                paramValue = match[1];
-            }
-            newMap[title] = paramStyleMap[paramValue];
-        });
+			// Now assign line styles to titles based on parameter values
+			const newMap = {};
+			titles.forEach((title) => {
+				const match = title.match(/\((.*?)\)/);
+				let paramValue = '';
+				if (match && match[1]) {
+					paramValue = match[1];
+				}
+				newMap[title] = paramStyleMap[paramValue];
+			});
 
-        this.props.setLineStyleMap(newMap);
+			this.props.setLineStyleMap(newMap);
+		} else {
+			const newMap = {};
+			titles.forEach((title) => {
+				newMap[title] = 'solid';
+			});
+			this.props.setLineStyleMap(newMap);
+		}
     };
 
     resetLineWidthMap = (titles) => {
@@ -254,14 +275,36 @@ class PlotGraph extends PureComponent {
             }
         }
 
-        if (parseFloat(graphState.yMin) >= parseFloat(graphState.yMax)) {
-            yaxisRange = undefined; // Keep the previous value or use autoscale
-        } else {
-            yaxisRange = [
-                parseFloat(graphState.yMin),
-                parseFloat(graphState.yMax),
-            ];
-        }
+	if (isYAutoscaleChecked) {
+		// Get the Y-axis data
+		const yValues = this.props.data.columns.map((col) => Math.max(...col));
+		const minY = Math.min(...yValues);
+		const maxY = Math.max(...yValues);
+
+		// Add a buffer (e.g., 10% of the range)
+		const buffer = (maxY - minY) * 0.1;
+		const bufferedMinY = minY - buffer;
+		const bufferedMaxY = maxY + buffer;
+
+		// Define the step size you want (e.g., 5 or 10)
+		const stepSize = 2;
+
+		// Round the min and max to the nearest multiple of the step size
+		const roundedMinY = Math.floor(bufferedMinY / stepSize) * stepSize;
+		const roundedMaxY = Math.ceil(bufferedMaxY / stepSize) * stepSize;
+
+		// Set the Y-axis range
+		yaxisRange = [roundedMinY, roundedMaxY];
+	} else {
+		if (parseFloat(graphState.yMin) >= parseFloat(graphState.yMax)) {
+			yaxisRange = undefined; // Keep the previous value or use autoscale
+		} else {
+			yaxisRange = [
+				parseFloat(graphState.yMin),
+				parseFloat(graphState.yMax),
+			];
+		}
+	}
 
         // Calculate dtick for x and y axis based on the grid count and axis range
         const xMajorDTick = xaxisRange

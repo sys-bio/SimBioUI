@@ -50,6 +50,9 @@ const DropdownWithPopup = ({
     steadyState,
     eigenValues,
     jacobian,
+    concentration,
+    fluxControl,
+    elasticities,
     textareaContent,
     sbmlCode,
     isChecked,
@@ -162,6 +165,9 @@ A = 10
 
     // Show more options for x and y
     const [showMoreOptions, setShowMoreOptions] = useState(false);
+
+    // Lines style for parameter scan
+    const [linesStyle, setLinesStyle] = useState("Cross Titles")
 
     // Initial setup
 	const toggleDarkMode = () => {
@@ -816,6 +822,7 @@ A = 10
 				setShowMoreOptions={setShowMoreOptions}
 				selectionList={selectionList}
 				setSelectionList={setSelectionList}
+				setPaletteColor={setPaletteColor}
                 // For Steady State
                 data={data}
                 computeSteadyState={computeSteadyState}
@@ -843,6 +850,8 @@ A = 10
                 firstParameter={firstParameter}
                 handleScanButton={handleScanButton}
 			    showSplitView={showSplitView}
+			    linesStyle={linesStyle}
+			    setLinesStyle={setLinesStyle}
             />
 
             <div
@@ -919,6 +928,9 @@ A = 10
                     lineStyleMap={lineStyleMap}
                     showSteadyStatePopup={showSteadyStatePopup}
                     jacobian={jacobian}
+                    concentration={concentration}
+                    fluxControl={fluxControl}
+                    elasticities={elasticities}
                     handleSteadyStateDock={handleSteadyStateDock}
                     handleSteadyStateUndock={handleSteadyStateUndock}
                     handleCloseSteadyStatePopup={handleCloseSteadyStatePopup}
@@ -929,6 +941,7 @@ A = 10
                     isDataTableDocked={isDataTableDocked}
                     showMoreDataPopup={showMoreDataPopup}
                     setShowMoreDataPopup={setShowMoreDataPopup}
+                    linesStyle={linesStyle}
                 />
             </div>
 
@@ -950,6 +963,7 @@ A = 10
                 initialTabData={initialTabData}
                 handleResetParameters={handleResetParameters}
                 handleResetInApp={handleResetInApp}
+                setActiveAnalysisPanel={setActiveAnalysisPanel}
             />
             <div className="search-container">
 				<input

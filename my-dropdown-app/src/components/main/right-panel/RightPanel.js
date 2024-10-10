@@ -40,6 +40,10 @@ const RightPanel = (props, ref) => {
     lineStyleMap,
     showSteadyStatePopup,
     jacobian,
+    fluxControl,
+	reactionRates,
+	concentration,
+	elasticities,
     handleSteadyStateUndock,
     handleSteadyStateDock,
     handleCloseSteadyStatePopup,
@@ -49,7 +53,8 @@ const RightPanel = (props, ref) => {
 	isDataTableDocked,
 	showMoreDataPopup,
 	setShowMoreDataPopup,
-	setIsSteadyStateDocked
+	setIsSteadyStateDocked,
+	linesStyle
   } = props;
 
   const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
@@ -450,6 +455,7 @@ const RightPanel = (props, ref) => {
             lineStyleMap={lineStyleMap}
             plotHeight={plotHeight}
             setSelectedOptions={setSelectedOptions}
+            linesStyle={linesStyle}
           />
           <div>
             <div style={{ display: "flex", marginTop: "10px" }}>
@@ -637,6 +643,10 @@ const RightPanel = (props, ref) => {
 					onUndock={handleSteadyStateUndock}
 					onClose={handleCloseSteadyStatePopup}
 					jacobian={jacobian}
+					fluxControl={fluxControl}
+					reactionRates={reactionRates}
+					concentration={concentration}
+					elasticities={elasticities}
 				  />
 				)}
 			  </div>
@@ -659,6 +669,10 @@ const RightPanel = (props, ref) => {
 			onClose={() => {setShowSteadyStatePopup(false)}}
 			isDarkMode={isDarkMode}
 			jacobian={jacobian}
+			concentration={concentration}
+			fluxControl={fluxControl}
+            reactionRates={reactionRates}
+            elasticities={elasticities}
 			isDock={false}
 			onDock={handleSteadyStateDock}
 			onUndock={handleSteadyStateUndock}

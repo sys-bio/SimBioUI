@@ -43,13 +43,15 @@ export const getPanelStyles = ({ layoutVertical, panelWidth, isDarkMode, centerP
                         : "#000000"
                     : "white", // Adjust colors for dark/bright mode
                 border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d",
+                marginTop: "70px", /* Adjust the margin-top to move the sub-panel up */
+                marginBottom: "80px" /* Remove margin-bottom */
             },
             centerSubPanelStyle: {
                 width: centerPanelWidth,
                 height: window.innerHeight - 100,
                 backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                 border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d",
-                marginTop: "60px", // Adjust the margin-top to move the sub-panel up
+                marginTop: "70px", // Adjust the margin-top to move the sub-panel up
                 marginBottom: "80px", // Remove margin-bottom
             },
             rightSubpanelStyle: {
@@ -58,7 +60,7 @@ export const getPanelStyles = ({ layoutVertical, panelWidth, isDarkMode, centerP
                 height: window.innerHeight - 100,
                 backgroundColor: isDarkMode ? "#2e2d2d" : "white",
                 border: isDarkMode ? "1px solid gray" : "1px solid #5e5d5d",
-                marginTop: "60px" /* Adjust the margin-top to move the sub-panel up */,
+                marginTop: "70px" /* Adjust the margin-top to move the sub-panel up */,
                 marginBottom: "80px" /* Remove margin-bottom */,
             },
         };

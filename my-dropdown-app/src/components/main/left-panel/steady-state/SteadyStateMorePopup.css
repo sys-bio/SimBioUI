@@ -141,6 +141,35 @@
     background-color: #e0e0e0;
 }
 
+.flux-control-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.flux-control-table th,
+.flux-control-table td {
+    text-align: center;
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+}
+
+.flux-control-table th {
+    background-color: inherit;
+    position: sticky;
+}
+
+.flux-control-table td:first-child {
+    position: sticky;
+    background-color: inherit;
+    z-index: 1;
+}
+
+.flux-control-table tr:hover {
+    background-color: #e0e0e0;
+}
+
 .resize-handle-steady-state-popup {
     width: 10px !important;
     height: 10px !important;

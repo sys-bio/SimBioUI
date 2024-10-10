@@ -31,11 +31,6 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
           return isDarkMode ? "#242323" : "white";
       }
 
-//      if (value === 0) {
-//          // Set background color to blue when value is zero
-//          return "#72aed4"; // Adjusted blue color
-//      }
-
       let color;
 
       if (value >= 0) {

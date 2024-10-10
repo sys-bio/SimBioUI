@@ -12,8 +12,6 @@
   box-sizing: border-box;
   height: calc(100vh - 100px); /* Adjusted height to ensure visibility */
   overflowY: auto;
-  margin-top: 60px; /* Adjust the margin-top to move the sub-panel up */
-  margin-bottom: 80px; /* Remove margin-bottom */
 }
 
 .resize-handle {

@@ -39,6 +39,9 @@ export class App extends React.Component {
             steadyState: 0,
             eigenValues: [],
             jacobian: [],
+            concentration: [],
+            fluxControl: [],
+            elasticities: [],
             floatingSpecies: [],
             boundarySpecies: [],
             reactionRates: [],
@@ -55,7 +58,7 @@ export class App extends React.Component {
 				numValues: 16
 			},
 			selectionList: [],
-			isDataTableDocked: false
+			isDataTableDocked: false,
         };
     }
 
@@ -116,6 +119,9 @@ export class App extends React.Component {
                     boundarySpecies: this.state.copasi.boundarySpeciesNames,
                     reactionRates: this.state.copasi.reactionNames,
                     jacobian: this.state.copasi.jacobian,
+                    concentration: this.state.copasi.getConcentrationControlCoefficients(false),
+                    fluxControl: this.state.copasi.getFluxControlCoefficients(false),
+                    elasticities: this.state.copasi.getElasticities(false),
                     selectedValues: this.state.copasi.selectedValues,
                     selectionList: selectionList,
                 }, () => {
@@ -393,6 +399,10 @@ export class App extends React.Component {
             this.state.copasi.reset();
             const simResults = this.state.copasi.simulateEx(start, end, points);
             const parsedResults = typeof simResults === 'string' ? JSON.parse(simResults) : simResults;
+            const selectionList = simResults.titles.reduce((acc, title) => ({
+				...acc,
+				[title]: title === 'Time' ? false : true, // If the title is "Time", set it to false
+			}), {});
 
             this.setState({
             	initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
@@ -405,6 +415,10 @@ export class App extends React.Component {
                 eigenValues: eigenValuesRes,
                 jacobian: jacobianRes,
                 selectedValues: selectedValues,
+                concentration: this.state.copasi.getConcentrationControlCoefficients(false),
+				fluxControl: this.state.copasi.getFluxControlCoefficients(false),
+				elasticities: this.state.copasi.getElasticities(false),
+				selectionList: selectionList
             });
         };
 
@@ -501,7 +515,7 @@ export class App extends React.Component {
 		}
 	};
 
-	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, optionsList, isDataTableDocked) => {
+	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, optionsList, isDataTableDocked, linesStyle) => {
 		const proceedWithScan = () => {
 			if (isDataTableDocked) {
 				this.setIsDataTableDocked(true);
@@ -698,6 +712,9 @@ export class App extends React.Component {
                     steadyState={this.state.steadyState}
                     eigenValues={this.state.eigenValues}
                     jacobian={this.state.jacobian}
+                    concentration={this.state.concentration}
+                    fluxControl={this.state.fluxControl}
+                    elasticities={this.state.elasticities}
                     floatingSpecies={this.state.floatingSpecies}
                     boundarySpecies={this.state.boundarySpecies}
                     reactionRates={this.state.reactionRates}

@@ -69,7 +69,7 @@ class TimeCourseSimulation extends Component {
                 this.props.onCheckboxChange(this.props.isResetInitialState);
             }
         }
-
+		this.props.setPaletteColor([]);
         this.setState({ previousContent: editorContent }); // Store the content as the previous content
     };
 
@@ -218,7 +218,7 @@ class TimeCourseSimulation extends Component {
                                         color: isDarkMode ? "white" : "black",
                                     }}
                                 >
-                                    X Axis
+                                    Independent Variables
                                 </span>
                                 <button
                                     className="x-axis-option-style"
@@ -268,7 +268,7 @@ class TimeCourseSimulation extends Component {
                                         color: isDarkMode ? "white" : "black",
                                     }}
                                 >
-                                    Y Axis
+                                    Dependent Variables
                                 </span>
                                 <button
                                     className="x-axis-option-style"

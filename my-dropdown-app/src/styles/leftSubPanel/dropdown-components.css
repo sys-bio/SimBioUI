@@ -39,17 +39,17 @@
 .dropdown-examples-container,
 .dropdown-help-container{
     position: absolute;
-    top: 90%; /* Adjust as necessary */
     width: 200px;
     border-radius: 6px;
     z-index: 1000; /* Ensure it's above other content */
 }
-.dropdown-file-container,
-.dropdown-analysis-container,
-.dropdown-options-container,
+
+.dropdown-options-container {
+	margin-top: -22px;
+}
 .dropdown-examples-container,
-.dropdown-help-container {
-    margin-top: 3px; /* Adjust as necessary */
+.dropdown-analysis-container {
+	margin-top: -27px;
 }
 
 .dropdown-toolbar-button-file,

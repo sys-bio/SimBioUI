@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { MIN_PANEL_WIDTH } from "../../../../constants/const";
 import { FaBars } from "react-icons/fa";
 import "./SteadyState.css";
-import SteadyStateMorePopup from "./SteadyStateMorePopup";
 import SliderPopupWindow from "./SliderPopupWindow"; // Import the SliderPopup component
 
 class SteadyState extends Component {

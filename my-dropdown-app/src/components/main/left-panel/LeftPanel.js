@@ -45,6 +45,7 @@ const LeftPanel = (props) => {
         steadyState,
         eigenValues,
         jacobian,
+        fluxControl,
 		kOptionsForSliders,
 		minMaxValues,
 		sliderValues,
@@ -68,7 +69,9 @@ const LeftPanel = (props) => {
         firstParameter,
         handleScanButton,
         showSplitView,
-        setShowSplitView
+        setShowSplitView,
+        linesStyle,
+        setLinesStyle
     } = props;
     const [selectedElements, setSelectedElements] = useState([]);
 	const closePopup = () => {
@@ -121,6 +124,7 @@ const LeftPanel = (props) => {
                     showMoreOptions={showMoreOptions}
                     setShowMoreOptions={setShowMoreOptions}
                     selectionList={selectionList}
+                    setPaletteColor={setPaletteColor}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState
@@ -177,6 +181,8 @@ const LeftPanel = (props) => {
                     setShowMoreOptions={setShowMoreOptions}
                     selectionList={selectionList}
                     setSelectionList={setSelectionList}
+                    linesStyle={linesStyle}
+                    setLinesStyle={setLinesStyle}
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation

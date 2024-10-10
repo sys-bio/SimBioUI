@@ -37,12 +37,12 @@ class COPASI {
         this.getVersion = Module.getVersion
         this.getMessages = Module.getMessages;
         this.steadyState = Module.steadyState;
+        this.computeMca = Module.computeMca;
         this.oneStep = Module.oneStep;
         this.initCps = Module.initCps;
         this.destroy = Module.destroy;
         this.getValue = Module.getValue;
         this.setValue = Module.setValue;
-        this.setValueByName = Module.setValueByName;
         this.resetAll = Module.resetAll;
 
         // init runtime
@@ -409,6 +409,75 @@ class COPASI {
     get eigenValuesReduced2D() {
         return this._vector2dToArray(this.Module.getEigenValuesReduced2D());
     }
+
+    /**
+     * Retrieves the flux control coefficients for the model 
+     * 
+     * Note that computeMca must be called before this method
+     * 
+     * @param {bool} scaled indicating whether the scaled (true) or unscaled coefficients should be returned 
+     * @returns {object} the flux control coefficients as object
+     */
+    getFluxControlCoefficients(scaled)
+    {
+        return JSON.parse(this.Module.getFluxControlCoefficients(scaled));
+    }
+
+    /**
+     * Retrieves the flux control coefficients for the model as 2d array
+     * @param {bool} scaled indicating whether the scaled (true) or unscaled coefficients should be returned 
+     * @returns {number[][]} the flux control coefficients as 2D array
+     */
+    getFluxControlCoefficients2D(scaled)
+    {
+        return this._vector2dToArray(this.Module.getFluxControlCoefficients2D(scaled));
+    }
+    
+    /**
+     * Retrieves the concentration control coefficients for the model 
+     * 
+     * Note that computeMca must be called before this method
+     * 
+     * @param {bool} scaled indicating whether the scaled (true) or unscaled coefficients should be returned 
+     * @returns {object} the concentration control coefficients as object
+     */
+    getConcentrationControlCoefficients(scaled)
+    {
+        return JSON.parse(this.Module.getConcentrationControlCoefficients(scaled));
+    }
+
+    /**
+     * Retrieves the concentration control coefficients for the model as 2d array
+     * @param {bool} scaled indicating whether the scaled (true) or unscaled coefficients should be returned 
+     * @returns {number[][]} the concentration control coefficients as 2D array
+     */
+    getConcentrationControlCoefficients2D(scaled)
+    {
+        return this._vector2dToArray(this.Module.getConcentrationControlCoefficients2D(scaled));
+    }
+
+    /**
+     * Retrieves the elasticities
+     * 
+     * @param {bool} scaled indicating whether the scaled (true) or unscaled coefficients should be returned 
+     * @returns {object} the elasticites as object
+     */
+    getElasticities(scaled)
+    {
+        return JSON.parse(this.Module.getElasticities(scaled));
+    }
+
+    /**
+     * Retrieves the elasticities
+     * 
+     * @param {bool} scaled indicating whether the scaled (true) or unscaled coefficients should be returned 
+     * @returns {number[][]} the elasticities as 2D array
+     */
+    getElasticities2D(scaled)
+    {
+        return this._vector2dToArray(this.Module.getElasticities2D(scaled));
+    }
+
 }
 
 // if module is defined, export the COPASI class

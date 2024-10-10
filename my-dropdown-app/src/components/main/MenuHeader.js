@@ -33,6 +33,7 @@ const MenuHeader = (props) => {
     const optionsDropdownRef = useRef(null);
     const examplesDropdownRef = useRef(null);
     const helpDropdownRef = useRef(null);
+    const fileInputRef = useRef(null);
 
     const [showDropdownToolbar, setShowDropdownToolbar] = useState(false);
     const [activeToolbarButton, setActiveToolbarButton] = useState("");
@@ -40,6 +41,47 @@ const MenuHeader = (props) => {
     const [showAboutIridiumPopup, setShowAboutIridiumPopup] = useState(false); // State for the new popup
 
     const [showExamplePopup, setShowExamplePopup] = useState(false);
+
+    const handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileContent = e.target.result;
+                const fileName = file.name;
+                const fileExtension = fileName.split(".").pop().toLowerCase();
+                switch (fileExtension) {
+                    case "txt":
+                    case "ant":
+                        if (typeof handleContentSelect === "function") {
+                            handleContentSelect(fileContent);
+                        }
+                        break;
+                    case "xml":
+                        if (typeof handleSBMLfile === "function") {
+                            handleSBMLfile(fileContent);
+                            handleResetInApp();
+                            handleResetParameters();
+                            setSelectedParameter(null);
+                        }
+                        break;
+                    default:
+                        console.error("Unsupported file format");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = null; // Reset the file input
+        }
+    };
+
+    const handleOpenFile = () => {
+        const acceptedFileTypes = ".txt,.ant,.xml";
+        const fileInput = fileInputRef.current;
+        if (fileInput) {
+            fileInput.accept = acceptedFileTypes;
+            fileInput.click();
+        }
+    };
 
     const { dropdownToolbarStyle, dropdownToolbarButtonsStyle, modeIcon, modeTooltip } = useMemo(() => {
         const dropdownToolbarStyle = {
@@ -109,7 +151,7 @@ const MenuHeader = (props) => {
 
     return (
         <div className="top-menu">
-            <div ref={fileDropdownRef}>
+            <div ref={fileDropdownRef}> {/* Only file button + icons are inline */}
                 <button
                     className="top-menu-button"
                     style={{
@@ -143,7 +185,30 @@ const MenuHeader = (props) => {
                         initialTabData={initialTabData}
                     />
                 )}
+                <div style={{ display: 'flex'}}> {/* Only affects icons inside this container */}
+                    <img
+                        src={`${process.env.PUBLIC_URL}/NewFileIcon.png`}
+                        alt="New File Icon"
+                        style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
+                        backgroundColor: "#747875"}}
+                        onClick={() => {
+							if (editorInstance) {
+								// Set the new content in the editor
+								editorInstance.setValue(initialTabData.textContent);
+							}
+						}}
+                    />
+
+                </div>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".txt,.ant,.xml"
+                    style={{ display: "none" }}
+                    onChange={handleFileSelect}
+                />
             </div>
+
             <div ref={analysisDropdownRef}>
                 <button
                     className="top-menu-button"
@@ -155,6 +220,23 @@ const MenuHeader = (props) => {
                 >
                     Analysis
                 </button>
+                <div style={{ display: 'flex'}}> {/* Only affects icons inside this container */}
+                	<img
+						src={`${process.env.PUBLIC_URL}/SaveIcon.png`}
+						alt="Save Icon"
+						style={{ width: "25px", height: "25px", marginTop: "-4px",
+						backgroundColor: "#747875"}}
+						onClick={onExportAntSelected}
+					/>
+					<img
+						src={`${process.env.PUBLIC_URL}/OpenIcon.png`}
+						alt="Open"
+						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
+						backgroundColor: "#747875"}}
+						onClick={handleOpenFile}
+					/>
+
+				</div>
                 {activeToolbarButton === "Analysis" && showDropdownToolbar && (
                     <DropdownContainers
                         className={"dropdown-analysis-container"}
@@ -182,6 +264,30 @@ const MenuHeader = (props) => {
                 >
                     Options
                 </button>
+                <div style={{ display: 'flex'}}> {/* Only affects icons inside this container */}
+                	<div
+						style={{
+							height: "30px", /* Match the icon height */
+							width: "1px", /* Thickness of the line */
+							backgroundColor: "gray", /* Line color */
+							marginTop: "-5px"
+						}}
+					/>
+					<img
+						src={`${process.env.PUBLIC_URL}/TimeCourseSimulation.png`}
+						alt="Time Course Simulation"
+						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
+						backgroundColor: "#747875"}}
+						onClick={() => setActiveAnalysisPanel("Time Course Simulation")}
+					/>
+					<img
+						src={`${process.env.PUBLIC_URL}/SteadyState.svg`}
+						alt="Steady State"
+						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
+						backgroundColor: "#747875"}}
+						onClick={() => setActiveAnalysisPanel("Steady-State")}
+					/>
+				</div>
                 {activeToolbarButton === "Options" && showDropdownToolbar && (
                     <DropdownContainers
                         className={"dropdown-options-container"}
@@ -196,7 +302,7 @@ const MenuHeader = (props) => {
                     />
                 )}
             </div>
-            <div ref={examplesDropdownRef} className={"container-of-toolbar-and-dropdown"}>
+            <div ref={examplesDropdownRef} >
                 <button
                     className="top-menu-button"
                     style={{
@@ -207,6 +313,24 @@ const MenuHeader = (props) => {
                 >
                     Examples
                 </button>
+                <div style={{ display: 'flex'}}> {/* Only affects icons inside this container */}
+					<img
+						src={`${process.env.PUBLIC_URL}/ParameterScanIcon.png`}
+						alt="ParameterScan"
+						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
+						backgroundColor: "#747875",  }}
+						onClick={() => setActiveAnalysisPanel("Parameter Scan")}
+					/>
+					<div
+						style={{
+							height: "30px", /* Match the icon height */
+							width: "1px", /* Thickness of the line */
+							backgroundColor: "gray", /* Line color */
+							marginTop: "-5px",
+							marginLeft: "15px"
+						}}
+					/>
+				</div>
                 {activeToolbarButton === "Examples" && showDropdownToolbar && (
                     <DropdownContainers
                         className={"dropdown-examples-container"}
@@ -233,6 +357,19 @@ const MenuHeader = (props) => {
                 >
                     Help
                 </button>
+                <div style={{ display: 'flex'}}> {/* Only affects icons inside this container */}
+					<img
+						src={`${process.env.PUBLIC_URL}/example.png`}
+						alt="Example"
+						style={{ width: "25px", height: "25px", marginLeft: "-15px", marginTop: "-4px",
+						backgroundColor: "#747875"}}
+						onClick={() => {
+							if (setShowExamplePopup) {
+								setShowExamplePopup(true);
+							}
+						}}
+					/>
+				</div>
                 {activeToolbarButton === "Help" && showDropdownToolbar && (
                     <DropdownContainers
                         className={"dropdown-help-container"}

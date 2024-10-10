@@ -62,7 +62,8 @@ class ParameterScan extends Component {
             showModal: false,
             pythonContent: '', // To store the generated Python content
             selectedPalette: 'Default', // Default selection
-            selectedPaletteColors: colorPalettes.Default
+            selectedPaletteColors: colorPalettes.Default,
+            linesStyle: "Cross Titles"
         };
     }
 
@@ -227,6 +228,10 @@ if showLegend:
                     borderRadius: "4px",
                     height: "25px",
                     marginLeft: "10px",
+                    width: "100%", // Make the dropdown take full width
+					maxWidth: "100%", // Ensure it doesn't exceed the panel width
+					boxSizing: "border-box", // Include padding and border in width calculation
+					marginLeft: "10px",
                 }}
             >
                 {allOptions.map((option, index) => (
@@ -295,6 +300,32 @@ if showLegend:
                 {Object.keys(colorPalettes).map((paletteName, index) => (
                     <option key={index} value={paletteName}>
                         {paletteName}
+                    </option>
+                ))}
+            </select>
+        );
+    };
+
+    renderLineStyleDropdown = () => {
+        const lineStyles = ["Cross Lines", "Cross Titles"]; // Options for line styles
+
+        return (
+            <select
+                value={this.props.linesStyle}
+                onChange={(event) => {
+                    const selectedLineStyle = event.target.value;
+                    this.props.setLinesStyle(selectedLineStyle); // Update the lineStyle state
+                }}
+                style={{
+                    ...generalStyle(this.props.isDarkMode, "black", "white", "gray", "black"),
+                    borderRadius: "4px",
+                    height: "25px",
+                    marginLeft: "5%"
+                }}
+            >
+                {lineStyles.map((style, index) => (
+                    <option key={index} value={style}>
+                        {style}
                     </option>
                 ))}
             </select>
@@ -573,6 +604,12 @@ if showLegend:
                                     Color palette:
                                 </span>
                                     {this.renderColorPaletteDropdown()}
+                            </div>
+                            <div style={{ display: "flex", marginTop: "10px" }}>
+                                <span className={"text"} style={generalStyle(isDarkMode, "", "", "#2e2d2d", "white")}>
+                                    Line Style:
+                                </span>
+                                {this.renderLineStyleDropdown()}
                             </div>
                         </>
                     ) : (

@@ -54,12 +54,16 @@ class SteadyStateMorePopup extends Component {
     getCellBackgroundColor = (value) => {
         const { isDarkMode } = this.props;
 
-        if (typeof value !== 'number' || isNaN(value)) {
-            return isDarkMode ? '#242323' : 'white';
+        // Define a threshold for rounding to zero
+        const threshold = 1e-10;
+
+        // Check if the value is very close to zero
+        if (Math.abs(value) < threshold) {
+            return '#72aed4'; // Color for zero
         }
 
-        if (value === 0) {
-            return '#72aed4'; // Color for zero
+        if (typeof value !== 'number' || isNaN(value)) {
+            return isDarkMode ? '#242323' : 'white';
         }
 
         let color;
@@ -76,11 +80,10 @@ class SteadyStateMorePopup extends Component {
         return color;
     };
 
-    renderTable = () => {
-        const { jacobian } = this.props;
+    renderTable = (data) => {
 
         // Ensure jacobian is defined and has the expected structure
-        if (!jacobian || !jacobian.rows || !jacobian.columns || !jacobian.values) {
+        if (!data || !data.rows || !data.columns || !data.values) {
             return <div>No data available</div>;
         }
 
@@ -89,23 +92,23 @@ class SteadyStateMorePopup extends Component {
                 <thead>
                     <tr style={this.generalStyle("black", "gray", "white", "black", "gray", "black", "0px")}>
                         <th></th>
-                        {jacobian.columns.map((col, index) => (
+                        {data.columns.map((col, index) => (
                             <th key={index} style={{ fontWeight: "normal", fontSize: "12px" }}>[{col}]</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {jacobian.rows.map((row, rIndex) => (
+                    {data.rows.map((row, rIndex) => (
                         <tr style={this.generalStyle("black", "gray", "white", "black", "gray", "black", "0px")} key={rIndex}>
                             <td style={this.generalStyle("black", "gray", "white", "black", "white", "black", "0px")}>[{row}]</td>
-                            {jacobian.values[rIndex].map((value, cIndex) => (
+                            {data.values[rIndex].map((value, cIndex) => (
                                 <td
                                     style={{
                                         ...this.generalStyle("black", "gray", "black", "black", "gray", "black", "0px"),
                                         backgroundColor: this.getCellBackgroundColor(value)
                                     }}
                                     key={cIndex}
-                                    onMouseEnter={(e) => this.showTooltip(e, row, jacobian.columns[cIndex], value)}
+                                    onMouseEnter={(e) => this.showTooltip(e, row, data.columns[cIndex], value)}
                                     onMouseLeave={this.hideTooltip}
                                 >
                                     {value.toFixed(8)}
@@ -284,8 +287,18 @@ class SteadyStateMorePopup extends Component {
 					</div>
                     {/* Scrollable container for table */}
                     <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
-                        {this.state.showJacobian && this.renderTable()}
+                        {this.state.showJacobian && this.renderTable(this.props.jacobian)}
                     </div>
+                    <div style={{ flex: 1, overflowY: "auto", padding: "20px", marginTop: "-50%" }}>
+						{this.state.showFluxControl && this.renderTable(this.props.fluxControl)}
+					</div>
+					<div style={{ flex: 1, overflowY: "auto", padding: "20px", marginTop: "-50%" }}>
+						{this.state.showConcentrationControl && this.renderTable(this.props.concentration)}
+					</div>
+					<div style={{ flex: 1, overflowY: "auto", padding: "20px", marginTop: "-50%" }}>
+						{this.state.showElasticities && this.renderTable(this.props.elasticities)}
+					</div>
+
 
                     {/* Fixed container for buttons */}
                     <div
@@ -381,7 +394,10 @@ class SteadyStateMorePopup extends Component {
                         </div>
 						<div className="steady-state-popup-jacobian-table-container"
 							style={this.generalStyle("#242323", "white", "", "", "#242323", "white", "0px")}>
-							{this.state.showJacobian && this.renderTable()}
+							{this.state.showJacobian && this.renderTable(this.props.jacobian)}
+							{this.state.showFluxControl && this.renderTable(this.props.fluxControl)}
+							{this.state.showConcentrationControl && this.renderTable(this.props.concentration)}
+							{this.state.showElasticities && this.renderTable(this.props.elasticities)}
 						</div>
 						<div className="steady-state-popup-bottom"
 							style={this.generalStyle("#9e9b9b", "white", "white", "black", "gray", "black", "8px")}>
