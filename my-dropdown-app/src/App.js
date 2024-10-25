@@ -510,8 +510,7 @@ export class App extends React.Component {
 		}
 	};
 
-	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, isLog) => {
-			console.log(isLog);
+	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, isLog, isSteadyState) => {
 			const proceedWithScan = () => {
 			if (isDataTableDocked) {
 				this.setIsDataTableDocked(true);
@@ -629,7 +628,9 @@ export class App extends React.Component {
 					endTime: end,
 					numPoints: points
 				};
-
+				if (isSteadyState) {
+					this.state.copasi.steadyState();
+				}
 				// Run the simulation
 				const simResults = JSON.parse(this.state.copasi.Module.simulateEx(start, end, points));
 

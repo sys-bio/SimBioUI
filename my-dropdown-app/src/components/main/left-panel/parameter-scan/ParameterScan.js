@@ -400,7 +400,7 @@ if showLegend:
                                     onClick={() =>
                                     this.props.handleScanButton(this.props.editorInstance?.getValue(),
                                     this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace,
-                                    this.state.isTable, isLogarithmicDistribution)}
+                                    this.state.isTable, isLogarithmicDistribution, isSteadyState)}
                                 >
                                     Scan
                                 </button>
