@@ -391,10 +391,13 @@ export class App extends React.Component {
 
             const steadyStateValue = this.state.copasi.steadyState();
             // Run the simulation from start to end
-
+			this.state.copasi.computeMca(true);
             const eigenValuesRes = this.state.copasi.eigenValues2D;
             const jacobianRes = this.state.copasi.jacobian;
-            const selectedValues = this.state.copasi.selectedValues
+            const selectedValues = this.state.copasi.selectedValues;
+            const concentration = this.state.copasi.getConcentrationControlCoefficients(true);
+			const fluxControl = this.state.copasi.getFluxControlCoefficients(true);
+			const elasticities = this.state.copasi.getElasticities(true);
 
             this.state.copasi.reset();
             const simResults = this.state.copasi.simulateEx(start, end, points);
@@ -415,9 +418,9 @@ export class App extends React.Component {
                 eigenValues: eigenValuesRes,
                 jacobian: jacobianRes,
                 selectedValues: selectedValues,
-                concentration: this.state.copasi.getConcentrationControlCoefficients(false),
-				fluxControl: this.state.copasi.getFluxControlCoefficients(false),
-				elasticities: this.state.copasi.getElasticities(false),
+                concentration: concentration,
+				fluxControl: fluxControl,
+				elasticities: elasticities,
 				selectionList: selectionList
             });
         };
@@ -507,8 +510,9 @@ export class App extends React.Component {
 		}
 	};
 
-	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, linesStyle) => {
-		const proceedWithScan = () => {
+	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, isLog) => {
+			console.log(isLog);
+			const proceedWithScan = () => {
 			if (isDataTableDocked) {
 				this.setIsDataTableDocked(true);
 			}
@@ -587,10 +591,24 @@ export class App extends React.Component {
 					return;
 				}
 
-				const stepSize = (maxValue - minValue) / (numValues - 1);
-				for (let i = 0; i < numValues; i++) {
-					const value = minValue + i * stepSize;
-					parameterValues.push(value);
+				// Check if log scale is used
+				if (isLog) {
+					const logMinValue = Math.log10(minValue);
+					const logMaxValue = Math.log10(maxValue);
+					const logStepSize = (logMaxValue - logMinValue) / (numValues - 1);
+
+					for (let i = 0; i < numValues; i++) {
+						const logValue = logMinValue + i * logStepSize;
+						const value = Math.pow(10, logValue); // Convert back from log scale to original scale
+						parameterValues.push(value);
+					}
+				} else {
+					// Linear scale
+					const stepSize = (maxValue - minValue) / (numValues - 1);
+					for (let i = 0; i < numValues; i++) {
+						const value = minValue + i * stepSize;
+						parameterValues.push(value);
+					}
 				}
 			}
 
