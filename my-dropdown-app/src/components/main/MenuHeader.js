@@ -41,6 +41,19 @@ const MenuHeader = (props) => {
     const [showAboutIridiumPopup, setShowAboutIridiumPopup] = useState(false); // State for the new popup
 
     const [showExamplePopup, setShowExamplePopup] = useState(false);
+    const [tooltip, setTooltip] = useState({ visible: false, text: "", x: 0, y: 0 });
+
+        const showTooltip = (text, event) => {
+            setTooltip({
+                visible: true,
+                text,
+                x: event.clientX,
+                y: event.clientY
+            });
+        };
+            const hideTooltip = () => {
+                setTooltip({ visible: false, text: "", x: 0, y: 0 });
+            };
 
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
@@ -197,6 +210,8 @@ const MenuHeader = (props) => {
 								editorInstance.setValue(initialTabData.textContent);
 							}
 						}}
+						onMouseEnter={(e) => showTooltip("New File", e)}
+						onMouseLeave={hideTooltip}
                     />
 
                 </div>
@@ -227,6 +242,8 @@ const MenuHeader = (props) => {
 						style={{ width: "30px", height: "45px", marginTop: "-14px",
 						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={onExportAntSelected}
+						onMouseEnter={(e) => showTooltip("Save", e)}
+                        onMouseLeave={hideTooltip}
 					/>
 					<img
 						src={`${process.env.PUBLIC_URL}/OpenIcon.png`}
@@ -234,6 +251,8 @@ const MenuHeader = (props) => {
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
 						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={handleOpenFile}
+						onMouseEnter={(e) => showTooltip("Open", e)}
+						onMouseLeave={hideTooltip}
 					/>
 
 				</div>
@@ -279,6 +298,8 @@ const MenuHeader = (props) => {
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
 						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={() => setActiveAnalysisPanel("Time Course Simulation")}
+						onMouseEnter={(e) => showTooltip("Time Course Simulation", e)}
+						onMouseLeave={hideTooltip}
 					/>
 					<img
 						src={`${process.env.PUBLIC_URL}/SteadyState.svg`}
@@ -286,6 +307,8 @@ const MenuHeader = (props) => {
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
 						filter: "brightness(0) invert(1)", backgroundColor: "transparent"}}
 						onClick={() => setActiveAnalysisPanel("Steady-State")}
+						onMouseEnter={(e) => showTooltip("Steady State", e)}
+                        onMouseLeave={hideTooltip}
 					/>
 				</div>
                 {activeToolbarButton === "Options" && showDropdownToolbar && (
@@ -320,6 +343,8 @@ const MenuHeader = (props) => {
 						style={{ width: "25px", height: "25px", marginLeft: "15px", marginTop: "-4px",
 						filter: "brightness(0) invert(1)", backgroundColor: "transparent" }}
 						onClick={() => setActiveAnalysisPanel("Parameter Scan")}
+						onMouseEnter={(e) => showTooltip("Parameter Scan", e)}
+                        onMouseLeave={hideTooltip}
 					/>
 					<div
 						style={{
@@ -368,6 +393,8 @@ const MenuHeader = (props) => {
 								setShowExamplePopup(true);
 							}
 						}}
+						onMouseEnter={(e) => showTooltip("Example", e)}
+                        onMouseLeave={hideTooltip}
 					/>
 				</div>
                 {activeToolbarButton === "Help" && showDropdownToolbar && (
@@ -443,6 +470,23 @@ const MenuHeader = (props) => {
                     </div>
                 </div>
             )}
+            {tooltip.visible && (
+				<div
+					style={{
+						position: "fixed",
+						left: tooltip.x,
+						top: tooltip.y,
+						backgroundColor: "black",
+						color: "white",
+						padding: "5px",
+						borderRadius: "4px",
+						fontSize: "12px",
+						zIndex: 1000,
+					}}
+				>
+					{tooltip.text}
+				</div>
+			)}
             {showAboutIridiumPopup && (
                 <AboutIridiumPopup isDarkMode={isDarkMode} setShowAboutIridiumPopup={setShowAboutIridiumPopup} />
             )}

@@ -62,10 +62,19 @@ export class App extends React.Component {
         };
     }
 
+    /**
+     * Loads the COPASI API module, initializes an instance, and updates the component state.
+     * Called during component mounting.
+     */
     componentDidMount() {
         this.loadCopasiAPI();
     }
 
+    /**
+     * Initializes COPASI API by loading a module asynchronously.
+     * Sets the instance in the component state.
+     * @returns {Promise<void>}
+     */
     loadCopasiAPI = async () => {
         try {
             const cps = await createCpsModule();
@@ -78,14 +87,18 @@ export class App extends React.Component {
         }
     };
 
-    // Update loadCopasi to return a Promise
+    /**
+     * Loads COPASI model data into the application, resets the model state,
+     * and updates relevant state variables with model data.
+     * @returns {Promise<void>}
+     */
     loadCopasi = () => {
         return new Promise((resolve, reject) => {
             try {
                 const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
                 if (this.state.sbmlCode !== this.state.oldSBMLContent) {
                     this.state.copasi.loadModel(this.state.sbmlCode);
-                    const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
+                    const kValues = this.state.copasi.globalParameterValues;
                     const kOptions = this.state.copasi.globalParameterNames;
                     this.setState({
                         kValues: kValues,
@@ -105,7 +118,7 @@ export class App extends React.Component {
                 const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
                 const selectionList = simResults.titles.reduce((acc, title) => ({
                     ...acc,
-                    [title]: title === 'Time' ? false : true, // If the title is "Time", set it to false
+                    [title]: title === 'Time' ? false : true,
                 }), {});
 
                 this.setState({
@@ -134,6 +147,14 @@ export class App extends React.Component {
         });
     };
 
+    /**
+     * Processes a text change in Antimony content by converting it to SBML.
+     * Calls loadCopasi if conversion succeeds.
+     * @param {string} content - The Antimony content.
+     * @param {boolean} isChecked - Checkbox state indicating conversion requirement.
+     * @param {boolean} isComputeSteadyState - Whether to compute steady state.
+     * @returns {Promise<void>}
+     */
     handleTextChange = (content, isChecked, isComputeSteadyState) => {
         if (!ant_wrap) {
             return this.loadAntimonyLib().then(() => this.processTextChange(content, isChecked, isComputeSteadyState));
@@ -142,7 +163,14 @@ export class App extends React.Component {
         }
     };
 
-    // Update processTextChange to return a Promise
+    /**
+     * Converts Antimony content to SBML if valid; updates sbmlCode in state.
+     * Calls loadCopasi for further processing if isComputeSteadyState is false.
+     * @param {string} content - Antimony content to process.
+     * @param {boolean} isChecked - Checkbox state.
+     * @param {boolean} isComputeSteadyState - Flag indicating steady state computation.
+     * @returns {Promise<void>}
+     */
     processTextChange = (content, isChecked, isComputeSteadyState) => {
         return new Promise((resolve, reject) => {
             if (content.trim() !== "") {
@@ -155,7 +183,6 @@ export class App extends React.Component {
                             convertedAnt: "",
                         },
                         () => {
-                            // Only call loadCopasi when isComputeSteadyState is false
                             if (!isComputeSteadyState) {
                                 this.loadCopasi().then(resolve).catch(reject);
                             } else {
@@ -168,30 +195,31 @@ export class App extends React.Component {
                     reject(new Error("Antimony syntax is not valid."));
                 }
             } else {
-                resolve(); // If content is empty, resolve immediately
+                resolve();
             }
         });
     };
 
+    /**
+     * Resets the model state to its initial conditions using COPASI's reset function.
+     */
     handleLocalReset = () => {
         this.state.copasi.reset();
     };
 
+    /**
+     * Updates COPASI's global parameter values and, if specified, recalculates eigenvalues.
+     * @param {string} option - Parameter option name.
+     * @param {number} value - New parameter value.
+     * @param {boolean} isEigenvaluesRecalculated - Flag for recalculating eigenvalues.
+     */
     handleKValuesChanges = (option, value, isEigenvaluesRecalculated) => {
         try {
-            // Set the new parameter value
             this.state.copasi.setValue(option, value);
-
-            // Retrieve simulation parameters
             const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
-
-            // Reset the model to ensure it starts from initial conditions
             this.state.copasi.reset();
-
-            // Run the simulation with the updated parameter
             const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
 
-            // Update the state with the new simulation results
             this.setState({
                 data: {
                     columns: simResults.columns,
@@ -205,7 +233,6 @@ export class App extends React.Component {
                 selectedValues: this.state.copasi.selectedValues,
             });
 
-            // If eigenvalues need to be recalculated
             if (isEigenvaluesRecalculated) {
                 const steadyStateValue = this.state.copasi.steadyState();
                 const eigenValuesRes = this.state.copasi.eigenValues2D;
@@ -221,6 +248,11 @@ export class App extends React.Component {
         }
     };
 
+    /**
+     * Handles changes to the checkbox state.
+     * Updates simulation results in the state if changes are made.
+     * @param {boolean} isChecked - New checkbox state.
+     */
     handleCheckboxChange = (isChecked) => {
         if (this.state.simulationParameterChanges) {
             this.loadCopasi();
@@ -242,6 +274,11 @@ export class App extends React.Component {
         }
     };
 
+    /**
+     * Updates simulation parameter values in the component state.
+     * @param {string} parameterName - The name of the parameter.
+     * @param {number} value - The new value for the parameter.
+     */
     handleParametersChange = (parameterName, value) => {
         this.setState((prevState) => ({
             simulationParameters: {
@@ -252,13 +289,15 @@ export class App extends React.Component {
         }));
     };
 
-    // Update loadAntimonyLib to return a Promise
+    /**
+     * Loads Antimony library asynchronously and initializes antimonyWrapper.
+     * @returns {Promise<void>}
+     */
     loadAntimonyLib() {
         return new Promise((resolve, reject) => {
             try {
                 libantimony().then((libantimony) => {
                     ant_wrap = new antimonyWrapper(libantimony);
-
                     console.log("libantimony loaded");
                     resolve();
                 });
@@ -269,8 +308,12 @@ export class App extends React.Component {
         });
     }
 
+    /**
+     * Processes and converts SBML content to Antimony format.
+     * Sets the resulting Antimony content in the state.
+     * @param {string} content - The SBML content to process.
+     */
     handleSBMLfile = (content) => {
-        // Check if ant_wrap is ready, if not, load and then process
         if (!ant_wrap) {
             this.loadAntimonyLib().then(() => this.processSBMLFile(content));
         } else {
@@ -278,15 +321,16 @@ export class App extends React.Component {
         }
     };
 
-    // Process the SBML content once the library is loaded
+    /**
+     * Converts SBML content to Antimony if valid, updates component state with converted Antimony code.
+     * @param {string} content - SBML content to be processed.
+     */
     processSBMLFile = (content) => {
         let antCode;
         if (content.trim() !== "") {
             const res = ant_wrap.convertSBMLToAntimony(content);
             if (res.isSuccess()) {
                 antCode = res.getResult();
-
-                // Set the processed antCode without the notes
                 this.setState({ sbmlCode: content, convertedAnt: antCode });
             }
         }
@@ -294,7 +338,10 @@ export class App extends React.Component {
         this.handleResetParameters();
     };
 
-    // In App.js
+    /**
+     * Exports SBML content from Antimony format, prompts for file name, and downloads the file.
+     * @param {string} antimonyContent - The Antimony content to be exported.
+     */
     handleExportSBML = (antimonyContent) => {
         if (typeof ant_wrap === 'undefined') {
             alert("Run \"Simulate\" to export SBML")
@@ -315,6 +362,11 @@ export class App extends React.Component {
         }
     };
 
+    /**
+     * Prompts user for file name and triggers download of specified content.
+     * @param {string} content - The content to be downloaded.
+     * @param {boolean} isSBML - Flag indicating if content is SBML format.
+     */
     promptForFileNameAndDownload = (content, isSBML) => {
         let fileName;
         if (isSBML) {
@@ -327,6 +379,12 @@ export class App extends React.Component {
         }
     };
 
+    /**
+     * Downloads the specified data as a file with the provided filename.
+     * @param {string} data - The data to download.
+     * @param {string} fileName - The name for the downloaded file.
+     * @param {boolean} isSBML - Determines the MIME type of the download.
+     */
     downloadFile = (data, fileName, isSBML) => {
         const mimeType = isSBML ? "application/xml" : "text/plain";
         const blob = new Blob([data], { type: mimeType });
@@ -337,13 +395,19 @@ export class App extends React.Component {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(href); // Clean up
+        URL.revokeObjectURL(href);
     };
 
+    /**
+     * Resets data in the application state to initial values.
+     */
     handleResetInApp = () => {
         this.setState({ data: { columns: [] } });
     };
 
+    /**
+     * Resets simulation parameters and other variables to initial values.
+     */
     handleResetParameters = () => {
         this.setState({
             sbmlExport: "",
@@ -359,9 +423,14 @@ export class App extends React.Component {
             oldSBMLContent: "",
             kOptions: [],
             kValues: [],
-        })
+        });
     }
 
+    /**
+     * Computes the steady state for a model loaded into COPASI.
+     * Loads and processes SBML if needed, then updates state with simulation results.
+     * @param {string} content - Content to be processed if provided.
+     */
     computeSteadyState = (content) => {
         const proceedWithComputation = () => {
             const parameters = this.state.simulationParameters;
@@ -371,18 +440,14 @@ export class App extends React.Component {
 
             if (this.state.sbmlCode !== this.state.oldSBMLContent) {
 				this.state.copasi.loadModel(this.state.sbmlCode);
-				const kValues = this.state.copasi.globalParameterValues; // Moved inside the if block
+				const kValues = this.state.copasi.globalParameterValues;
 				const kOptions = this.state.copasi.globalParameterNames;
 				this.setState({
 					kValues: kValues,
 					kOptions: kOptions
 				});
 			}
-
-            // Reset the model to ensure it starts from initial conditions
             this.state.copasi.reset();
-
-            // Set time course settings explicitly
             this.state.copasi.timeCourseSettings = {
                 startTime: start,
                 endTime: end,
@@ -390,7 +455,6 @@ export class App extends React.Component {
             };
 
             const steadyStateValue = this.state.copasi.steadyState();
-            // Run the simulation from start to end
 			this.state.copasi.computeMca(true);
             const eigenValuesRes = this.state.copasi.eigenValues2D;
             const jacobianRes = this.state.copasi.jacobian;
@@ -404,7 +468,7 @@ export class App extends React.Component {
             const parsedResults = typeof simResults === 'string' ? JSON.parse(simResults) : simResults;
             const selectionList = simResults.titles.reduce((acc, title) => ({
 				...acc,
-				[title]: title === 'Time' ? false : true, // If the title is "Time", set it to false
+				[title]: title === 'Time' ? false : true,
 			}), {});
 
             this.setState({
@@ -432,20 +496,21 @@ export class App extends React.Component {
 			});
     };
 
+    /**
+     * Applies selected options to the COPASI species rate selection list.
+     * Updates state with new species selections.
+     * @param {Object} selectedOptions - Map of selected options to apply.
+     */
     handleMoreOptionsApply(selectedOptions) {
-        // Initialize speciesRateSelection with defaultList
         this.setState({ isNewOptionsAdded: true, data: { columns: [], titles: [] } });
         let speciesRateSelection = [...this.state.copasi.selectionList];
 
-        // Iterate through the selectedOptions map
         for (const [key, values] of Object.entries(selectedOptions)) {
         	if (key === "Floating Species") {
 				const rateValues = values.map((name) => `${name}`);
-				// Only add values that are not already in speciesRateSelection
 				speciesRateSelection = [...speciesRateSelection, ...rateValues.filter(value => !speciesRateSelection.includes(value))];
 			}
 			if (key === "Rate of Changes") {
-				// Add ".Rate" to each value and append to speciesRateSelection if not already present
 				const rateValues = values.map((name) => `${name.replace(/'/g, '')}.Rate`);
 				speciesRateSelection = [...speciesRateSelection, ...rateValues.filter(value => !speciesRateSelection.includes(value))];
 			}
@@ -459,32 +524,50 @@ export class App extends React.Component {
             return acc;
         }, {});
 
-        // Update selectedOptions in the state
         this.setSelectedOptions(updatedOptions);
-        // Update copasi selectionList with the new speciesRateSelection
         this.state.copasi.selectionList = speciesRateSelection;
-        this.setState({selectionList: updatedOptions})
+        this.setState({selectionList: updatedOptions});
     }
 
+    /**
+     * Sets whether new options have been added to the component state.
+     * @param {boolean} isNewOptionsAdded - Flag indicating if new options were added.
+     */
     setIsNewOptionsAdded(isNewOptionsAdded) {
-        this.setState({ isNewOptionsAdded: isNewOptionsAdded })
+        this.setState({ isNewOptionsAdded: isNewOptionsAdded });
     }
 
+    /**
+     * Sets selected options for COPASI simulation in component state.
+     * @param {Object} selectedOptions - Map of selected options.
+     */
     setSelectedOptions(selectedOptions) {
-        this.setState({ selectedOptions: selectedOptions })
+        this.setState({ selectedOptions: selectedOptions });
     }
 
+    /**
+     * Updates the selection list in the state and calls handleScanButton after the update.
+     * @param {Object} newSelectionList - The new selection list.
+     */
 	setSelectionList = (newSelectionList) => {
 		this.setState({ selectionList: newSelectionList }, () => {
-			// Call handleScanButton after the state is updated
 			this.handleScanButton(this.props.editorInstance?.getValue(), this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace, this.state.isDataTableDocked, this.state.linesStyle);
 		});
 	};
 
+    /**
+     * Sets docking state of data table in the component.
+     * @param {boolean} isDocked - Whether the data table is docked.
+     */
     setIsDataTableDocked(isDocked) {
-    	this.setState({isDataTableDocked: isDocked})
+    	this.setState({isDataTableDocked: isDocked});
     }
 
+    /**
+     * Updates the scan parameters for parameter scans in the state.
+     * @param {string} key - The key for the parameter being updated.
+     * @param {number|string} value - The new value for the parameter.
+     */
 	handleParameterScansUpdate = (key, value) => {
 		if (['timeStart', 'timeEnd', 'numPoints'].includes(key)) {
 			this.setState((prevState) => ({
@@ -510,6 +593,15 @@ export class App extends React.Component {
 		}
 	};
 
+    /**
+     * Executes parameter scanning for COPASI, processes simulation results, and updates state.
+     * @param {string} content - Optional content to be processed before scan.
+     * @param {boolean} isUseListOfNumbers - Flag indicating list usage for parameter values.
+     * @param {string} valuesSeparatedBySpace - List of parameter values.
+     * @param {boolean} isDataTableDocked - Docking state of the data table.
+     * @param {boolean} isLog - Flag indicating logarithmic scale.
+     * @param {boolean} isSteadyState - Whether to perform steady state computation.
+     */
 	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, isLog, isSteadyState) => {
 			const proceedWithScan = () => {
 			if (isDataTableDocked) {
@@ -545,7 +637,6 @@ export class App extends React.Component {
 			const end = parseFloat(parameters.timeEnd);
 			const points = parseFloat(parameters.numPoints);
 			if (Object.keys(this.state.selectionList).length > 0) {
-				// Filter optionsList to include keys where value is true, but always include "Time"
 				const selectionList = Object.keys(this.state.selectionList).filter(
 					(key) => key === 'Time' || this.state.selectionList[key] === true
 				);
@@ -560,7 +651,6 @@ export class App extends React.Component {
 					alert("Values should be separated by spaces.");
 					return;
 				}
-				// Use valuesSeparatedBySpace to get parameterValues
 				const valuesStrArray = valuesSeparatedBySpace.trim().split(/\s+/);
 				for (let i = 0; i < valuesStrArray.length; i++) {
 					const valueStr = valuesStrArray[i];
@@ -576,7 +666,6 @@ export class App extends React.Component {
 					return;
 				}
 			} else {
-				// Use minValue, maxValue, numValues to compute parameterValues
 				const minValueStr = this.state.firstParameter.minValue;
 				const maxValueStr = this.state.firstParameter.maxValue;
 				const numValuesStr = this.state.firstParameter.numValues;
@@ -590,7 +679,6 @@ export class App extends React.Component {
 					return;
 				}
 
-				// Check if log scale is used
 				if (isLog) {
 					const logMinValue = Math.log10(minValue);
 					const logMaxValue = Math.log10(maxValue);
@@ -598,11 +686,10 @@ export class App extends React.Component {
 
 					for (let i = 0; i < numValues; i++) {
 						const logValue = logMinValue + i * logStepSize;
-						const value = Math.pow(10, logValue); // Convert back from log scale to original scale
+						const value = Math.pow(10, logValue);
 						parameterValues.push(value);
 					}
 				} else {
-					// Linear scale
 					const stepSize = (maxValue - minValue) / (numValues - 1);
 					for (let i = 0; i < numValues; i++) {
 						const value = minValue + i * stepSize;
@@ -611,18 +698,14 @@ export class App extends React.Component {
 				}
 			}
 
-			// Arrays to hold results
 			const allSimResults = [];
 			let titles = [];
 			let timeData = [];
 
-			// Loop over parameter values
 			for (let i = 0; i < parameterValues.length; i++) {
 				const value = parameterValues[i];
 				this.state.copasi.setValue(parameterName, value);
-				// Reset the model
 				this.state.copasi.reset();
-				// Set time course settings
 				this.state.copasi.timeCourseSettings = {
 					startTime: start,
 					endTime: end,
@@ -631,38 +714,30 @@ export class App extends React.Component {
 				if (isSteadyState) {
 					this.state.copasi.steadyState();
 				}
-				// Run the simulation
 				const simResults = JSON.parse(this.state.copasi.Module.simulateEx(start, end, points));
 
-				// Collect the simulation results
 				allSimResults.push({
 					parameterValue: value,
 					simResults: simResults
 				});
 
-				// Collect titles and time data only once
 				if (i === 0) {
 					titles = simResults.titles;
-					timeData = simResults.columns[0]; // Assuming time is the first column
+					timeData = simResults.columns[0];
 				}
 			}
 
-			// Now, construct combined data for plotting
 			const combinedData = {
 				columns: [timeData],
 				titles: ['Time'],
 			};
 
-			// For each variable (excluding Time), collect data across parameter values
 			for (let varIndex = 1; varIndex < titles.length; varIndex++) {
 				const varName = titles[varIndex];
-
 				for (let paramIndex = 0; paramIndex < parameterValues.length; paramIndex++) {
 					const paramValue = parameterValues[paramIndex];
 					const simResult = allSimResults[paramIndex].simResults;
 					const dataColumn = simResult.columns[varIndex];
-
-					// Create a new title that includes the parameter value
 					const newTitle = `${varName} (${parameterName}=${paramValue.toFixed(3)})`;
 
 					combinedData.columns.push(dataColumn);
@@ -670,16 +745,15 @@ export class App extends React.Component {
 				}
 			}
 
-			// Update initialOptions and selectedOptions
 			const initialOptions = combinedData.titles.reduce((acc, title) => {
 				return {
 					...acc,
-					[title]: title === "Time" ? false : true // Set to false if title is "Time", otherwise true
+					[title]: title === "Time" ? false : true
 				};
 			}, {});
 			const selectionList = this.state.copasi.selectionList.reduce((acc, title) => ({
 				...acc,
-				[title]: title === 'Time' ? false : true, // If the title is "Time", set it to false
+				[title]: title === 'Time' ? false : true,
 			}), {});
 
 			this.setState({
@@ -695,7 +769,6 @@ export class App extends React.Component {
 			});
 		};
 
-		// Check if content needs to be processed
 		if (content) {
 			this.handleTextChange(content, this.state.isChecked, true)
 				.then(proceedWithScan)
@@ -706,7 +779,6 @@ export class App extends React.Component {
 			proceedWithScan();
 		}
 	};
-
 
     render() {
         const simulationParameters = this.state;
@@ -755,7 +827,6 @@ export class App extends React.Component {
                     setSelectionList={this.setSelectionList}
                     isDataTableDocked={this.state.isDataTableDocked}
                     setIsDataTableDocked={this.setIsDataTableDocked}
-
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>

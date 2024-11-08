@@ -63,7 +63,8 @@ class ParameterScan extends Component {
             pythonContent: '', // To store the generated Python content
             selectedPalette: 'Default', // Default selection
             selectedPaletteColors: colorPalettes.Default,
-            linesStyle: "Cross Titles"
+            linesStyle: "Dotted Lines",
+            allOptions: new Map()
         };
     }
 
@@ -98,10 +99,12 @@ class ParameterScan extends Component {
     };
 
     handleParameterChange = (event) => {
-        const selectedParameter = event.target.value;
-		this.setState({ selectedParameter }, () => {
-			this.handleInputChange('parameterName', selectedParameter);
-		});
+        const selectedKey = event.target.value;
+        const selectedParameter = this.state.allOptions.get(selectedKey);
+
+        this.setState({ selectedParameter: selectedKey }, () => {
+            this.handleInputChange('parameterName', selectedParameter);
+        });
     };
 
     handleShowLegendChange = (event) => {
@@ -179,39 +182,31 @@ if showLegend:
         this.props.handleParameterScansUpdate(key, value);
     };
 
-    componentDidMount() {
-        this.updateSelectedParameter();
-    }
+//Z
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.kOptions !== this.props.kOptions || prevProps.selectedOptions !== this.props.selectedOptions) {
-            this.updateSelectedParameter();
-        }
-    }
-
-    updateSelectedParameter = () => {
-        const { kOptions, selectedOptions } = this.props;
-        const allOptions = [...kOptions];
-        Object.entries(selectedOptions).forEach(([key, value]) => {
-            if (value) {
-                allOptions.push(`[${key}]_0`);
-            }
-        });
-//        if (allOptions.length > 0 && (!this.state.selectedParameter || !allOptions.includes(this.state.selectedParameter))) {
-//            const firstOption = allOptions[0];
-//            this.setState({ selectedParameter: firstOption });
-//            this.props.handleParameterScansUpdate('parameterName', firstOption);
-//        }
-    };
+//    updateSelectedParameter = () => {
+//        const { kOptions, selectedOptions } = this.props;
+//        const allOptions = [...kOptions];
+//        Object.entries(selectedOptions).forEach(([key, value]) => {
+//            if (value) {
+//                allOptions.push(`[${key}]_0`);
+//            }
+//        });
+//    };
 
     renderDropdown = () => {
         const { kOptions, floatingSpecies, isDarkMode } = this.props;
-        const allOptions = [...kOptions];
-        Object.values(floatingSpecies).forEach((value) => {
-            if (value) {
-                allOptions.push(`[${value}]_0`);
-            }
-        });
+        const { allOptions } = this.state;
+		kOptions.forEach(option => {
+			allOptions.set(option, option);
+		});
+
+		// Add selected options from floatingSpecies with init([value]) as key and [value]_0 as value
+		Object.values(floatingSpecies).forEach((value) => {
+			if (value) {
+				allOptions.set(`init([${value}])`, `[${value}]_0`);
+			}
+		});
 
         return (
             <select
@@ -227,11 +222,11 @@ if showLegend:
                     boxSizing: "border-box",
                 }}
             >
-                {allOptions.map((option, index) => (
-                    <option key={index} value={option}> {/* Ensure the option value is set correctly */}
-                        {option}
-                    </option>
-                ))}
+                {Array.from(allOptions.keys()).map((key, index) => (
+					<option key={index} value={key}>
+						{key}
+					</option>
+				))}
             </select>
         );
     };
@@ -300,7 +295,7 @@ if showLegend:
     };
 
     renderLineStyleDropdown = () => {
-        const lineStyles = ["Cross Lines", "Cross Titles"]; // Options for line styles
+        const lineStyles = ["Solid Lines", "Dotted Lines"]; // Options for line styles
 
         return (
             <select

@@ -166,10 +166,11 @@ const RightPanel = (props, ref) => {
 
 
   // Heights for graph and data table when data table is docked
-  const [graphHeight, setGraphHeight] = useState(window.innerHeight * 0.5);
-  const [dataTableHeight, setDataTableHeight] = useState(window.innerHeight * 0.5);
+  const initialHeight = window.innerHeight * 0.5;
+  const [graphHeight, setGraphHeight] = useState(initialHeight);
+  const [dataTableHeight, setDataTableHeight] = useState(initialHeight);
   // Adjust plotHeight based on docking state
-  const plotHeight = isDataTableDocked ? graphHeight - 150 : window.innerHeight * 0.55;
+  const plotHeight = (isDataTableDocked || isSteadyStateDocked) ? graphHeight - 150 : window.innerHeight * 0.55;
   const isResizing = useRef(false);
 
 //	const plotHeight = isDataTableDocked
@@ -388,7 +389,7 @@ const RightPanel = (props, ref) => {
         <div
           style={{
             flex: isDataTableDocked ? 1 : 1,
-            height: isDataTableDocked ? "50%" : "100%", // Adjusted height
+            height: `${graphHeight}px`, // Adjusted height
             overflowY: "auto",
           }}
         >
