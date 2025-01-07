@@ -33,6 +33,7 @@ const DropdownWithPopup = ({
     convertedAnt,
     onParametersChange,
     onCheckboxChange,
+    tempSimulationParameters,
     simulationParam,
     SBMLContent,
     handleExportSBML,
@@ -42,6 +43,7 @@ const DropdownWithPopup = ({
     handleResetParameters,
     handleSBMLfile,
     handleKValuesChanges,
+    handleKValuesChangesInSteadyState,
     handleLocalReset,
     data,
     kOptions,
@@ -54,7 +56,6 @@ const DropdownWithPopup = ({
     fluxControl,
     elasticities,
     textareaContent,
-    sbmlCode,
     isChecked,
 	floatingSpecies,
 	boundarySpecies,
@@ -72,7 +73,8 @@ const DropdownWithPopup = ({
 	selectionList,
 	setSelectionList,
 	isDataTableDocked,
-	setIsDataTableDocked
+	setIsDataTableDocked,
+	isSteadyState
 }) => {
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
@@ -233,6 +235,12 @@ A = 10
         setSliderValues((prev) => ({ ...prev, [option]: roundedValue }));
         handleKValuesChanges(option, roundedValue, isEigenvaluesRecalculated);
     };
+
+    const handleSliderChangeInSteadyState = (option, value, isEigenvaluesRecalculated) => {
+      const roundedValue = Number(value).toFixed(2);
+ 	  setSliderValues((prev) => ({ ...prev, [option]: roundedValue }));
+      handleKValuesChangesInSteadyState(option, roundedValue, isEigenvaluesRecalculated);
+	};
 
     const handleLabelClick = (parameter) => {
         setSelectedParameter(parameter);
@@ -798,6 +806,7 @@ A = 10
                 handleLocalReset={handleLocalReset}
                 onParametersChange={onParametersChange}
                 handleIconClick={handleIconClick}
+                tempSimulationParameters={tempSimulationParameters}
                 simulationParam={simulationParam}
                 setShowSplitView={setShowSplitView}
                 handleTextChange={handleTextChange}
@@ -840,6 +849,7 @@ A = 10
 				handleLabelClick={handleLabelClick}
 				selectedValues={selectedValues}
 				setShowSteadyStatePopup={setShowSteadyStatePopup}
+				handleSliderChangeInSteadyState={handleSliderChangeInSteadyState}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}
@@ -873,8 +883,7 @@ A = 10
                         className={"front-size-adjustment"}
                         style={{
                             height: `${centerSubPanelHeight * 0.1}px`,
-                            marginLeft: "10px",
-                            marginTop: "1%"
+                            marginLeft: "10px"
                         }}
                     >
                         <label
@@ -937,6 +946,7 @@ A = 10
                     setShowSteadyStatePopup={setShowSteadyStatePopup}
                     isSteadyStateDocked={isSteadyStateDocked}
                     setIsSteadyStateDocked={setIsSteadyStateDocked}
+                    isSteadyState={isSteadyState}
                     setIsDataTableDocked={setIsDataTableDocked}
                     isDataTableDocked={isDataTableDocked}
                     showMoreDataPopup={showMoreDataPopup}

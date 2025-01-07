@@ -38,7 +38,7 @@ const SimulationParameters = ({ className, isDarkMode, onParametersChange, simul
                     }}
                     type="number"
                     name="timeStart"
-                    value={simulationParam.simulationParameters.timeStart}
+                    value={simulationParam.timeStart}
                     onChange={handleInputChange}
                 />
             </div>
@@ -53,7 +53,7 @@ const SimulationParameters = ({ className, isDarkMode, onParametersChange, simul
                     }}
                     type="number"
                     name="timeEnd"
-                    value={simulationParam.simulationParameters.timeEnd || ''}
+                    value={simulationParam.timeEnd || ''}
                     onChange={handleInputChange}
                 />
             </div>
@@ -68,7 +68,7 @@ const SimulationParameters = ({ className, isDarkMode, onParametersChange, simul
                     }}
                     type="number"
                     name="numPoints"
-                    value={simulationParam.simulationParameters.numPoints || ''}
+                    value={simulationParam.numPoints || ''}
                     onChange={handleInputChange}
                 />
             </div>

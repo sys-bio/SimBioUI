@@ -54,14 +54,15 @@ const RightPanel = (props, ref) => {
 	showMoreDataPopup,
 	setShowMoreDataPopup,
 	setIsSteadyStateDocked,
+	isSteadyState,
 	linesStyle
   } = props;
 
   const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
 
   // Checkboxes for graph
-  const [isXAutoscaleChecked, setIsXAutoscaleChecked] = useState(false);
-  const [isYAutoscaleChecked, setIsYAutoscaleChecked] = useState(false);
+  const [isXAutoscaleChecked, setIsXAutoscaleChecked] = useState(true);
+  const [isYAutoscaleChecked, setIsYAutoscaleChecked] = useState(true);
 
   // When click on Edit Graph, there is a popup shown up
   const [showEditGraphPopup, setShowEditGraphPopup] = useState(false);
@@ -88,7 +89,7 @@ const RightPanel = (props, ref) => {
   const [includeGraphBorder, setIncludeGraphBorder] = useState(true);
 
   // Auto scale both axes checkbox
-  const [autoScaleBothAxes, setAutoScaleBothAxes] = useState(false);
+  const [autoScaleBothAxes, setAutoScaleBothAxes] = useState(true);
 
   // Log both axes
   const [logBothAxes, setLogBothAxes] = useState(false);
@@ -179,8 +180,8 @@ const RightPanel = (props, ref) => {
 
   useEffect(() => {
     if (isNewTabCreated) {
-      setIsXAutoscaleChecked(false);
-      setIsYAutoscaleChecked(false);
+      setIsXAutoscaleChecked(true);
+      setIsYAutoscaleChecked(true);
       setIsShowLegendChecked(true);
       setGraphState({
         xMin: "0.00",
@@ -457,6 +458,7 @@ const RightPanel = (props, ref) => {
             plotHeight={plotHeight}
             setSelectedOptions={setSelectedOptions}
             linesStyle={linesStyle}
+            isSteadyState={isSteadyState}
           />
           <div>
             <div style={{ display: "flex", marginTop: "10px" }}>

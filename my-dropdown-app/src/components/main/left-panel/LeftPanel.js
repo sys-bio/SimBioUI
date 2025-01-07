@@ -3,7 +3,6 @@ import TimeCourseSimulation from "./time-course-simulation/TimeCourseSimulation"
 import SteadyState from "./steady-state/SteadyState";
 import ParameterScan from "./parameter-scan/ParameterScan";
 import RealTimeSimulation from "./realtime-simulation/RealTimeSimulation";
-import StructureAnalysis from "./structure-analysis/StructureAnalysis";
 import MoreOptionsPopup from "./time-course-simulation/MoreOptionsPopup";
 
 const LeftPanel = (props) => {
@@ -15,6 +14,7 @@ const LeftPanel = (props) => {
         handleLocalReset,
         onParametersChange,
         handleIconClick,
+        tempSimulationParameters,
         simulationParam,
         handleTextChange,
         initialOptions,
@@ -52,6 +52,7 @@ const LeftPanel = (props) => {
 		selectedParameter,
 		handleCheckboxChange,
 		handleSliderChange,
+		handleSliderChangeInSteadyState,
 		handleMinValueChange,
 		handleMaxValueChange,
 		handleLabelClick,
@@ -100,6 +101,7 @@ const LeftPanel = (props) => {
                     handleLocalReset={handleLocalReset}
                     onParametersChange={onParametersChange}
                     handleIconClick={handleIconClick}
+                    tempSimulationParameters={tempSimulationParameters}
                     simulationParam={simulationParam}
                     setShowSplitView={setShowSplitView}
                     handleTextChange={handleTextChange}
@@ -146,6 +148,7 @@ const LeftPanel = (props) => {
 					selectedParameter={selectedParameter}
 					handleCheckboxChange={handleCheckboxChange}
 					handleSliderChange={handleSliderChange}
+					handleSliderChangeInSteadyState={handleSliderChangeInSteadyState}
 					handleMinValueChange={handleMinValueChange}
 					handleMaxValueChange={handleMaxValueChange}
 					handleLabelClick={handleLabelClick}
@@ -186,13 +189,6 @@ const LeftPanel = (props) => {
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation
-                    leftSubpanelStyle={leftSubpanelStyle}
-                    panelWidth={panelWidth}
-                    isDarkMode={isDarkMode}
-                    handleIconClick={handleIconClick}
-                />
-            ) : activeAnalysisPanel === "Structure Analysis" ? (
-                <StructureAnalysis
                     leftSubpanelStyle={leftSubpanelStyle}
                     panelWidth={panelWidth}
                     isDarkMode={isDarkMode}

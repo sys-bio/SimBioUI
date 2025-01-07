@@ -71,7 +71,7 @@ class PlotGraph extends PureComponent {
     };
 
     resetLineColorMap = (titles) => {
-    	if (this.props.linesStyle === 'Cross Titles') {
+    	if (this.props.linesStyle === 'Dotted Lines') {
 			const variableNames = new Set();
 			titles.forEach((title) => {
 				// Extract variable name before the first parenthesis
@@ -126,7 +126,7 @@ class PlotGraph extends PureComponent {
 
 
     resetLineStyleMap = (titles) => {
-    	if (this.props.linesStyle === "Cross Titles") {
+    	if (this.props.linesStyle === "Dotted Lines") {
 			const lineStyles = [
 				'solid',
 				'dash',
@@ -205,27 +205,33 @@ class PlotGraph extends PureComponent {
             isYAutoscaleChecked,
             graphState,
             plotHeight,
+            isSteadyState
         } = this.props;
 
         let indexOfX;
         let name_of_xAxis;
         if (this.props.data.titles !== undefined) {
-            if (this.props.xAxis_selected_option == null) {
-                indexOfX = 0;
-                name_of_xAxis = 'Time';
-            } else {
-                indexOfX = this.props.data.titles.indexOf(
-                    this.props.xAxis_selected_option
-                );
-                name_of_xAxis = this.props.xAxis_selected_option;
-            }
+        	if (isSteadyState) {
+        		indexOfX = 0;
+        		name_of_xAxis = this.props.data.titles[0];
+        	} else {
+        		if (this.props.xAxis_selected_option == null) {
+					indexOfX = 0;
+					name_of_xAxis = 'Time';
+				} else {
+					indexOfX = this.props.data.titles.indexOf(
+						this.props.xAxis_selected_option
+					);
+					name_of_xAxis = this.props.xAxis_selected_option;
+				}
+        	}
         }
 
-        const baseFontSize = 12;
-        const dynamicFontSize = Math.max(
-            12,
-            (rightPanelWidth / 500) * 12
-        );
+        const baseFontSize = 12; // Base font size for titles
+        const dynamicFontSize = Math.max(10, (rightPanelWidth / 500) * 10); // Adjust dynamic font size based on panel width
+        const tickFontSize = Math.max(8, dynamicFontSize * 0.8); // Smaller font size for ticks
+		const standoff = 20; // Fixed gap between Y-axis title and graph
+        const leftMargin = Math.ceil(standoff + dynamicFontSize * 2);
         const xValues = this.props.data.columns[indexOfX];
         const plotsCount = this.props.data.columns.length;
 
@@ -275,37 +281,6 @@ class PlotGraph extends PureComponent {
             }
         }
 
-	if (isYAutoscaleChecked) {
-		// Get the Y-axis data
-		const yValues = this.props.data.columns.map((col) => Math.max(...col));
-		const minY = Math.min(...yValues);
-		const maxY = Math.max(...yValues);
-
-		// Add a buffer (e.g., 10% of the range)
-		const buffer = (maxY - minY) * 0.1;
-		const bufferedMinY = minY - buffer;
-		const bufferedMaxY = maxY + buffer;
-
-		// Define the step size you want (e.g., 5 or 10)
-		const stepSize = 2;
-
-		// Round the min and max to the nearest multiple of the step size
-		const roundedMinY = Math.floor(bufferedMinY / stepSize) * stepSize;
-		const roundedMaxY = Math.ceil(bufferedMaxY / stepSize) * stepSize;
-
-		// Set the Y-axis range
-		yaxisRange = [roundedMinY, roundedMaxY];
-	} else {
-		if (parseFloat(graphState.yMin) >= parseFloat(graphState.yMax)) {
-			yaxisRange = undefined; // Keep the previous value or use autoscale
-		} else {
-			yaxisRange = [
-				parseFloat(graphState.yMin),
-				parseFloat(graphState.yMax),
-			];
-		}
-	}
-
         // Calculate dtick for x and y axis based on the grid count and axis range
         const xMajorDTick = xaxisRange
             ? (xaxisRange[1] - xaxisRange[0]) / this.props.xMajorGridCount
@@ -315,6 +290,36 @@ class PlotGraph extends PureComponent {
             : null;
         const xMinorDTick = xMajorDTick / this.props.xMinorGridCount;
         const yMinorDTick = yMajorDTick / this.props.yMinorGridCount;
+        if (isYAutoscaleChecked) {
+        		// Get the Y-axis data
+        		const yValues = this.props.data.columns.map((col) => Math.max(...col));
+        		const minY = Math.min(...yValues);
+        		const maxY = Math.max(...yValues);
+
+        		// Add a buffer (e.g., 10% of the range)
+        		const buffer = (maxY - minY) * 0.1;
+        		const bufferedMinY = minY - buffer;
+        		const bufferedMaxY = maxY + buffer;
+
+        		// Define the step size you want (e.g., 5 or 10)
+        		const stepSize = 2;
+
+        		// Round the min and max to the nearest multiple of the step size
+        		const roundedMinY = Math.floor(bufferedMinY / stepSize) * stepSize;
+        		const roundedMaxY = Math.ceil(bufferedMaxY / stepSize) * stepSize;
+
+        		// Set the Y-axis range
+        		yaxisRange = [roundedMinY, roundedMaxY];
+        	} else {
+        		if (parseFloat(graphState.yMin) >= parseFloat(graphState.yMax)) {
+        			yaxisRange = undefined; // Keep the previous value or use autoscale
+        		} else {
+        			yaxisRange = [
+        				parseFloat(graphState.yMin),
+        				parseFloat(graphState.yMax),
+        			];
+        		}
+        	}
 
         return (
             <div>
@@ -322,7 +327,7 @@ class PlotGraph extends PureComponent {
                     ref={this.plotRef}
                     data={plotData}
                     layout={{
-                        width: rightPanelWidth * 0.95,
+                        width: rightPanelWidth * 0.90,
                         height: plotHeight,
                         title: {
                             text: this.props.titleVisible
@@ -330,7 +335,7 @@ class PlotGraph extends PureComponent {
                                 : '',
                             font: {
                                 color: this.props.selectedColor,
-                                size: dynamicFontSize,
+                                size: '14px',
                             },
                         },
                         paper_bgcolor:
@@ -346,12 +351,12 @@ class PlotGraph extends PureComponent {
                                     : '',
                                 font: {
                                     color: 'black',
-                                    size: dynamicFontSize,
+                                    size: '14px',
                                 },
                             },
                             tickfont: {
                                 color: 'black',
-                                size: dynamicFontSize * 0.8,
+                                size: '14px',
                             },
                             gridcolor: this.props.isXMajorGridOn
                                 ? this.props.xMajorGridColor
@@ -395,12 +400,12 @@ class PlotGraph extends PureComponent {
                                     : '',
                                 font: {
                                     color: 'black',
-                                    size: dynamicFontSize,
+                                    size: '14px',
                                 },
                             },
                             tickfont: {
                                 color: 'black',
-                                size: dynamicFontSize * 0.8,
+                                size: '14px',
                             },
                             gridcolor: this.props.isYMajorGridOn
                                 ? this.props.yMajorGridColor
@@ -457,7 +462,7 @@ class PlotGraph extends PureComponent {
                               ]
                             : [],
                         margin: {
-                            l: 50,
+                            l: leftMargin,
                             r: 50,
                             b: 50,
                             t: 50,

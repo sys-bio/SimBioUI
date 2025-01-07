@@ -229,6 +229,7 @@ class SteadyState extends Component {
                         selectedParameter={this.props.selectedParameter}
                         handleCheckboxChange={this.props.handleCheckboxChange}
                         handleSliderChange={this.props.handleSliderChange}
+                        handleSliderChangeInSteadyState={this.props.handleSliderChangeInSteadyState}
                         handleMinValueChange={this.props.handleMinValueChange}
                         handleMaxValueChange={this.props.handleMaxValueChange}
                         handleLabelClick={this.props.handleLabelClick}

@@ -26,6 +26,11 @@ export class App extends React.Component {
             convertedAnt: "",
             isChecked: false,
             changeValues: "",
+            tempSimulationParameters: {
+				timeStart: 0.0,
+				timeEnd: 20.0,
+				numPoints: 200,
+			},
             simulationParameters: {
                 timeStart: 0.0,
                 timeEnd: 20.0,
@@ -59,6 +64,7 @@ export class App extends React.Component {
 			},
 			selectionList: [],
 			isDataTableDocked: false,
+			isSteadyState: false
         };
     }
 
@@ -95,9 +101,9 @@ export class App extends React.Component {
     loadCopasi = () => {
         return new Promise((resolve, reject) => {
             try {
-                const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
+                const { timeStart, timeEnd, numPoints } = this.state.tempSimulationParameters;
                 if (this.state.sbmlCode !== this.state.oldSBMLContent) {
-                    this.state.copasi.loadModel(this.state.sbmlCode);
+                	this.state.copasi.loadModel(this.state.sbmlCode);
                     const kValues = this.state.copasi.globalParameterValues;
                     const kOptions = this.state.copasi.globalParameterNames;
                     this.setState({
@@ -116,6 +122,7 @@ export class App extends React.Component {
 					}
 				}
                 const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
+                console.log(simResults)
                 const selectionList = simResults.titles.reduce((acc, title) => ({
                     ...acc,
                     [title]: title === 'Time' ? false : true,
@@ -137,6 +144,7 @@ export class App extends React.Component {
                     elasticities: this.state.copasi.getElasticities(false),
                     selectedValues: this.state.copasi.selectedValues,
                     selectionList: selectionList,
+                    simulationParameters: { ...this.state.tempSimulationParameters },
                 }, () => {
                     resolve();
                 });
@@ -159,7 +167,7 @@ export class App extends React.Component {
         if (!ant_wrap) {
             return this.loadAntimonyLib().then(() => this.processTextChange(content, isChecked, isComputeSteadyState));
         } else {
-            return this.processTextChange(content, isChecked);
+            return this.processTextChange(content, isChecked, isComputeSteadyState);
         }
     };
 
@@ -174,6 +182,29 @@ export class App extends React.Component {
     processTextChange = (content, isChecked, isComputeSteadyState) => {
         return new Promise((resolve, reject) => {
             if (content.trim() !== "") {
+                // Parse content to extract `timeEnd` and `numPoints`
+                let timeEnd = null;
+                let numPoints = null;
+                const lines = content.split("\n"); // Split content into lines
+
+                lines.forEach((line) => {
+                    const trimmedLine = line.trim();
+                    if (trimmedLine.startsWith("#")) {
+                        // Extract the text after the # symbol
+                        if (trimmedLine.startsWith("#TimeEnd")) {
+                            const match = trimmedLine.match(/#TimeEnd\s+(\d+(\.\d+)?)/);
+                            if (match) {
+                                timeEnd = parseFloat(match[1]);
+                            }
+                        } else if (trimmedLine.startsWith("#NumberPoints")) {
+                            const match = trimmedLine.match(/#NumberPoints\s+(\d+)/);
+                            if (match) {
+                                numPoints = parseInt(match[1], 10);
+                            }
+                        }
+                    }
+                });
+
                 const result = ant_wrap.convertAntimonyToSBML(content);
                 if (result.isSuccess()) {
                     const sbml = result.getResult();
@@ -181,6 +212,11 @@ export class App extends React.Component {
                         {
                             sbmlCode: sbml,
                             convertedAnt: "",
+                            simulationParameters: {
+                                ...this.state.simulationParameters,
+                                timeEnd: timeEnd !== null ? timeEnd : this.state.simulationParameters.timeEnd,
+                                numPoints: numPoints !== null ? numPoints : this.state.simulationParameters.numPoints,
+                            },
                         },
                         () => {
                             if (!isComputeSteadyState) {
@@ -248,6 +284,28 @@ export class App extends React.Component {
         }
     };
 
+	handleKValuesChangesInSteadyState = (option, value, isEigenvaluesRecalculated) => {
+		try {
+			this.state.copasi.setValue(option, value);
+			const { timeStart, timeEnd, numPoints } = this.state.simulationParameters;
+			this.state.copasi.reset();
+
+			this.setState({
+				selectedValues: this.state.copasi.selectedValues,
+			});
+
+			if (isEigenvaluesRecalculated) {
+				const steadyStateValue = this.state.copasi.steadyState();
+				const eigenValuesRes = this.state.copasi.eigenValues2D
+				this.setState({
+					eigenValues: eigenValuesRes
+				});
+			}
+		} catch (err) {
+			console.error(`Error in handleKValuesChangesInSteadyState: ${err.message}`);
+		}
+	};
+
     /**
      * Handles changes to the checkbox state.
      * Updates simulation results in the state if changes are made.
@@ -281,8 +339,8 @@ export class App extends React.Component {
      */
     handleParametersChange = (parameterName, value) => {
         this.setState((prevState) => ({
-            simulationParameters: {
-                ...prevState.simulationParameters,
+            tempSimulationParameters: {
+                ...prevState.tempSimulationParameters,
                 [parameterName]: parseFloat(value),
             },
             simulationParameterChanges: true,
@@ -465,20 +523,20 @@ export class App extends React.Component {
 
             this.state.copasi.reset();
             const simResults = this.state.copasi.simulateEx(start, end, points);
-            const parsedResults = typeof simResults === 'string' ? JSON.parse(simResults) : simResults;
+            //const parsedResults = typeof simResults === 'string' ? JSON.parse(simResults) : simResults;
             const selectionList = simResults.titles.reduce((acc, title) => ({
 				...acc,
 				[title]: title === 'Time' ? false : true,
 			}), {});
 
             this.setState({
-            	initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
+            	//initialOptions: simResults.titles.reduce((acc, title) => ({ ...acc, [title]: true }), {}),
                 oldSBMLContent: this.state.sbmlCode,
                 steadyState: steadyStateValue,
-                data: {
-                    columns: parsedResults.columns,
-                    titles: parsedResults.titles,
-                },
+				data: {
+					columns: [], // Explicitly set to empty
+					titles: [],  // Explicitly set to empty
+				},
                 eigenValues: eigenValuesRes,
                 jacobian: jacobianRes,
                 selectedValues: selectedValues,
@@ -496,12 +554,104 @@ export class App extends React.Component {
 			});
     };
 
+    computeParameterScanSteadyState = (valuesSeparatedBySpace, updatedSelectionList, isUseListOfNumbers, isLog) => {
+//        const { minValue, maxValue, numValues } = this.state.firstParameter;
+        const parameters = this.state.simulationParameters;
+		const start = parameters.timeStart;
+		const end = parameters.timeEnd;
+		const points = parameters.numPoints;
+//
+//
+//        const stepSize = (maxValue - minValue) / (numValues - 1);
+//        const parameterValues = Array.from({ length: numValues }, (_, i) => minValue + i * stepSize);
+		let parameterValues = this.getListOfValues(valuesSeparatedBySpace, updatedSelectionList, isUseListOfNumbers, isLog);
+
+        // Initialize steady-state results with parameter values and dynamic species
+        const steadyStateResults = {
+            parameter: parameterValues, // Parameter values
+        };
+
+        // Populate steadyStateResults with keys for each species in selectionList
+        const selectionList = this.state.copasi.selectionList.slice(1);
+        selectionList.forEach((species) => {
+            steadyStateResults[species] = []; // Initialize empty arrays for each species
+        });
+        const parameterName = this.state.firstParameter.parameterName === ''
+                    ? this.state.copasi.globalParameterNames[0]
+                    : this.state.firstParameter.parameterName;
+
+        parameterValues.forEach((value) => {
+            try {
+                // Set parameter value in COPASI
+                this.state.copasi.setValue(parameterName, value);
+                this.state.copasi.reset();
+				this.state.copasi.timeCourseSettings = {
+					startTime: start,
+					endTime: end,
+					numPoints: points
+				};
+
+				const steadyStateValue = this.state.copasi.steadyState();
+
+                // Retrieve steady-state values for all selected species
+                const speciesValues = this.state.copasi.selectedValues.slice(1);
+
+                // Log and handle missing values
+                if (!speciesValues || speciesValues.length !== selectionList.length) {
+                    selectionList.forEach((species) => steadyStateResults[species].push(null));
+                    return;
+                }
+
+                // Populate steadyStateResults for each species
+                selectionList.forEach((species, index) => {
+                    steadyStateResults[species].push(speciesValues[index]);
+                });
+            } catch (err) {
+                console.error(`Error computing steady state for parameter=${value}:`, err.message);
+                selectionList.forEach((species) => steadyStateResults[species].push(null)); // Fill with null on error
+            }
+        });
+
+        // Prepare columns and titles for the state update
+        const columns = [steadyStateResults.parameter]; // Start with parameter values
+        const titles = [parameterName]; // Start with parameter name
+		const selectionListTmp = this.state.copasi.selectionList.reduce((acc, title) => ({
+			...acc,
+			[title]: title === 'Time' ? false : true,
+		}), {});
+
+        selectionList.forEach((species) => {
+            columns.push(steadyStateResults[species]); // Add species data
+            titles.push(species); // Add species name
+        });
+
+        const initialOptions = titles.reduce((acc, title) => {
+			return {
+				...acc,
+				[title]: title === parameterName ? false : true,
+			};
+		}, {});
+
+        // Update the state with the computed steady-state results
+        this.setState(
+            {
+                data: {
+                    columns: columns,
+                    titles: titles,
+                },
+                initialOptions: initialOptions,
+                selectedOptions: initialOptions,
+				selectionList: selectionListTmp,
+            }
+        );
+    };
+
     /**
      * Applies selected options to the COPASI species rate selection list.
      * Updates state with new species selections.
      * @param {Object} selectedOptions - Map of selected options to apply.
      */
-    handleMoreOptionsApply(selectedOptions) {
+	handleMoreOptionsApply(selectedOptions) {
         this.setState({ isNewOptionsAdded: true, data: { columns: [], titles: [] } });
         let speciesRateSelection = [...this.state.copasi.selectionList];
 
@@ -550,9 +700,18 @@ export class App extends React.Component {
      * @param {Object} newSelectionList - The new selection list.
      */
 	setSelectionList = (newSelectionList) => {
-		this.setState({ selectionList: newSelectionList }, () => {
-			this.handleScanButton(this.props.editorInstance?.getValue(), this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace, this.state.isDataTableDocked, this.state.linesStyle);
-		});
+		this.setState({ selectionList: newSelectionList });
+//		, () => {
+//			this.handleScanButton(
+//				this.props.editorInstance?.getValue(),
+//				this.state.isUseListOfNumbers,
+//				this.state.valuesSeparatedBySpace,
+//				this.state.isDataTableDocked,
+//				this.state.linesStyle,
+//				false,
+//				newSelectionList // Pass the updated selection list
+//			);
+//		});
 	};
 
     /**
@@ -602,183 +761,201 @@ export class App extends React.Component {
      * @param {boolean} isLog - Flag indicating logarithmic scale.
      * @param {boolean} isSteadyState - Whether to perform steady state computation.
      */
-	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, isLog, isSteadyState) => {
-			const proceedWithScan = () => {
-			if (isDataTableDocked) {
-				this.setIsDataTableDocked(true);
-			}
-			this.state.copasi.loadModel(this.state.sbmlCode);
-			if (this.state.sbmlCode !== this.state.oldSBMLContent) {
-				const kValues = this.state.copasi.globalParameterValues;
-				const kOptions = this.state.copasi.globalParameterNames;
-				const floatingSpecies = this.state.copasi.floatingSpeciesNames;
-				this.setState({
-					kValues: kValues,
-					kOptions: kOptions,
-					floatingSpecies: floatingSpecies,
-					selectionList: [],
-					firstParameter: {
-						parameterName: "",
-						minValue: 0.1,
-						maxValue: 1.0,
-						numValues: 16
-					},
-					parametersScanType: {
-						timeStart: 0.0,
-						timeEnd: 10.0,
-						numPoints: 100,
-					},
-				});
-			}
-			const parameterName = this.state.firstParameter.parameterName === '' ?
-				this.state.copasi.globalParameterNames[0] : this.state.firstParameter.parameterName;
-			const parameters = this.state.parametersScanType;
-			const start = parseFloat(parameters.timeStart);
-			const end = parseFloat(parameters.timeEnd);
-			const points = parseFloat(parameters.numPoints);
-			if (Object.keys(this.state.selectionList).length > 0) {
-				const selectionList = Object.keys(this.state.selectionList).filter(
-					(key) => key === 'Time' || this.state.selectionList[key] === true
-				);
-				this.state.copasi.selectionList = selectionList;
-			}
-
-			let parameterValues = [];
-
-			if (isUseListOfNumbers) {
-				const specialSeparatorRegex = /[,;:]/;
-				if (specialSeparatorRegex.test(valuesSeparatedBySpace)) {
-					alert("Values should be separated by spaces.");
-					return;
+	handleScanButton = (content, isUseListOfNumbers, valuesSeparatedBySpace, isDataTableDocked, isLog, isSteadyState,
+	updatedSelectionList) => {
+		const proceedWithScan = () => {
+			this.setState({isSteadyState: isSteadyState});
+			if (!isSteadyState) {
+				if (isDataTableDocked) {
+					this.setIsDataTableDocked(true);
 				}
-				const valuesStrArray = valuesSeparatedBySpace.trim().split(/\s+/);
-				for (let i = 0; i < valuesStrArray.length; i++) {
-					const valueStr = valuesStrArray[i];
-					const value = parseFloat(valueStr);
-					if (isNaN(value)) {
-						alert("Invalid number '" + valueStr + "' in the list of values.");
-						return;
-					}
-					parameterValues.push(value);
-				}
-				if (parameterValues.length === 0) {
-					alert("No valid values provided in the list.");
-					return;
-				}
-			} else {
-				const minValueStr = this.state.firstParameter.minValue;
-				const maxValueStr = this.state.firstParameter.maxValue;
-				const numValuesStr = this.state.firstParameter.numValues;
+				const parameters = this.state.parametersScanType;
+				const start = parseFloat(parameters.timeStart);
+				const end = parseFloat(parameters.timeEnd);
+				const points = parseFloat(parameters.numPoints);
+				let parameterValues = this.getListOfValues(valuesSeparatedBySpace, updatedSelectionList, isUseListOfNumbers, isLog);
+				const allSimResults = [];
+				let titles = [];
+				let timeData = [];
+				const parameterName = this.state.firstParameter.parameterName === '' ?
+                				 this.state.copasi.globalParameterNames[0] : this.state.firstParameter.parameterName;
 
-				const minValue = parseFloat(minValueStr);
-				const maxValue = parseFloat(maxValueStr);
-				const numValues = parseFloat(numValuesStr);
+				for (let i = 0; i < parameterValues.length; i++) {
+					const value = parameterValues[i];
 
-				if (numValues < 2) {
-					alert("Number of values must be at least 2.");
-					return;
-				}
+					this.state.copasi.setValue(parameterName, value);
+					this.state.copasi.reset();
+					this.state.copasi.timeCourseSettings = {
+						startTime: start,
+						endTime: end,
+						numPoints: points
+					};
+					const simResults = JSON.parse(this.state.copasi.Module.simulateEx(start, end, points));
 
-				if (isLog) {
-					const logMinValue = Math.log10(minValue);
-					const logMaxValue = Math.log10(maxValue);
-					const logStepSize = (logMaxValue - logMinValue) / (numValues - 1);
+					allSimResults.push({
+						parameterValue: value,
+						simResults: simResults
+					});
 
-					for (let i = 0; i < numValues; i++) {
-						const logValue = logMinValue + i * logStepSize;
-						const value = Math.pow(10, logValue);
-						parameterValues.push(value);
-					}
-				} else {
-					const stepSize = (maxValue - minValue) / (numValues - 1);
-					for (let i = 0; i < numValues; i++) {
-						const value = minValue + i * stepSize;
-						parameterValues.push(value);
+					if (i === 0) {
+						titles = simResults.titles;
+						timeData = simResults.columns[0];
 					}
 				}
-			}
 
-			const allSimResults = [];
-			let titles = [];
-			let timeData = [];
-
-			for (let i = 0; i < parameterValues.length; i++) {
-				const value = parameterValues[i];
-				this.state.copasi.setValue(parameterName, value);
-				this.state.copasi.reset();
-				this.state.copasi.timeCourseSettings = {
-					startTime: start,
-					endTime: end,
-					numPoints: points
+				const combinedData = {
+					columns: [timeData],
+					titles: ['Time'],
 				};
-				if (isSteadyState) {
-					this.state.copasi.steadyState();
+
+				for (let varIndex = 1; varIndex < titles.length; varIndex++) {
+					const varName = titles[varIndex];
+					for (let paramIndex = 0; paramIndex < parameterValues.length; paramIndex++) {
+						const paramValue = parameterValues[paramIndex];
+						const simResult = allSimResults[paramIndex].simResults;
+						const dataColumn = simResult.columns[varIndex];
+						const newTitle = `${varName} (${parameterName}=${paramValue.toFixed(3)})`;
+
+						combinedData.columns.push(dataColumn);
+						combinedData.titles.push(newTitle);
+					}
 				}
-				const simResults = JSON.parse(this.state.copasi.Module.simulateEx(start, end, points));
 
-				allSimResults.push({
-					parameterValue: value,
-					simResults: simResults
-				});
-
-				if (i === 0) {
-					titles = simResults.titles;
-					timeData = simResults.columns[0];
-				}
-			}
-
-			const combinedData = {
-				columns: [timeData],
-				titles: ['Time'],
-			};
-
-			for (let varIndex = 1; varIndex < titles.length; varIndex++) {
-				const varName = titles[varIndex];
-				for (let paramIndex = 0; paramIndex < parameterValues.length; paramIndex++) {
-					const paramValue = parameterValues[paramIndex];
-					const simResult = allSimResults[paramIndex].simResults;
-					const dataColumn = simResult.columns[varIndex];
-					const newTitle = `${varName} (${parameterName}=${paramValue.toFixed(3)})`;
-
-					combinedData.columns.push(dataColumn);
-					combinedData.titles.push(newTitle);
-				}
-			}
-
-			const initialOptions = combinedData.titles.reduce((acc, title) => {
-				return {
+				const initialOptions = combinedData.titles.reduce((acc, title) => {
+					return {
+						...acc,
+						[title]: title === "Time" ? false : true
+					};
+				}, {});
+				const selectionList = this.state.copasi.selectionList.reduce((acc, title) => ({
 					...acc,
-					[title]: title === "Time" ? false : true
-				};
-			}, {});
-			const selectionList = this.state.copasi.selectionList.reduce((acc, title) => ({
-				...acc,
-				[title]: title === 'Time' ? false : true,
-			}), {});
+					[title]: title === 'Time' ? false : true,
+				}), {});
 
-			this.setState({
-				data: combinedData,
-				initialOptions: initialOptions,
-				selectedOptions: initialOptions,
-				selectionList: selectionList,
-				floatingSpecies: this.state.copasi.floatingSpeciesNames,
-				boundarySpecies: this.state.copasi.boundarySpeciesNames,
-				reactionRates: this.state.copasi.reactionNames,
-				jacobian: this.state.copasi.jacobian,
-				selectedValues: this.state.copasi.selectedValues,
-			});
-		};
-
-		if (content) {
-			this.handleTextChange(content, this.state.isChecked, true)
-				.then(proceedWithScan)
-				.catch((err) => {
-					console.error("Error during computation:", err);
+				this.setState({
+					data: combinedData,
+					initialOptions: initialOptions,
+					selectedOptions: initialOptions,
+					selectionList: selectionList,
+					floatingSpecies: this.state.copasi.floatingSpeciesNames,
+					boundarySpecies: this.state.copasi.boundarySpeciesNames,
+					reactionRates: this.state.copasi.reactionNames,
+					jacobian: this.state.copasi.jacobian,
+					selectedValues: this.state.copasi.selectedValues,
 				});
-		} else {
-			proceedWithScan();
-		}
+			} else {
+				this.computeParameterScanSteadyState(valuesSeparatedBySpace, updatedSelectionList, isUseListOfNumbers, isLog);
+			}
+		};
+		this.handleTextChange(content, this.state.isChecked, true)
+			.then(proceedWithScan)
+			.catch((err) => {
+				console.error("Error during computation:", err);
+			});
 	};
+
+	// Helper functions to handle list of numbers
+	computeValuesFromList = (valuesSeparatedBySpace) => {
+		let parameterValues = [];
+		const specialSeparatorRegex = /[,;:]/;
+		if (specialSeparatorRegex.test(valuesSeparatedBySpace)) {
+			alert("Values should be separated by spaces.");
+			return;
+		}
+		const valuesStrArray = valuesSeparatedBySpace.trim().split(/\s+/);
+		for (let i = 0; i < valuesStrArray.length; i++) {
+			const valueStr = valuesStrArray[i];
+			const value = parseFloat(valueStr);
+			if (isNaN(value)) {
+				alert("Invalid number '" + valueStr + "' in the list of values.");
+				return;
+			}
+			parameterValues.push(value);
+		}
+		if (parameterValues.length === 0) {
+			alert("No valid values provided in the list.");
+			return;
+		}
+		return parameterValues;
+	}
+
+	computeValuesFromRange = (isLog) => {
+		let parameterValues = [];
+		const minValueStr = this.state.firstParameter.minValue;
+		const maxValueStr = this.state.firstParameter.maxValue;
+		const numValuesStr = this.state.firstParameter.numValues;
+
+		const minValue = parseFloat(minValueStr);
+		const maxValue = parseFloat(maxValueStr);
+		const numValues = parseFloat(numValuesStr);
+
+		if (numValues < 2) {
+			alert("Number of values must be at least 2.");
+			return;
+		}
+
+		if (isLog) {
+			const logMinValue = Math.log10(minValue);
+			const logMaxValue = Math.log10(maxValue);
+			const logStepSize = (logMaxValue - logMinValue) / (numValues - 1);
+
+			for (let i = 0; i < numValues; i++) {
+				const logValue = logMinValue + i * logStepSize;
+				const value = Math.pow(10, logValue);
+				parameterValues.push(value);
+			}
+		} else {
+			const stepSize = (maxValue - minValue) / (numValues - 1);
+			for (let i = 0; i < numValues; i++) {
+				const value = minValue + i * stepSize;
+				parameterValues.push(value);
+			}
+		}
+		return parameterValues;
+	}
+
+	getListOfValues = (valuesSeparatedBySpace, updatedSelectionList, isUseListOfNumbers, isLog) => {
+		if (this.state.sbmlCode !== this.state.oldSBMLContent) {
+			this.state.copasi.loadModel(this.state.sbmlCode);
+			const kValues = this.state.copasi.globalParameterValues;
+			const kOptions = this.state.copasi.globalParameterNames;
+			const floatingSpecies = this.state.copasi.floatingSpeciesNames;
+			updatedSelectionList = [];
+			this.setState({
+				kValues: kValues,
+				kOptions: kOptions,
+				floatingSpecies: floatingSpecies,
+				selectionList: [],
+				oldSBMLContent: this.state.sbmlCode,
+				firstParameter: {
+					parameterName: "",
+					minValue: 0.1,
+					maxValue: 1.0,
+					numValues: 16
+				},
+				parametersScanType: {
+					timeStart: 0.0,
+					timeEnd: 10.0,
+					numPoints: 100,
+				},
+			});
+		}
+		if (Object.keys(updatedSelectionList).length > 0) {
+			const selectionList = Object.keys(updatedSelectionList).filter(
+				(key) => key === 'Time' || updatedSelectionList[key] === true
+			);
+			this.state.copasi.selectionList = selectionList;
+		}
+
+		let parameterValues = [];
+
+		if (isUseListOfNumbers) {
+			parameterValues = this.computeValuesFromList(valuesSeparatedBySpace);
+		} else {
+			parameterValues = this.computeValuesFromRange(isLog);
+		}
+		return parameterValues;
+	}
 
     render() {
         const simulationParameters = this.state;
@@ -790,11 +967,13 @@ export class App extends React.Component {
                     initialOptions={this.state.initialOptions}
                     handleExportSBML={this.handleExportSBML}
                     simulationParam={simulationParameters}
+                    tempSimulationParameters={this.state.tempSimulationParameters}
                     SBMLContent={this.state.sbmlExport}
                     handleLocalReset={this.handleLocalReset}
                     handleTextChange={this.handleTextChange}
                     handleResetInApp={this.handleResetInApp}
                     handleKValuesChanges={this.handleKValuesChanges}
+                    handleKValuesChangesInSteadyState={this.handleKValuesChangesInSteadyState}
                     data={this.state.data}
                     isChecked={this.state.isChecked}
                     onCheckboxChange={this.handleCheckboxChange}
@@ -827,6 +1006,7 @@ export class App extends React.Component {
                     setSelectionList={this.setSelectionList}
                     isDataTableDocked={this.state.isDataTableDocked}
                     setIsDataTableDocked={this.setIsDataTableDocked}
+                    isSteadyState={this.state.isSteadyState}
                 />
                 <header className="App-header">
                     <span>COPASI version: {this.state.copasi?.version}</span>
@@ -837,3 +1017,4 @@ export class App extends React.Component {
 }
 
 export default App;
+

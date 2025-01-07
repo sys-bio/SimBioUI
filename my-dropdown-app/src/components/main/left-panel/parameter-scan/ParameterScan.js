@@ -197,6 +197,7 @@ if showLegend:
     renderDropdown = () => {
         const { kOptions, floatingSpecies, isDarkMode } = this.props;
         const { allOptions } = this.state;
+        allOptions.clear();
 		kOptions.forEach(option => {
 			allOptions.set(option, option);
 		});
@@ -282,7 +283,7 @@ if showLegend:
                     ...generalStyle(this.props.isDarkMode, "black", "white", "gray", "black"),
                     borderRadius: "4px",
                     height: "25px",
-                    marginLeft: "10px",
+                    marginLeft: "12px",
                 }}
             >
                 {Object.keys(colorPalettes).map((paletteName, index) => (
@@ -395,7 +396,8 @@ if showLegend:
                                     onClick={() =>
                                     this.props.handleScanButton(this.props.editorInstance?.getValue(),
                                     this.state.isUseListOfNumbers, this.state.valuesSeparatedBySpace,
-                                    this.state.isTable, isLogarithmicDistribution, isSteadyState)}
+                                    this.state.isTable, isLogarithmicDistribution, isSteadyState,
+                                    this.props.selectionList)}
                                 >
                                     Scan
                                 </button>
@@ -587,17 +589,28 @@ if showLegend:
                                     Generate Python
                                 </button>
                             </div>
-                            <div style={{display: "flex", marginTop: "10px"}}>
-                                <span className={"text"} style={generalStyle(isDarkMode, "", "", "#2e2d2d", "white")}>
-                                    Color palette:
-                                </span>
-                                    {this.renderColorPaletteDropdown()}
+                            <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
+                              <span
+                                className={"text"}
+                                style={{
+                                  ...generalStyle(isDarkMode, "", "", "#2e2d2d", "white"),
+                                }}
+                              >
+                                Color palette:
+                              </span>
+                              {this.renderColorPaletteDropdown()}
                             </div>
-                            <div style={{ display: "flex", marginTop: "10px" }}>
-                                <span className={"text"} style={generalStyle(isDarkMode, "", "", "#2e2d2d", "white")}>
-                                    Line Style:
-                                </span>
-                                {this.renderLineStyleDropdown()}
+                            <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
+                              <span
+                                className={"text"}
+                                style={{
+                                  ...generalStyle(isDarkMode, "", "", "#2e2d2d", "white"),
+                                  marginLeft: "17px",
+                                }}
+                              >
+                                Line Style:
+                              </span>
+                              {this.renderLineStyleDropdown()}
                             </div>
                         </>
                     ) : (

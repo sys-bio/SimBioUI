@@ -11,7 +11,7 @@ const SliderPopupWindow = ({
     isDarkMode,
     selectedParameter,
     handleCheckboxChange,
-    handleSliderChange,
+    handleSliderChangeInSteadyState,
     handleMinValueChange,
     handleMaxValueChange,
     handleLabelClick,
@@ -297,7 +297,7 @@ const SliderPopupWindow = ({
                                                         max={minMaxValues[option].max}
                                                         value={sliderValues[option]}
                                                         step={stepSize} // Use the computed stepSize here
-                                                        onChange={(e) => handleSliderChange(option, e.target.value, true)}
+                                                        onChange={(e) => handleSliderChangeInSteadyState(option, e.target.value, true)}
                                                         style={{
                                                             width: "100%",
                                                             background: `linear-gradient(to right, #2273f5 0%, blue ${
@@ -352,6 +352,24 @@ const SliderPopupWindow = ({
                         </div>
                     </>
                 )}
+                <button
+					className="dock-button"
+					onClick={handleDock} // Attach the handleDoc function to onClick
+					style={{
+						position: "absolute",
+						bottom: "10px",
+						right: "70px",
+						background: isDarkMode ? "black" : "white",
+						border: "1px solid gray",
+						borderRadius: "8px",
+						fontSize: "12px",
+						color: isDarkMode ? "white" : "black",
+						cursor: "pointer",
+						padding: "5px 10px",
+					}}
+				>
+					Dock
+				</button>
                 <div
 					className="resize-handle-slider-popup resize-handle-top-left-slider-popup"
 					onMouseDown={(e) => handleResize("top-left", e)}
@@ -368,24 +386,6 @@ const SliderPopupWindow = ({
 					className="resize-handle-slider-popup resize-handle-bottom-right-slider-popup"
 					onMouseDown={(e) => handleResize("bottom-right", e)}
 				/>
-				<button
-					className="dock-button"
-					onClick={handleDock} // Attach the handleDoc function to onClick
-					style={{
-						position: "absolute",
-						bottom: "10px",
-						right: "10px",
-						background: isDarkMode ? "black" : "white",
-						border: "1px solid gray",
-						borderRadius: "8px",
-						fontSize: "12px",
-						color: isDarkMode ? "white" : "black",
-						cursor: "pointer",
-						padding: "5px 10px",
-					}}
-				>
-					Dock
-				</button>
             </div>
         </Draggable>
     );

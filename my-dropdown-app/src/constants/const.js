@@ -14,8 +14,7 @@ export const ANALYSIS_ITEM = [
     { label: "Time Course Simulation" },
     { label: "Steady-State" },
     { label: "Parameter Scan" },
-    { label: "Real-Time Simulation" },
-    { label: "Structure Analysis" },
+    { label: "Real-Time Simulation" }
 ];
 export const OPTIONS_ITEMS = [
     { label: "Preferences..." },

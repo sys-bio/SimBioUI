@@ -107,7 +107,7 @@ class TimeCourseSimulation extends Component {
     };
 
     render() {
-        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, simulationParam, onParametersChange, handleLocalReset, isResetInitialState, showMoreOptions } = this.props;
+        const { isDarkMode, leftSubpanelStyle, panelWidth, handleIconClick, tempSimulationParameters, onParametersChange, handleLocalReset, isResetInitialState, showMoreOptions } = this.props;
         const { options, selectedXOption, showDropdown, showXDropdown, showDropdownButtons } = this.state;
 
         const dropdownXAxisButtonStyle = {
@@ -155,7 +155,7 @@ class TimeCourseSimulation extends Component {
                                     className={"border-with-text-simulation"}
                                     isDarkMode={isDarkMode}
                                     onParametersChange={onParametersChange}
-                                    simulationParam={simulationParam}
+                                    simulationParam={tempSimulationParameters}
                                 />
                                 <div
                                     style={{
@@ -294,7 +294,7 @@ class TimeCourseSimulation extends Component {
                                         updateOptions={this.updateSelectedOptions}
                                         isDarkMode={isDarkMode}
                                         withCheckboxes={true}
-                                        options={this.props.selectionList}
+                                        options={this.props.selectedOptions}
                                     />
                                 )}
                                 {showDropdownButtons && (
