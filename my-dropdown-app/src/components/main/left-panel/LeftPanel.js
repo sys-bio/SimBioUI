@@ -75,6 +75,8 @@ const LeftPanel = (props) => {
         setLinesStyle
     } = props;
     const [selectedElements, setSelectedElements] = useState([]);
+    const [isParameterScan, setIsParameterScan] = useState(false);
+
 	const closePopup = () => {
 		setSelectedElements([]);
 		setShowMoreOptions(false);
@@ -127,6 +129,7 @@ const LeftPanel = (props) => {
                     setShowMoreOptions={setShowMoreOptions}
                     selectionList={selectionList}
                     setPaletteColor={setPaletteColor}
+                    setIsParameterScan={setIsParameterScan}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState
@@ -186,6 +189,7 @@ const LeftPanel = (props) => {
                     setSelectionList={setSelectionList}
                     linesStyle={linesStyle}
                     setLinesStyle={setLinesStyle}
+                    setIsParameterScan={setIsParameterScan}
                 />
             ) : activeAnalysisPanel === "Real-Time Simulation" ? (
                 <RealTimeSimulation
@@ -206,6 +210,7 @@ const LeftPanel = (props) => {
 					reactionRates={reactionRates}
 					kOptions={kOptions}
 					handleMoreOptionsApply={handleMoreOptionsApply}
+					isParameterScan={isParameterScan}
 				/>
 			)}
         </>

@@ -64,7 +64,9 @@ export class App extends React.Component {
 			},
 			selectionList: [],
 			isDataTableDocked: false,
-			isSteadyState: false
+			isSteadyState: false,
+			moreOptionsForTimeCourseSimulation: [],
+			moreOptionsForParameterScan: []
         };
     }
 
@@ -102,7 +104,7 @@ export class App extends React.Component {
         return new Promise((resolve, reject) => {
             try {
                 const { timeStart, timeEnd, numPoints } = this.state.tempSimulationParameters;
-                if (this.state.sbmlCode !== this.state.oldSBMLContent) {
+                if (this.state.sbmlCode !== this.state.oldSBMLContent || this.state.moreOptionsForTimeCourseSimulation.length === 0) {
                 	this.state.copasi.loadModel(this.state.sbmlCode);
                     const kValues = this.state.copasi.globalParameterValues;
                     const kOptions = this.state.copasi.globalParameterNames;
@@ -111,6 +113,9 @@ export class App extends React.Component {
                         kOptions: kOptions
                     });
                 }
+				if (this.state.moreOptionsForTimeCourseSimulation.length !== 0) {
+					this.state.copasi.selectionList = this.state.moreOptionsForTimeCourseSimulation;
+				}
                 this.state.copasi.reset();
                 const kValues = this.state.kValues;
                 const kOptions = this.state.kOptions;
@@ -122,7 +127,6 @@ export class App extends React.Component {
 					}
 				}
                 const simResults = JSON.parse(this.state.copasi.Module.simulateEx(timeStart, timeEnd, numPoints));
-                console.log(simResults)
                 const selectionList = simResults.titles.reduce((acc, title) => ({
                     ...acc,
                     [title]: title === 'Time' ? false : true,
@@ -391,6 +395,7 @@ export class App extends React.Component {
                 antCode = res.getResult();
                 this.setState({ sbmlCode: content, convertedAnt: antCode });
             }
+            this.loadCopasi();
         }
         this.handleResetInApp();
         this.handleResetParameters();
@@ -651,7 +656,7 @@ export class App extends React.Component {
      * Updates state with new species selections.
      * @param {Object} selectedOptions - Map of selected options to apply.
      */
-	handleMoreOptionsApply(selectedOptions) {
+	handleMoreOptionsApply(selectedOptions, isParameterScan) {
         this.setState({ isNewOptionsAdded: true, data: { columns: [], titles: [] } });
         let speciesRateSelection = [...this.state.copasi.selectionList];
 
@@ -675,8 +680,13 @@ export class App extends React.Component {
         }, {});
 
         this.setSelectedOptions(updatedOptions);
-        this.state.copasi.selectionList = speciesRateSelection;
+        //this.state.copasi.selectionList = speciesRateSelection;
         this.setState({selectionList: updatedOptions});
+        if (isParameterScan) {
+        	this.setState({moreOptionsForParameterScan: speciesRateSelection});
+        } else {
+        	this.setState({moreOptionsForTimeCourseSimulation: speciesRateSelection});
+        }
     }
 
     /**
@@ -768,6 +778,9 @@ export class App extends React.Component {
 			if (!isSteadyState) {
 				if (isDataTableDocked) {
 					this.setIsDataTableDocked(true);
+				}
+				if (this.state.moreOptionsForParameterScan.length !== 0) {
+					this.state.copasi.selectionList = this.state.moreOptionsForParameterScan;
 				}
 				const parameters = this.state.parametersScanType;
 				const start = parseFloat(parameters.timeStart);

@@ -376,7 +376,10 @@ if showLegend:
                                 <button
                                     className={"text"}
                                     style={generalStyle(isDarkMode, "black", "white", "gray", "black")}
-                                    onClick={() => this.props.setShowMoreOptions(true)}
+                                    onClick={() => {
+                                        this.props.setShowMoreOptions(true);
+                                        this.props.setIsParameterScan(true);
+                                    }}
                                 >
                                     What to plot
                                 </button>

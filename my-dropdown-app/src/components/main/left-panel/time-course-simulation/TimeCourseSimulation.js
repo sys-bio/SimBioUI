@@ -322,7 +322,10 @@ class TimeCourseSimulation extends Component {
                                             style={{
                                                 color: isDarkMode ? "white" : "black",
                                             }}
-                                            onClick={() => this.props.setShowMoreOptions(true)}
+                                            onClick={() => {
+                                                this.props.setShowMoreOptions(true);
+                                                this.props.setIsParameterScan(false);
+                                            }}
                                         >
                                             More options
                                         </button>

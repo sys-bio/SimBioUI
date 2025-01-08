@@ -11,7 +11,8 @@ const MoreOptionsPopup = ({
     boundarySpecies = [],
     reactionRates = [],
     kOptions = [], // Add kOptions with a default value
-    handleMoreOptionsApply
+    handleMoreOptionsApply,
+    isParameterScan
 }) => {
     const nodeRef = useRef(null);
     const [showFloatingSpecies, setShowFloatingSpecies] = useState(false);
@@ -212,7 +213,7 @@ const MoreOptionsPopup = ({
     };
 
 	const handleApply = () => {
-		handleMoreOptionsApply(selectedMap); // Pass the selected map when Apply is clicked
+		handleMoreOptionsApply(selectedMap, isParameterScan); // Pass the selected map when Apply is clicked
 		closePopup();
 	};
 
