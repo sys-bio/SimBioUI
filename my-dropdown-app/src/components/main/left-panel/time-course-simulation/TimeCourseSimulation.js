@@ -287,7 +287,7 @@ class TimeCourseSimulation extends Component {
                                     {" "}
                                     Select Y{" "}
                                 </button>
-                                {showDropdown && (
+                                {(
                                     <DropdownContainers
                                         key={JSON.stringify(options)}
                                         className={"dropdown-container"}
@@ -297,7 +297,7 @@ class TimeCourseSimulation extends Component {
                                         options={this.props.selectedOptions}
                                     />
                                 )}
-                                {showDropdownButtons && (
+                                {(
                                     <div>
                                         <button
                                             className={'select-and-unselect-all-style'}
