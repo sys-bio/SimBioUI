@@ -41,6 +41,7 @@ const RightPanel = (props, ref) => {
     showSteadyStatePopup,
     jacobian,
     fluxControl,
+    isOutOfSync,
 	reactionRates,
 	concentration,
 	elasticities,
@@ -461,6 +462,20 @@ const RightPanel = (props, ref) => {
             isSteadyState={isSteadyState}
           />
           <div>
+            {isOutOfSync &&
+              <div style={{
+                  display: "flex",
+                  backgroundColor: isDarkMode ? "#4a4a4a" : "#d6d6d6",
+                  borderRadius: 4,
+                  border: isDarkMode ? "1px solid #828181" : "1px solid #bfbfbf",
+                  marginTop: 4,
+                  padding: 4,
+                  width: "90.5%"
+              }}>
+                <span style={{ color: isDarkMode ? "white" : "black", fontSize: 12 }}>
+                  Graph out of sync
+                </span>
+              </div>}
             <div style={{ display: "flex", marginTop: "10px" }}>
               <div style={{ marginRight: "10px" }}>
                 <NumberInput

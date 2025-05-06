@@ -39,6 +39,7 @@ const LeftPanel = (props) => {
         setShowMoreOptions,
         selectionList,
         setSelectionList,
+        onSimulate,
         // For Steady State
         data,
         computeSteadyState,
@@ -130,6 +131,7 @@ const LeftPanel = (props) => {
                     selectionList={selectionList}
                     setPaletteColor={setPaletteColor}
                     setIsParameterScan={setIsParameterScan}
+                    onSimulate={onSimulate}
                 />
             ) : activeAnalysisPanel === "Steady-State" ? (
                 <SteadyState
