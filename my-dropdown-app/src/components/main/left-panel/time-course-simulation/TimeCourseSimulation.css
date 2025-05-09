@@ -49,4 +49,17 @@
     width: auto; /* Adjusts width to content up to max width */
 }
 
+.search-bar {
+    padding: 2px 4px;
+    text-align: left;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
+    margin: 4px 2px;
+    cursor: text;
+    border-radius: 4px;
+    width: 95%;
+    height: 24px;
+    border: 1px solid #ccc; 
+}
 
