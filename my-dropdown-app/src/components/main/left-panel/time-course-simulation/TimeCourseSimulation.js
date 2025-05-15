@@ -296,7 +296,7 @@ class TimeCourseSimulation extends Component {
                                 {(
                                     <DropdownContainers
                                         key={JSON.stringify(this.state.filteredOptions)}
-                                        className={"dropdown-container"}
+                                        className={"dependent-dropdown-container"}
                                         updateOptions={this.updateSelectedOptions}
                                         isDarkMode={isDarkMode}
                                         withCheckboxes={true}

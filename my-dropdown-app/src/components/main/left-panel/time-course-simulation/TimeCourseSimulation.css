@@ -46,7 +46,8 @@
     background-color: royalblue;
     font-size: 10px;
     overflow: hidden;
-    width: auto; /* Adjusts width to content up to max width */
+    width: 76px; 
+    padding: 1px 1px;
 }
 
 .search-bar {
@@ -63,3 +64,17 @@
     border: 1px solid #ccc; 
 }
 
+.dependent-dropdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-height: 200px;
+    overflow-y: auto; /* Show the scrollbar only when needed */
+    width: 95%; /* Increase width to accommodate the scrollbar */
+    margin-left: 1px;
+    border-radius: 4px;
+    padding: 2px 6px; 
+    margin: 1px 0;    
+    line-height: 1.1;
+
+}
