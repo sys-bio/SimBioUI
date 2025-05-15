@@ -15,7 +15,9 @@ class TimeCourseSimulation extends Component {
             showDropdown: false,
             showXDropdown: false,
             showDropdownButtons: false,
-            shouldUpdateSelectedOptions: false
+            shouldUpdateSelectedOptions: false,
+            searchTerm: "",
+            filteredOptions: props.selectedOptions
         };
     }
 
@@ -27,6 +29,7 @@ class TimeCourseSimulation extends Component {
         if (prevProps.selectedOptions !== this.props.selectedOptions) {
 			this.setState({
 				options: this.props.selectedOptions,
+                filteredOptions: this.props.selectedOptions,
 			});
 		}
 
@@ -270,34 +273,37 @@ class TimeCourseSimulation extends Component {
                                 >
                                     Dependent Variables
                                 </span>
-                                <button
-                                    className="x-axis-option-style"
-                                    style={{
-                                        backgroundColor: isDarkMode ? "#242323" : "white",
-                                        color: isDarkMode ? "white" : "black",
-                                        border: isDarkMode ? "1px solid gray" : "1px solid black",
+                                <input
+                                    type="text"
+                                    placeholder="Search dependent variables"
+                                    className="search-bar"
+                                    value={this.state.searchTerm}
+                                    onChange={(e) => {
+                                        const searchTerm = e.target.value;
+                                        this.setState({ searchTerm });
+
+                                        const filteredOptions = Object.keys(this.state.options).reduce((acc, key) => {
+                                            if (key.toLowerCase().includes(searchTerm.toLowerCase())) {
+                                                acc[key] = this.state.options[key];
+                                            }
+                                            return acc; 
+                                        }, {});
+
+                                        this.setState({ filteredOptions});
+
                                     }}
-                                    onClick={() => {
-                                        this.setState((prevState) => ({
-                                            showDropdown: !prevState.showDropdown,
-                                            showDropdownButtons: !prevState.showDropdownButtons,
-                                        }));
-                                    }}
-                                >
-                                    {" "}
-                                    Select Y{" "}
-                                </button>
-                                {showDropdown && (
+                                />
+                                {(
                                     <DropdownContainers
-                                        key={JSON.stringify(options)}
-                                        className={"dropdown-container"}
+                                        key={JSON.stringify(this.state.filteredOptions)}
+                                        className={"dependent-dropdown-container"}
                                         updateOptions={this.updateSelectedOptions}
                                         isDarkMode={isDarkMode}
                                         withCheckboxes={true}
-                                        options={this.props.selectedOptions}
+                                        options={this.state.filteredOptions}
                                     />
                                 )}
-                                {showDropdownButtons && (
+                                {(
                                     <div>
                                         <button
                                             className={'select-and-unselect-all-style'}
