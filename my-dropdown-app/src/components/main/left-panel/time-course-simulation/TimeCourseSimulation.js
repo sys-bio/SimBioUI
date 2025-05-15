@@ -10,6 +10,7 @@ class TimeCourseSimulation extends Component {
         super(props);
         this.state = {
             options: props.initialOptions,
+            onSimulate: props.onSimulate,
             previousContent: "",
             selectedXOption: "Time",
             showDropdown: false,
@@ -74,6 +75,7 @@ class TimeCourseSimulation extends Component {
         }
 		this.props.setPaletteColor([]);
         this.setState({ previousContent: editorContent }); // Store the content as the previous content
+        this.props.onSimulate();
     };
 
     resetInitialConditions = (e) => {

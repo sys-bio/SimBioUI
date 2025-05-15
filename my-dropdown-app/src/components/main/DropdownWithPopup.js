@@ -131,6 +131,10 @@ A = 10
      const [annotUnderlinedOn, setAnnotUnderlinedOn] = useState(false);
      const [annotationAddPosition, setAnnotationAddPosition] = useState(null);
 
+     // These are used to tell if the plot is out of sync
+     const [lastSimulatedEditorContent, setLastSimulatedEditorContent] = useState(null);
+     const [currentEditorContent, setCurrentEditorContent] = useState("");
+
      // Set highlight color for unannotated variables
      const [highlightColor, setHighlightColor] = useState("red");
      const [decorations, setDecorations] = useState([]);
@@ -794,6 +798,23 @@ A = 10
         }
     };
 
+    const onSimulate = () => {
+        if (!editorInstance) return;
+        setLastSimulatedEditorContent(editorInstance.getValue());
+    };
+
+    useEffect(() => {
+        if (!editorInstance) return;
+        setCurrentEditorContent(editorInstance.getValue());
+        
+        const disposable = editorInstance.onDidChangeModelContent(_ => {
+            if (!editorInstance) return;
+            setCurrentEditorContent(editorInstance.getValue());
+        });
+
+        return () => disposable.dispose();
+    }, [editorInstance]);
+
     return (
         <div className={`main-container ${isDarkMode ? "dark-mode" : "bright-mode"}`}>
             <LeftPanel
@@ -832,6 +853,7 @@ A = 10
 				selectionList={selectionList}
 				setSelectionList={setSelectionList}
 				setPaletteColor={setPaletteColor}
+                onSimulate={onSimulate}
                 // For Steady State
                 data={data}
                 computeSteadyState={computeSteadyState}
@@ -854,7 +876,6 @@ A = 10
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}
                 setIsShowLegendChecked={setIsShowLegendChecked}
-                setPaletteColor={setPaletteColor}
                 handleParameterScansUpdate={handleParameterScansUpdate}
                 parametersScanType={parametersScanType}
                 firstParameter={firstParameter}
@@ -939,6 +960,7 @@ A = 10
                     jacobian={jacobian}
                     concentration={concentration}
                     fluxControl={fluxControl}
+                    isOutOfSync={lastSimulatedEditorContent !== currentEditorContent}
                     elasticities={elasticities}
                     handleSteadyStateDock={handleSteadyStateDock}
                     handleSteadyStateUndock={handleSteadyStateUndock}
