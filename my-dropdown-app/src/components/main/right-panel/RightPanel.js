@@ -179,6 +179,9 @@ const RightPanel = (props, ref) => {
 //	  ? window.innerHeight * 0.35 // Adjust this value as needed
 //	  : window.innerHeight * 0.55; // Adjust this value as needed
 
+  // Add new state for active tab
+  const [activeTab, setActiveTab] = useState('graph');
+
   useEffect(() => {
     if (isNewTabCreated) {
       setIsXAutoscaleChecked(true);
@@ -384,196 +387,187 @@ const RightPanel = (props, ref) => {
         className="graphs-container"
         style={{
           display: "flex",
-          flexDirection: "column", // Changed from 'row' to 'column'
+          flexDirection: "column",
           height: "100%",
         }}
       >
-        <div
-          style={{
-            flex: isDataTableDocked ? 1 : 1,
-            height: `${graphHeight}px`, // Adjusted height
-            overflowY: "auto",
-          }}
-        >
-          {/* PlotGraph and controls */}
-          <PlotGraph
-            ref={ref}
-            selectedOptions={selectedOptions}
-            xAxis_selected_option={xAxis_selected_option}
-            data={data}
-            rightPanelWidth={rightPanelWidth}
-            rightPanelHeight={window.innerHeight}
-            isDarkMode={isDarkMode}
-            graphState={graphState}
-            isXAutoscaleChecked={isXAutoscaleChecked}
-            isYAutoscaleChecked={isYAutoscaleChecked}
-            isShowLegendChecked={isShowLegendChecked}
-            graphTitleName={graphTitleName}
-            titleVisible={titleVisible}
-            selectedMainTitleColor={selectedMainTitleColor}
-            selectedGraphBorderColor={selectedGraphBorderColor}
-            selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
-            selectedGraphBackgroundColor={selectedGraphBackgroundColor}
-            simulationParam={simulationParam}
-            includeGraphBorder={includeGraphBorder}
-            borderWidth={borderWidth}
-            nameOfXAxisUserInput={nameOfXAxisUserInput}
-            nameOfYAxisUserInput={nameOfYAxisUserInput}
-            xAxisTitleIsShown={xAxisTitleIsShown}
-            yAxisTitleIsShown={yAxisTitleIsShown}
-            showXMajorTicks={showXMajorTicks}
-            showYMajorTicks={showYMajorTicks}
-            showXMinorTicks={showXMinorTicks}
-            showYMinorTicks={showYMinorTicks}
-            colorForXAxis={colorForXAxis}
-            colorForYAxis={colorForYAxis}
-            xMajorGridColor={xMajorGridColor}
-            yMajorGridColor={yMajorGridColor}
-            xMajorGridCount={xMajorGridCount}
-            yMajorGridCount={yMajorGridCount}
-            xMajorGridWidth={xMajorGridWidth}
-            yMajorGridWidth={yMajorGridWidth}
-            xMinorGridColor={xMinorGridColor}
-            yMinorGridColor={yMinorGridColor}
-            xMinorGridCount={xMinorGridCount}
-            yMinorGridCount={yMinorGridCount}
-            xMinorGridWidth={xMinorGridWidth}
-            yMinorGridWidth={yMinorGridWidth}
-            isXMajorGridOn={isXMajorGridOn}
-            isYMajorGridOn={isYMajorGridOn}
-            isXMinorGridOn={isXMinorGridOn}
-            isYMinorGridOn={isYMinorGridOn}
-            isLegendFrameBorderOn={isLegendFrameBorderOn}
-            legendFrameColor={legendFrameColor}
-            legendFrameWidth={legendFrameWidth}
-            legendFrameGap={legendFrameGap}
-            legendFrameLineLength={legendFrameLineLength}
-            legendFrameInteriorColor={legendFrameInteriorColor}
-            paletteColor={paletteColor}
-            setLineColorMap={setLineColorMap}
-            lineColorMap={lineColorMap}
-            setLineWidthMap={setLineWidthMap}
-            lineWidthMap={lineWidthMap}
-            setLineStyleMap={setLineStyleMap}
-            lineStyleMap={lineStyleMap}
-            plotHeight={plotHeight}
-            setSelectedOptions={setSelectedOptions}
-            linesStyle={linesStyle}
-            isSteadyState={isSteadyState}
-          />
-          <div>
-            {isOutOfSync &&
-              <div style={{
-                  display: "flex",
-                  backgroundColor: isDarkMode ? "#4a4a4a" : "#d6d6d6",
-                  borderRadius: 4,
-                  border: isDarkMode ? "1px solid #828181" : "1px solid #bfbfbf",
-                  marginTop: 4,
-                  padding: 4,
-                  width: "90.5%"
-              }}>
-                <span style={{ color: isDarkMode ? "white" : "black", fontSize: 12 }}>
-                  Graph out of sync
-                </span>
-              </div>}
-            <div style={{ display: "flex", marginTop: "10px" }}>
-              <div style={{ marginRight: "10px" }}>
-                <NumberInput
-                  label="X Minimum:"
-                  style={styleForNumberInputInXYMinimum()}
-                  value={graphState.xMin || ""}
-                  onChange={(e) =>
-                    setGraphState((prevState) => ({
-                      ...prevState,
-                      xMin: e.target.value,
-                    }))
-                  }
-                  isDarkMode={isDarkMode}
-                  disabled={isXAutoscaleChecked}
-                />
-                <NumberInput
-                  label="X Maximum:"
-                  style={styleForNumberInputInXYMinimum()}
-                  value={graphState.xMax || ""}
-                  onChange={(e) =>
-                    setGraphState((prevState) => ({
-                      ...prevState,
-                      xMax: e.target.value,
-                    }))
-                  }
-                  isDarkMode={isDarkMode}
-                  disabled={isXAutoscaleChecked}
-                />
-              </div>
+        {/* Add tab navigation */}
+        <div style={{
+          display: "flex",
+          borderBottom: `1px solid ${isDarkMode ? "#4a4a4a" : "#d6d6d6"}`,
+          marginBottom: "10px"
+        }}>
+          <button
+            style={{
+              padding: "8px 16px",
+              backgroundColor: activeTab === 'graph' ? (isDarkMode ? "#4a4a4a" : "#d6d6d6") : "transparent",
+              border: "none",
+              color: isDarkMode ? "white" : "black",
+              cursor: "pointer",
+              borderBottom: activeTab === 'graph' ? `2px solid ${isDarkMode ? "white" : "black"}` : "none"
+            }}
+            onClick={() => setActiveTab('graph')}
+          >
+            Graph
+          </button>
+          <button
+            style={{
+              padding: "8px 16px",
+              backgroundColor: activeTab === 'data' ? (isDarkMode ? "#4a4a4a" : "#d6d6d6") : "transparent",
+              border: "none",
+              color: isDarkMode ? "white" : "black",
+              cursor: "pointer",
+              borderBottom: activeTab === 'data' ? `2px solid ${isDarkMode ? "white" : "black"}` : "none"
+            }}
+            onClick={() => setActiveTab('data')}
+          >
+            Data
+          </button>
+        </div>
+
+        {/* Content area */}
+        <div style={{ flex: 1, overflow: "auto" }}>
+          {activeTab === 'graph' && (
+            <div style={{ height: "100%" }}>
+              <PlotGraph
+                ref={ref}
+                selectedOptions={selectedOptions}
+                xAxis_selected_option={xAxis_selected_option}
+                data={data}
+                rightPanelWidth={rightPanelWidth}
+                rightPanelHeight={window.innerHeight}
+                isDarkMode={isDarkMode}
+                graphState={graphState}
+                isXAutoscaleChecked={isXAutoscaleChecked}
+                isYAutoscaleChecked={isYAutoscaleChecked}
+                isShowLegendChecked={isShowLegendChecked}
+                graphTitleName={graphTitleName}
+                titleVisible={titleVisible}
+                selectedMainTitleColor={selectedMainTitleColor}
+                selectedGraphBorderColor={selectedGraphBorderColor}
+                selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
+                selectedGraphBackgroundColor={selectedGraphBackgroundColor}
+                simulationParam={simulationParam}
+                includeGraphBorder={includeGraphBorder}
+                borderWidth={borderWidth}
+                nameOfXAxisUserInput={nameOfXAxisUserInput}
+                nameOfYAxisUserInput={nameOfYAxisUserInput}
+                xAxisTitleIsShown={xAxisTitleIsShown}
+                yAxisTitleIsShown={yAxisTitleIsShown}
+                showXMajorTicks={showXMajorTicks}
+                showYMajorTicks={showYMajorTicks}
+                showXMinorTicks={showXMinorTicks}
+                showYMinorTicks={showYMinorTicks}
+                colorForXAxis={colorForXAxis}
+                colorForYAxis={colorForYAxis}
+                xMajorGridColor={xMajorGridColor}
+                yMajorGridColor={yMajorGridColor}
+                xMajorGridCount={xMajorGridCount}
+                yMajorGridCount={yMajorGridCount}
+                xMajorGridWidth={xMajorGridWidth}
+                yMajorGridWidth={yMajorGridWidth}
+                xMinorGridColor={xMinorGridColor}
+                yMinorGridColor={yMinorGridColor}
+                xMinorGridWidth={xMinorGridWidth}
+                yMinorGridWidth={yMinorGridWidth}
+                xMinorGridCount={xMinorGridCount}
+                yMinorGridCount={yMinorGridCount}
+                isXMajorGridOn={isXMajorGridOn}
+                isYMajorGridOn={isYMajorGridOn}
+                isXMinorGridOn={isXMinorGridOn}
+                isYMinorGridOn={isYMinorGridOn}
+                paletteColor={paletteColor}
+                setLineColorMap={setLineColorMap}
+                lineColorMap={lineColorMap}
+                setLineWidthMap={setLineWidthMap}
+                lineWidthMap={lineWidthMap}
+                setLineStyleMap={setLineStyleMap}
+                lineStyleMap={lineStyleMap}
+                isLegendFrameBorderOn={isLegendFrameBorderOn}
+                legendFrameColor={legendFrameColor}
+                legendFrameWidth={legendFrameWidth}
+                legendFrameGap={legendFrameGap}
+                legendFrameLineLength={legendFrameLineLength}
+                legendFrameInteriorColor={legendFrameInteriorColor}
+                plotHeight={plotHeight}
+                isSteadyState={isSteadyState}
+                linesStyle={linesStyle}
+              />
               <div>
-                <NumberInput
-                  label="Y Minimum:"
-                  style={styleForNumberInputInXYMinimum()}
-                  value={graphState.yMin || ""}
-                  onChange={(e) =>
-                    setGraphState((prevState) => ({
-                      ...prevState,
-                      yMin: e.target.value,
-                    }))
-                  }
-                  isDarkMode={isDarkMode}
-                  disabled={isYAutoscaleChecked}
-                />
-                <NumberInput
-                  label="Y Maximum:"
-                  style={styleForNumberInputInXYMinimum()}
-                  value={graphState.yMax || ""}
-                  onChange={(e) =>
-                    setGraphState((prevState) => ({
-                      ...prevState,
-                      yMax: e.target.value,
-                    }))
-                  }
-                  isDarkMode={isDarkMode}
-                  disabled={isYAutoscaleChecked}
-                />
-              </div>
-              <div
-                className="text-checkbox-input-autoscale"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  marginBottom: "10px",
-                }}
-              >
-                <div className="autoscale-container">
-                  <div className="checkbox-container">
-                    <label
-                      className="label-space"
-                      style={{
-                        color: isDarkMode ? "white" : "black",
-                      }}
-                    >
-                      <input
-                        className={"checkbox-input"}
-                        type="checkbox"
-                        checked={isXAutoscaleChecked}
-                        onChange={handleAutoscaleX}
-                      />
-                      Autoscale X
-                    </label>
+                {isOutOfSync && (
+                  <div style={{
+                    display: "flex",
+                    backgroundColor: isDarkMode ? "#4a4a4a" : "#d6d6d6",
+                    borderRadius: 4,
+                    border: isDarkMode ? "1px solid #828181" : "1px solid #bfbfbf",
+                    marginTop: 4,
+                    padding: 4,
+                    width: "90.5%"
+                  }}>
+                    <span style={{ color: isDarkMode ? "white" : "black", fontSize: 12 }}>
+                      Graph out of sync
+                    </span>
                   </div>
-                  <div className="checkbox-container">
-                    <label
-                      style={{
-                        color: isDarkMode ? "white" : "black",
-                      }}
-                    >
-                      <input
-                        className="checkbox-input"
-                        type="checkbox"
-                        checked={isYAutoscaleChecked}
-                        onChange={handleAutoscaleY}
-                      />
-                      Autoscale Y
-                    </label>
+                )}
+                <div style={{ display: "flex", marginTop: "10px" }}>
+                  <div style={{ marginRight: "10px" }}>
+                    <NumberInput
+                      label="X Minimum:"
+                      style={styleForNumberInputInXYMinimum()}
+                      value={graphState.xMin || ""}
+                      onChange={(e) =>
+                        setGraphState((prevState) => ({
+                          ...prevState,
+                          xMin: e.target.value,
+                        }))
+                      }
+                      isDarkMode={isDarkMode}
+                      disabled={isXAutoscaleChecked}
+                    />
+                    <NumberInput
+                      label="X Maximum:"
+                      style={styleForNumberInputInXYMinimum()}
+                      value={graphState.xMax || ""}
+                      onChange={(e) =>
+                        setGraphState((prevState) => ({
+                          ...prevState,
+                          xMax: e.target.value,
+                        }))
+                      }
+                      isDarkMode={isDarkMode}
+                      disabled={isXAutoscaleChecked}
+                    />
                   </div>
+                  <div>
+                    <NumberInput
+                      label="Y Minimum:"
+                      style={styleForNumberInputInXYMinimum()}
+                      value={graphState.yMin || ""}
+                      onChange={(e) =>
+                        setGraphState((prevState) => ({
+                          ...prevState,
+                          yMin: e.target.value,
+                        }))
+                      }
+                      isDarkMode={isDarkMode}
+                      disabled={isYAutoscaleChecked}
+                    />
+                    <NumberInput
+                      label="Y Maximum:"
+                      style={styleForNumberInputInXYMinimum()}
+                      value={graphState.yMax || ""}
+                      onChange={(e) =>
+                        setGraphState((prevState) => ({
+                          ...prevState,
+                          yMax: e.target.value,
+                        }))
+                      }
+                      isDarkMode={isDarkMode}
+                      disabled={isYAutoscaleChecked}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: "flex", marginTop: "10px" }}>
                   <div className="checkbox-container">
                     <label
                       style={{
@@ -620,273 +614,214 @@ const RightPanel = (props, ref) => {
                   >
                     Export To PDF
                   </button>
-                  <button
-                    className={"edit-export-style"}
-                    style={{
-                      color: isDarkMode ? "white" : "black",
-                      marginTop: "10px",
-                    }}
-                    onClick={handleShowMoreData}
-                  >
-                    Show Data
-                  </button>
                 </div>
               </div>
             </div>
+          )}
+          {activeTab === 'data' && (
+            <div style={{ height: "100%" }}>
+              <DataTablePopup
+                data={data}
+                isDarkMode={isDarkMode}
+                isDocked={true}
+                onUndock={handleDataTableUndock}
+                onClose={handleCloseDataTable}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      {showEditGraphPopup && (
+        <div className="modal-overlay">
+          <div className="popup-edit-graph"
+            style={{
+              backgroundColor: isDarkMode ? "#2e2d2d" : "white",
+              border: "1px solid grey",
+              borderRadius: "8px",
+              top: `${popupPosition.y}px`,
+              left: `${popupPosition.x}px`,
+              cursor: isDragging ? "grabbing" : "grab",
+            }}
+            onMouseDown={handleMouseDown}>
+            <div className="popup-top-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
+              <button
+                className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGraphButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                onClick={() =>
+                  handleShowButtonFeaturesInEditGraph(setShowGraphButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                }
+              >Graph</button>
+              <button
+                className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showAxesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                onClick={() =>
+                  handleShowButtonFeaturesInEditGraph(setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                }
+              >Axes</button>
+              <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGridButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                onClick={() =>
+                  handleShowButtonFeaturesInEditGraph(setShowGridButtonFeatures, setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
+                }
+              >Grid</button>
+              <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showSeriesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                onClick={() =>
+                  handleShowButtonFeaturesInEditGraph(setShowSeriesButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowGraphButtonFeatures, setShowLegendButtonFeatures)
+                }
+              >Series</button>
+              <button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showLegendButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
+                onClick={() =>
+                  handleShowButtonFeaturesInEditGraph(setShowLegendButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowGraphButtonFeatures)
+                }
+              >Legend</button>
+            </div>
+            {showGraphButtonFeatures && (
+              <GraphEditFeatures
+                isDarkMode={isDarkMode}
+                graphTitleName={graphTitleName}
+                setGraphTitleName={setGraphTitleName}
+                titleVisible={titleVisible}
+                setTitleVisible={setTitleVisible}
+                selectedMainTitleColor={selectedMainTitleColor}
+                setSelectedMainTitleColor={setSelectedMainTitleColor}
+                setShowMainTitleColorDropdown={setShowMainTitleColorDropdown}
+                showMainTitleColorDropdown={showMainTitleColorDropdown}
+                autoScaleBothAxes={autoScaleBothAxes}
+                logBothAxes={logBothAxes}
+                setLogBothAxes={setLogBothAxes}
+                selectedGraphBackgroundColor={selectedGraphBackgroundColor}
+                setSelectedGraphBackgroundColor={setSelectedGraphBackgroundColor}
+                setShowGraphBackgroundColorDropdown={setShowGraphBackgroundColorDropdown}
+                showGraphBackgroundColorDropdown={showGraphBackgroundColorDropdown}
+                borderWidth={borderWidth}
+                setBorderWidth={setBorderWidth}
+                selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
+                setSelectedGraphDrawingAreaColor={setSelectedGraphDrawingAreaColor}
+                setShowGraphDrawingAreaColorDropdown={setShowGraphDrawingAreaColorDropdown}
+                showGraphDrawingAreaColorDropdown={showGraphDrawingAreaColorDropdown}
+                includeGraphBorder={includeGraphBorder}
+                setIncludeGraphBorder={setIncludeGraphBorder}
+                selectedGraphBorderColor={selectedGraphBorderColor}
+                setSelectedGraphBorderColor={setSelectedGraphBorderColor}
+                setShowGraphBorderColorDropdown={setShowGraphBorderColorDropdown}
+                showGraphBorderColorDropdown={showGraphBorderColorDropdown}
+                isXAutoscaleChecked={isXAutoscaleChecked}
+                setShowEditGraphPopup={setShowEditGraphPopup}
+                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                setAutoScaleBothAxes={setAutoScaleBothAxes}
+              />
+            )}
+            {showAxesButtonFeatures && (
+              <AxesEditFeatures
+                isDarkMode={isDarkMode}
+                xAxis_selected_option={xAxis_selected_option}
+                nameOfXAxisUserInput={nameOfXAxisUserInput}
+                setNameOfXAxisUserInput={setNameOfXAxisUserInput}
+                nameOfYAxisUserInput={nameOfYAxisUserInput}
+                setNameOfYAxisUserInput={setNameOfYAxisUserInput}
+                xAxisTitleIsShown={xAxisTitleIsShown}
+                setXAxisTitleIsShown={setXAxisTitleIsShown}
+                yAxisTitleIsShown={yAxisTitleIsShown}
+                setYAxisTitleIsShown={setYAxisTitleIsShown}
+                styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
+                graphState={graphState}
+                setGraphState={setGraphState}
+                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                showXMajorTicks={showXMajorTicks}
+                setShowXMajorTicks={setShowXMajorTicks}
+                showYMajorTicks={showYMajorTicks}
+                setShowYMajorTicks={setShowYMajorTicks}
+                showXMinorTicks={showXMinorTicks}
+                setShowXMinorTicks={setShowXMinorTicks}
+                showYMinorTicks={showYMinorTicks}
+                setShowYMinorTicks={setShowYMinorTicks}
+                colorForXAxis={colorForXAxis}
+                setColorForXAxis={setColorForXAxis}
+                colorForYAxis={colorForYAxis}
+                setColorForYAxis={setColorForYAxis}
+                setIsXAutoscaleChecked={setIsXAutoscaleChecked}
+                isXAutoscaleChecked={isXAutoscaleChecked}
+                setIsYAutoscaleChecked={setIsYAutoscaleChecked}
+                isYAutoscaleChecked={isYAutoscaleChecked}
+              />
+            )}
+            {showGridButtonFeatures && (
+              <GridEditFeatures
+                isDarkMode={isDarkMode}
+                // Major
+                xMajorGridColor={xMajorGridColor}
+                setXMajorGridColor={setXMajorGridColor}
+                yMajorGridColor={yMajorGridColor}
+                setYMajorGridColor={setYMajorGridColor}
+                xMajorGridWidth={xMajorGridWidth}
+                setXMajorGridWidth={setXMajorGridWidth}
+                yMajorGridWidth={yMajorGridWidth}
+                setYMajorGridWidth={setYMajorGridWidth}
+                xMajorGridCount={xMajorGridCount}
+                setXMajorGridCount={setXMajorGridCount}
+                yMajorGridCount={yMajorGridCount}
+                setYMajorGridCount={setYMajorGridCount}
+                setIsXMajorGridOn={setIsXMajorGridOn}
+                setIsYMajorGridOn={setIsYMajorGridOn}
+                //Minor
+                xMinorGridColor={xMinorGridColor}
+                setXMinorGridColor={setXMinorGridColor}
+                yMinorGridColor={yMinorGridColor}
+                setYMinorGridColor={setYMinorGridColor}
+                xMinorGridWidth={xMinorGridWidth}
+                setXMinorGridWidth={setXMinorGridWidth}
+                yMinorGridWidth={yMinorGridWidth}
+                setYMinorGridWidth={setYMinorGridWidth}
+                xMinorGridCount={xMinorGridCount}
+                setXMinorGridCount={setXMinorGridCount}
+                yMinorGridCount={yMinorGridCount}
+                setYMinorGridCount={setYMinorGridCount}
+                setIsXMinorGridOn={setIsXMinorGridOn}
+                setIsYMinorGridOn={setIsYMinorGridOn}
+              />
+            )}
+            {showSeriesButtonFeatures && (
+              <SeriesEditFeatures
+                isDarkMode={isDarkMode}
+                selectedOptions={selectedOptions}
+                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                setSelectedOptions={setSelectedOptions}
+                lineColorMap={lineColorMap}
+                setLineColorMap={setLineColorMap}
+                setLineWidthMap={setLineWidthMap}
+                lineWidthMap={lineWidthMap}
+                setLineStyleMap={setLineStyleMap}
+                lineStyleMap={lineStyleMap}
+              />
+            )}
+            {showLegendButtonFeatures && (
+              <LegendEditFeatures
+                isDarkMode={isDarkMode}
+                styleForCheckboxCustomize={styleForCheckboxCustomize}
+                isShowLegendChecked={isShowLegendChecked}
+                setIsShowLegendChecked={setIsShowLegendChecked}
+                isLegendFrameBorderOn={isLegendFrameBorderOn}
+                setIsLegendFrameBorderOn={setIsLegendFrameBorderOn}
+                legendFrameColor={legendFrameColor}
+                setLegendFrameColor={setLegendFrameColor}
+                legendFrameWidth={legendFrameWidth}
+                setLegendFrameWidth={setLegendFrameWidth}
+                legendFrameGap={legendFrameGap}
+                setLegendFrameGap={setLegendFrameGap}
+                legendFrameLineLength={legendFrameLineLength}
+                setLegendFrameLineLength={setLegendFrameLineLength}
+                legendFrameInteriorColor={legendFrameInteriorColor}
+                setLegendFrameInteriorColor={setLegendFrameInteriorColor}
+              />
+            )}
+            <div className="popup-bottom-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
+              <button
+                className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
+                onClick={handleButtonClose}
+              >Close</button>
+            </div>
           </div>
         </div>
-        {(isDataTableDocked || isSteadyStateDocked) && (
-			<>
-			  <VerticalResizer onResizeStart={handleResizeStart} />
-			  <div
-				style={{
-				  flex: "0 0 auto",
-				  height: `${dataTableHeight}px`,
-				  overflowY: "auto",
-				}}
-			  >
-				{isDataTableDocked && (
-				  <DataTablePopup
-					data={data}
-					isDarkMode={isDarkMode}
-					isDocked={true}
-					onUndock={handleDataTableUndock}
-					onClose={handleCloseDataTable}
-				  />
-				)}
-				{isSteadyStateDocked && (
-				  <SteadyStateMorePopup
-					isDarkMode={isDarkMode}
-					isDocked={true}
-					onUndock={handleSteadyStateUndock}
-					onClose={handleCloseSteadyStatePopup}
-					jacobian={jacobian}
-					fluxControl={fluxControl}
-					reactionRates={reactionRates}
-					concentration={concentration}
-					elasticities={elasticities}
-				  />
-				)}
-			  </div>
-			</>
-		  )}
-      </div>
-      {showMoreDataPopup && !isDataTableDocked && (
-        <DataTablePopup
-          data={data}
-          onClose={() => {
-            setShowMoreDataPopup(false);
-          }}
-          isDarkMode={isDarkMode}
-          onDock={handleDataTableDock}
-          isDocked={false}
-        />
       )}
-      {showSteadyStatePopup && !isSteadyStateDocked &&
-		<SteadyStateMorePopup
-			onClose={() => {setShowSteadyStatePopup(false)}}
-			isDarkMode={isDarkMode}
-			jacobian={jacobian}
-			concentration={concentration}
-			fluxControl={fluxControl}
-            reactionRates={reactionRates}
-            elasticities={elasticities}
-			isDock={false}
-			onDock={handleSteadyStateDock}
-			onUndock={handleSteadyStateUndock}
-		/>}
-		{showEditGraphPopup && (
-			<div className="modal-overlay">
-				<div className="popup-edit-graph"
-					 style={{
-						 backgroundColor: isDarkMode ? "#2e2d2d" : "white",
-						 border: "1px solid grey",
-						 borderRadius: "8px",
-						 top: `${popupPosition.y}px`,
-						 left: `${popupPosition.x}px`,
-						 cursor: isDragging ? "grabbing" : "grab",
-					 }}
-					 onMouseDown={handleMouseDown}>
-					<div className="popup-top-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
-						<button
-							className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGraphButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-							onClick={() =>
-								handleShowButtonFeaturesInEditGraph(setShowGraphButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
-							}
-						>Graph</button>
-						<button
-							className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showAxesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-							onClick={() =>
-								handleShowButtonFeaturesInEditGraph(setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
-							}
-							>Axes</button>
-						<button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showGridButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-							onClick={() =>
-								handleShowButtonFeaturesInEditGraph(setShowGridButtonFeatures, setShowAxesButtonFeatures, setShowGraphButtonFeatures, setShowSeriesButtonFeatures, setShowLegendButtonFeatures)
-							}
-						>Grid</button>
-						<button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showSeriesButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-						onClick={() =>
-							handleShowButtonFeaturesInEditGraph(setShowSeriesButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowGraphButtonFeatures, setShowLegendButtonFeatures)
-						}
-						>Series</button>
-						<button className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? (showLegendButtonFeatures ? "black" : "#2e2d2d") : "white", color: isDarkMode ? "white" : "black", border: "1px solid gray"}}
-						onClick={() =>
-							handleShowButtonFeaturesInEditGraph(setShowLegendButtonFeatures, setShowAxesButtonFeatures, setShowGridButtonFeatures, setShowSeriesButtonFeatures, setShowGraphButtonFeatures)
-						}
-						>Legend</button>
-					</div>
-					{showGraphButtonFeatures && (
-						<GraphEditFeatures
-							isDarkMode={isDarkMode}
-							graphTitleName={graphTitleName}
-							setGraphTitleName={setGraphTitleName}
-							titleVisible={titleVisible}
-							setTitleVisible={setTitleVisible}
-							selectedMainTitleColor={selectedMainTitleColor}
-							setSelectedMainTitleColor={setSelectedMainTitleColor}
-							setShowMainTitleColorDropdown={setShowMainTitleColorDropdown}
-							showMainTitleColorDropdown={showMainTitleColorDropdown}
-							autoScaleBothAxes={autoScaleBothAxes}
-							logBothAxes={logBothAxes}
-							setLogBothAxes={setLogBothAxes}
-							selectedGraphBackgroundColor={selectedGraphBackgroundColor}
-							setSelectedGraphBackgroundColor={setSelectedGraphBackgroundColor}
-							setShowGraphBackgroundColorDropdown={setShowGraphBackgroundColorDropdown}
-							showGraphBackgroundColorDropdown={showGraphBackgroundColorDropdown}
-							borderWidth={borderWidth}
-							setBorderWidth={setBorderWidth}
-							selectedGraphDrawingAreaColor={selectedGraphDrawingAreaColor}
-							setSelectedGraphDrawingAreaColor={setSelectedGraphDrawingAreaColor}
-							setShowGraphDrawingAreaColorDropdown={setShowGraphDrawingAreaColorDropdown}
-							showGraphDrawingAreaColorDropdown={showGraphDrawingAreaColorDropdown}
-							includeGraphBorder={includeGraphBorder}
-							setIncludeGraphBorder={setIncludeGraphBorder}
-							selectedGraphBorderColor={selectedGraphBorderColor}
-							setSelectedGraphBorderColor={setSelectedGraphBorderColor}
-							setShowGraphBorderColorDropdown={setShowGraphBorderColorDropdown}
-							showGraphBorderColorDropdown={showGraphBorderColorDropdown}
-							isXAutoscaleChecked={isXAutoscaleChecked}
-							setShowEditGraphPopup={setShowEditGraphPopup}
-							styleForCheckboxCustomize={styleForCheckboxCustomize}
-							setAutoScaleBothAxes={setAutoScaleBothAxes}
-						/>
-					)}
-					{showAxesButtonFeatures && (
-						<AxesEditFeatures
-							isDarkMode={isDarkMode}
-							xAxis_selected_option={xAxis_selected_option}
-							nameOfXAxisUserInput={nameOfXAxisUserInput}
-							setNameOfXAxisUserInput={setNameOfXAxisUserInput}
-							nameOfYAxisUserInput={nameOfYAxisUserInput}
-							setNameOfYAxisUserInput={setNameOfYAxisUserInput}
-							xAxisTitleIsShown={xAxisTitleIsShown}
-							setXAxisTitleIsShown={setXAxisTitleIsShown}
-							yAxisTitleIsShown={yAxisTitleIsShown}
-							setYAxisTitleIsShown={setYAxisTitleIsShown}
-							styleForNumberInputInXYMinimum={styleForNumberInputInXYMinimum}
-							graphState={graphState}
-							setGraphState={setGraphState}
-							styleForCheckboxCustomize={styleForCheckboxCustomize}
-							showXMajorTicks={showXMajorTicks}
-							setShowXMajorTicks={setShowXMajorTicks}
-							showYMajorTicks={showYMajorTicks}
-							setShowYMajorTicks={setShowYMajorTicks}
-							showXMinorTicks={showXMinorTicks}
-							setShowXMinorTicks={setShowXMinorTicks}
-							showYMinorTicks={showYMinorTicks}
-							setShowYMinorTicks={setShowYMinorTicks}
-							colorForXAxis={colorForXAxis}
-							setColorForXAxis={setColorForXAxis}
-							colorForYAxis={colorForYAxis}
-							setColorForYAxis={setColorForYAxis}
-							setIsXAutoscaleChecked={setIsXAutoscaleChecked}
-							isXAutoscaleChecked={isXAutoscaleChecked}
-							setIsYAutoscaleChecked={setIsYAutoscaleChecked}
-							isYAutoscaleChecked={isYAutoscaleChecked}
-						/>
-					)}
-					{showGridButtonFeatures && (
-						<GridEditFeatures
-							isDarkMode={isDarkMode}
-							// Major
-							xMajorGridColor={xMajorGridColor}
-							setXMajorGridColor={setXMajorGridColor}
-							yMajorGridColor={yMajorGridColor}
-							setYMajorGridColor={setYMajorGridColor}
-							xMajorGridWidth={xMajorGridWidth}
-							setXMajorGridWidth={setXMajorGridWidth}
-							yMajorGridWidth={yMajorGridWidth}
-							setYMajorGridWidth={setYMajorGridWidth}
-							xMajorGridCount={xMajorGridCount}
-							setXMajorGridCount={setXMajorGridCount}
-							yMajorGridCount={yMajorGridCount}
-							setYMajorGridCount={setYMajorGridCount}
-							setIsXMajorGridOn={setIsXMajorGridOn}
-							setIsYMajorGridOn={setIsYMajorGridOn}
-							//Minor
-							xMinorGridColor={xMinorGridColor}
-							setXMinorGridColor={setXMinorGridColor}
-							yMinorGridColor={yMinorGridColor}
-							setYMinorGridColor={setYMinorGridColor}
-							xMinorGridWidth={xMinorGridWidth}
-							setXMinorGridWidth={setXMinorGridWidth}
-							yMinorGridWidth={yMinorGridWidth}
-							setYMinorGridWidth={setYMinorGridWidth}
-							xMinorGridCount={xMinorGridCount}
-							setXMinorGridCount={setXMinorGridCount}
-							yMinorGridCount={yMinorGridCount}
-							setYMinorGridCount={setYMinorGridCount}
-							setIsXMinorGridOn={setIsXMinorGridOn}
-							setIsYMinorGridOn={setIsYMinorGridOn}
-						/>
-					)}
-					{showSeriesButtonFeatures && (
-						<SeriesEditFeatures
-							isDarkMode={isDarkMode}
-							selectedOptions={selectedOptions}
-							styleForCheckboxCustomize={styleForCheckboxCustomize}
-							setSelectedOptions={setSelectedOptions}
-							lineColorMap={lineColorMap}
-							setLineColorMap={setLineColorMap}
-							setLineWidthMap={setLineWidthMap}
-							lineWidthMap={lineWidthMap}
-							setLineStyleMap={setLineStyleMap}
-							lineStyleMap={lineStyleMap}
-						/>
-					)}
-					{showLegendButtonFeatures && (
-						<LegendEditFeatures
-							isDarkMode={isDarkMode}
-							styleForCheckboxCustomize={styleForCheckboxCustomize}
-							isShowLegendChecked={isShowLegendChecked}
-							setIsShowLegendChecked={setIsShowLegendChecked}
-							isLegendFrameBorderOn={isLegendFrameBorderOn}
-							setIsLegendFrameBorderOn={setIsLegendFrameBorderOn}
-							legendFrameColor={legendFrameColor}
-							setLegendFrameColor={setLegendFrameColor}
-							legendFrameWidth={legendFrameWidth}
-							setLegendFrameWidth={setLegendFrameWidth}
-							legendFrameGap={legendFrameGap}
-							setLegendFrameGap={setLegendFrameGap}
-							legendFrameLineLength={legendFrameLineLength}
-							setLegendFrameLineLength={setLegendFrameLineLength}
-							legendFrameInteriorColor={legendFrameInteriorColor}
-							setLegendFrameInteriorColor={setLegendFrameInteriorColor}
-						/>
-					)}
-					<div className="popup-bottom-edit-graph" style={{backgroundColor: isDarkMode ? "#737170" : "white", border: "1px solid grey", borderRadius: "8px"}}>
-						   <button
-								className="edit-graph-popup-buttons" style={{backgroundColor: isDarkMode ? "#2e2d2d" : "white", color: isDarkMode ? "white" : "black"}}
-								onClick={handleButtonClose}
-						   >Close</button>
-					</div>
-				</div>
-			</div>
-            )}
-        </div>
-
-    );
+    </div>
+  );
 };
 
 export default forwardRef(RightPanel);
