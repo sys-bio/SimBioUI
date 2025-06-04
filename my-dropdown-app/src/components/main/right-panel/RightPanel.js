@@ -301,7 +301,7 @@ const RightPanel = (props, ref) => {
   };
 
   const handleShowMoreData = () => {
-    if (!data || data.columns.length === 0) {
+    if (!data || !data.columns || data.columns.length === 0) {
       window.alert("Run Simulate to show more data");
     } else {
       if (isDataTableDocked) {
@@ -419,7 +419,10 @@ const RightPanel = (props, ref) => {
               cursor: "pointer",
               borderBottom: activeTab === 'data' ? `2px solid ${isDarkMode ? "white" : "black"}` : "none"
             }}
-            onClick={() => setActiveTab('data')}
+            onClick={() => {
+              handleShowMoreData();
+              setActiveTab('data');
+            }}
           >
             Data
           </button>
@@ -509,111 +512,137 @@ const RightPanel = (props, ref) => {
                     </span>
                   </div>
                 )}
-                <div style={{ display: "flex", marginTop: "10px" }}>
-                  <div style={{ marginRight: "10px" }}>
+                {/* Controls Grid Layout */}
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 100px) 1fr 160px",
+                  gap: "20px 30px",
+                  alignItems: "start",
+                  marginTop: "16px",
+                }}>
+                  {/* X Min/Max */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     <NumberInput
                       label="X Minimum:"
-                      style={styleForNumberInputInXYMinimum()}
+                      style={{ 
+                        ...styleForNumberInputInXYMinimum(),
+                        marginTop: "2px",
+                        display: "block", 
+                        width: "60%" 
+                      }}
                       value={graphState.xMin || ""}
                       onChange={(e) =>
-                        setGraphState((prevState) => ({
-                          ...prevState,
-                          xMin: e.target.value,
-                        }))
+                        setGraphState((prevState) => ({ ...prevState, xMin: e.target.value }))
                       }
                       isDarkMode={isDarkMode}
                       disabled={isXAutoscaleChecked}
                     />
                     <NumberInput
                       label="X Maximum:"
-                      style={styleForNumberInputInXYMinimum()}
+                      style={{
+                        ...styleForNumberInputInXYMinimum(),
+                        marginTop: "2px",
+                        display: "block",
+                        width: "60%" 
+                      }}
                       value={graphState.xMax || ""}
                       onChange={(e) =>
-                        setGraphState((prevState) => ({
-                          ...prevState,
-                          xMax: e.target.value,
-                        }))
+                        setGraphState((prevState) => ({ ...prevState, xMax: e.target.value }))
                       }
                       isDarkMode={isDarkMode}
                       disabled={isXAutoscaleChecked}
                     />
                   </div>
-                  <div>
+                  {/* Y Min/Max */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     <NumberInput
                       label="Y Minimum:"
-                      style={styleForNumberInputInXYMinimum()}
+                      style={{
+                        ...styleForNumberInputInXYMinimum(),
+                        marginTop: "2px",
+                        display: "block",
+                        width: "60%" 
+                      }}
                       value={graphState.yMin || ""}
                       onChange={(e) =>
-                        setGraphState((prevState) => ({
-                          ...prevState,
-                          yMin: e.target.value,
-                        }))
+                        setGraphState((prevState) => ({ ...prevState, yMin: e.target.value }))
                       }
                       isDarkMode={isDarkMode}
                       disabled={isYAutoscaleChecked}
                     />
                     <NumberInput
                       label="Y Maximum:"
-                      style={styleForNumberInputInXYMinimum()}
+                      style={{
+                        ...styleForNumberInputInXYMinimum(),
+                        marginTop: "2px",
+                        display: "block",
+                        width: "60%" 
+                      }}
                       value={graphState.yMax || ""}
                       onChange={(e) =>
-                        setGraphState((prevState) => ({
-                          ...prevState,
-                          yMax: e.target.value,
-                        }))
+                        setGraphState((prevState) => ({ ...prevState, yMax: e.target.value }))
                       }
                       isDarkMode={isDarkMode}
                       disabled={isYAutoscaleChecked}
                     />
                   </div>
-                </div>
-                <div style={{ display: "flex", marginTop: "10px" }}>
-                  <div className="checkbox-container">
-                    <label
-                      style={{
-                        color: isDarkMode ? "white" : "black",
-                      }}
-                    >
+                  {/* Checkboxes */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "6px" }}>
+                    <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px", display: "flex", alignItems: "center", gap: "3px" }}>
                       <input
-                        className="checkbox-input"
+                        type="checkbox"
+                        checked={isXAutoscaleChecked}
+                        onChange={handleAutoscaleX}
+                        style={{ width: 18, height: 18 }}
+                      />
+                      Autoscale X
+                    </label>
+                    <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px", display: "flex", alignItems: "center", gap: "3px" }}>
+                      <input
+                        type="checkbox"
+                        checked={isYAutoscaleChecked}
+                        onChange={handleAutoscaleY}
+                        style={{ width: 18, height: 18 }}
+                      />
+                      Autoscale Y
+                    </label>
+                    <label style={{ color: isDarkMode ? "white" : "black", fontSize: "12px", display: "flex", alignItems: "center", gap: "3px" }}>
+                      <input
                         type="checkbox"
                         checked={isShowLegendChecked}
-                        onChange={(e) => {
-                          setIsShowLegendChecked(e.target.checked);
-                        }}
+                        onChange={(e) => setIsShowLegendChecked(e.target.checked)}
+                        style={{ width: 18, height: 18 }}
                       />
                       Show Legends
                     </label>
                   </div>
-                </div>
-                <div
-                  className="edit-export-buttons"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: "-10px",
-                    marginLeft: "10px",
-                  }}
-                >
-                  <button
-                    className={"edit-export-style"}
-                    style={{
-                      marginBottom: "10px",
-                      color: isDarkMode ? "white" : "black",
-                    }}
-                    onClick={() => setShowEditGraphPopup(true)}
-                  >
-                    Edit Graph
-                  </button>
-                  <button
-                    className={"edit-export-style"}
-                    style={{
-                      color: isDarkMode ? "white" : "black",
-                    }}
-                    onClick={handleDownloadPDF}
-                  >
-                    Export To PDF
-                  </button>
+                  {/* Action Buttons */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <button
+                      className={"edit-export-style"}
+                      style={{
+                        fontSize: "11px", padding: "14px 0", background: "#4a6cf7",
+                        color: "white", borderRadius: "5px", border: "none",
+                        fontWeight: 500, cursor: "pointer", display: "flex",
+                        alignItems: "center", justifyContent: "center"
+                      }}
+                      onClick={() => setShowEditGraphPopup(true)}
+                    >
+                      Edit Graph
+                    </button>
+                    <button
+                      className={"edit-export-style"}
+                      style={{
+                        fontSize: "11px", padding: "14px 0", background: "#4a6cf7",
+                        color: "white", borderRadius: "5px", border: "none",
+                        fontWeight: 500, cursor: "pointer", display: "flex",
+                        alignItems: "center", justifyContent: "center"
+                      }}
+                      onClick={handleDownloadPDF}
+                    >
+                      Export To PDF
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
