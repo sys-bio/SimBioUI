@@ -649,13 +649,24 @@ const RightPanel = (props, ref) => {
           )}
           {activeTab === 'data' && (
             <div style={{ height: "100%" }}>
-              <DataTablePopup
-                data={data}
-                isDarkMode={isDarkMode}
-                isDocked={true}
-                onUndock={handleDataTableUndock}
-                onClose={handleCloseDataTable}
-              />
+            {data && data.columns && data.columns.length > 0 ? (
+                <DataTablePopup
+                  data={data}
+                  isDarkMode={isDarkMode}
+                  isDocked={true}
+                  onUndock={handleDataTableUndock}
+                  onClose={handleCloseDataTable}
+                />
+              ) : (
+                <div style={{ 
+                  padding: "20px", 
+                  color: isDarkMode ? "white" : "black",
+                  textAlign: "center",
+                  fontSize: "1.1em"
+                }}>
+                  Run Simulate to show data
+                </div>
+              )}
             </div>
           )}
         </div>
