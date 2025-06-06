@@ -477,9 +477,9 @@ class PlotGraph extends PureComponent {
                         data={this.props.data}
                         selectedOptions={this.props.selectedOptions}
                         setSelectedOptions={this.props.setSelectedOptions}
-                        colors={lineColorMap} // Pass colors as a map
-                        lineStyles={lineStyleMap} // Pass lineStyles as a map
-                        lineWidths={lineWidthMap} // Pass lineWidths as a map
+                        colors={lineColorMap}
+                        lineStyles={lineStyleMap}
+                        lineWidths={lineWidthMap}
                         isLegendFrameBorderOn={this.props.isLegendFrameBorderOn}
                         legendFrameColor={this.props.legendFrameColor}
                         legendFrameWidth={this.props.legendFrameWidth}

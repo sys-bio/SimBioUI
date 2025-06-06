@@ -59,16 +59,17 @@ function DraggableLegend({
 
     // Handle removing an item when clicked
     const handleItemRemove = (title) => {
-        // Update the selectedOptions map
-        const updatedOptions = { ...selectedOptions };
-        updatedOptions[title] = false; // Remove the clicked item from selectedOptions
-        setSelectedOptions(updatedOptions); // Update the state in the parent component
+        if (typeof setSelectedOptions === 'function') {
+            const updatedOptions = { ...selectedOptions };
+            updatedOptions[title] = false;
+            setSelectedOptions(updatedOptions);
+        }
     };
 
     // Generate legend items based on plot data
     const legendItems = (data.titles || []).map((title, index) => {
         if (selectedOptions && selectedOptions[title]) {
-            const color = colors[title]; // Correctly access color from the map
+            const color = colors[title]; 
             const lineStyle = lineStyles[title] || 'solid';
             const lineWidth = lineWidths[title] || 2;
             const dashArray = dashArrayMap[lineStyle];
@@ -84,7 +85,7 @@ function DraggableLegend({
                         alignItems: 'center',
                         cursor: 'pointer', // Add pointer cursor to show it's clickable
                     }}
-                    onClick={() => handleItemRemove(title)} // Add click handler
+                    onClick={() => handleItemRemove(title)}
                 >
                     <svg
                         width={legendFrameLineLength}

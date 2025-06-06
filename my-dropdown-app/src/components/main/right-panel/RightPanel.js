@@ -42,21 +42,17 @@ const RightPanel = (props, ref) => {
     jacobian,
     fluxControl,
     isOutOfSync,
-	reactionRates,
-	concentration,
-	elasticities,
-    handleSteadyStateUndock,
+    reactionRates,
+    concentration,
+    elasticities,
     handleSteadyStateDock,
     handleCloseSteadyStatePopup,
     setShowSteadyStatePopup,
     isSteadyStateDocked,
-    setIsDataTableDocked,
-	isDataTableDocked,
-	showMoreDataPopup,
-	setShowMoreDataPopup,
-	setIsSteadyStateDocked,
-	isSteadyState,
-	linesStyle
+    showMoreDataPopup,
+    setShowMoreDataPopup,
+    isSteadyState,
+    linesStyle
   } = props;
 
   const [graphState, setGraphState] = useState(INITIAL_GRAPH_STATE);
@@ -172,7 +168,7 @@ const RightPanel = (props, ref) => {
   const [graphHeight, setGraphHeight] = useState(initialHeight);
   const [dataTableHeight, setDataTableHeight] = useState(initialHeight);
   // Adjust plotHeight based on docking state
-  const plotHeight = (isDataTableDocked || isSteadyStateDocked) ? graphHeight - 150 : window.innerHeight * 0.55;
+  const plotHeight = (isSteadyStateDocked) ? graphHeight - 150 : window.innerHeight * 0.55;
   const isResizing = useRef(false);
 
 //	const plotHeight = isDataTableDocked
@@ -304,29 +300,11 @@ const RightPanel = (props, ref) => {
     if (!data || !data.columns || data.columns.length === 0) {
       window.alert("Run Simulate to show more data");
     } else {
-      if (isDataTableDocked) {
-        setIsDataTableDocked(false);
-      }
       setShowMoreDataPopup(true);
     }
   };
 
-  const handleDataTableDock = () => {
-    setIsDataTableDocked(true);
-    setShowMoreDataPopup(false);
-    if (isSteadyStateDocked) {
-    	setShowSteadyStatePopup(true);
-    	setIsSteadyStateDocked(false);
-    }
-  };
-
-  const handleDataTableUndock = () => {
-    setIsDataTableDocked(false);
-    setShowMoreDataPopup(true);
-  };
-
   const handleCloseDataTable = () => {
-    setIsDataTableDocked(false);
     setShowMoreDataPopup(false);
   };
 
@@ -649,12 +627,11 @@ const RightPanel = (props, ref) => {
           )}
           {activeTab === 'data' && (
             <div style={{ height: "100%" }}>
-            {data && data.columns && data.columns.length > 0 ? (
+              {data && data.columns && data.columns.length > 0 ? (
                 <DataTablePopup
                   data={data}
                   isDarkMode={isDarkMode}
                   isDocked={true}
-                  onUndock={handleDataTableUndock}
                   onClose={handleCloseDataTable}
                 />
               ) : (
