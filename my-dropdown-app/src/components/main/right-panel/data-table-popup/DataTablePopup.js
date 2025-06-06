@@ -3,7 +3,7 @@ import Draggable from "react-draggable";
 import chroma from "chroma-js";
 import "./DataTablePopup.css";
 
-const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock }) => {
+const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock }) => {
   const [hoveredData, setHoveredData] = useState({
     title: "",
     index: -1,
@@ -13,7 +13,7 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
   const [size, setSize] = useState({ width: 700, height: 500 });
   const nodeRef = useRef(null);
 
-  const [decimalPlaces, setDecimalPlaces] = useState(2); // Added state for decimal places
+  const [decimalPlaces, setDecimalPlaces] = useState(2);
 
   const allNumericValues = data.columns
     .flat()
@@ -23,7 +23,6 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
   // Calculate the maximum absolute value
   const maxAbsValue = Math.max(...allNumericValues.map(Math.abs)) || 1;
 
-  // Function to compute the background color based on the cell's value
   // Function to compute the background color based on the cell's value
   const getCellBackgroundColor = (value) => {
       if (typeof value !== "number" || isNaN(value)) {
@@ -166,7 +165,54 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
   };
 
   return (
-    <>
+    <div className={isDocked ? "data-table-docked" : "data-table-popup"}>
+      <div className="data-table-header" style={{ backgroundColor: isDarkMode ? "#242323" : "white" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{ color: isDarkMode ? "white" : "black", marginRight: "5px", fontSize:"14px" }}>Decimal Places:</span>
+            <input
+                type="number"
+                value={decimalPlaces}
+                min="0"
+                onChange={(e) => setDecimalPlaces(parseInt(e.target.value) || "")}
+                style={{
+                  width: "50px",
+                  marginLeft: "2px",
+                  backgroundColor: isDarkMode ? "black" : "white",
+                  color: isDarkMode ? "white" : "black",
+                  border: isDarkMode ? "1px solid gray" : "1px solid black",
+                  borderRadius: "5px",
+                }}
+              />
+          </div>
+
+          <div style={{ marginLeft: "auto" }}>
+            <button
+              onClick={promptForFileNameAndDownload}
+              style={{
+                padding: "5px 10px",
+                backgroundColor: isDarkMode ? "black" : "white",
+                border: isDarkMode ? "1px solid grey" : "1px solid black",
+                color: isDarkMode ? "white" : "black",
+                marginRight: "10px",
+              }}
+            >
+              Save as CSV
+            </button>
+            <button
+              onClick={onClose}
+              style={{
+                backgroundColor: isDarkMode ? "black" : "white",
+                border: isDarkMode ? "1px solid grey" : "1px solid black",
+                color: isDarkMode ? "white" : "black",
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
       {isDocked ? (
         <div
           className="data-table-docked"
@@ -244,67 +290,6 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
                 ))}
               </tbody>
             </table>
-          </div>
-
-          {/* Fixed container for decimal places input and buttons */}
-          <div
-            style={{
-              padding: "10px",
-              borderTop: isDarkMode ? "1px solid #2d2d2d" : "1px solid white",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <label
-              style={{
-                marginLeft: "10px",
-                color: isDarkMode ? "white" : "black",
-                display: "flex",
-                alignItems: "center",
-                fontSize: "12px",
-              }}
-            >
-              Decimal Places:
-              <input
-                type="number"
-                value={decimalPlaces}
-                min="0"
-                onChange={(e) => setDecimalPlaces(parseInt(e.target.value) || "")}
-                style={{
-                  width: "50px",
-                  marginLeft: "5px",
-                  backgroundColor: isDarkMode ? "black" : "white",
-                  color: isDarkMode ? "white" : "black",
-                  border: isDarkMode ? "1px solid gray" : "1px solid black",
-                  borderRadius: "5px",
-                }}
-              />
-            </label>
-
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                onClick={promptForFileNameAndDownload}
-                style={{
-                  padding: "5px 10px",
-                  backgroundColor: isDarkMode ? "black" : "white",
-                  border: isDarkMode ? "1px solid grey" : "1px solid black",
-                  color: isDarkMode ? "white" : "black",
-                  marginRight: "10px",
-                }}
-              >
-                Save as CSV
-              </button>
-              <button
-                onClick={onUndock}
-                style={{
-                  backgroundColor: isDarkMode ? "black" : "white",
-                  border: isDarkMode ? "1px solid grey" : "1px solid black",
-                  color: isDarkMode ? "white" : "black",
-                }}
-              >
-                Undock
-              </button>
-            </div>
           </div>
         </div>
       ) : (
@@ -388,78 +373,6 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
               </table>
             </div>
 
-            {/* Fixed container for decimal places input and buttons */}
-            <div
-              style={{
-                padding: "10px",
-                borderTop: isDarkMode ? "1px solid #2d2d2d" : "1px solid white",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <label
-                style={{
-                  marginLeft: "10px",
-                  color: isDarkMode ? "white" : "black",
-                  display: "flex",
-                  alignItems: "center",
-                  fontSize: "12px",
-                }}
-              >
-                Decimal Places:
-                <input
-                  type="number"
-                  value={decimalPlaces}
-                  min="0"
-                  onChange={(e) => setDecimalPlaces(parseInt(e.target.value) || "")}
-                  style={{
-                    width: "50px",
-                    marginLeft: "5px",
-                    backgroundColor: isDarkMode ? "black" : "white",
-                    color: isDarkMode ? "white" : "black",
-                    border: isDarkMode ? "1px solid gray" : "1px solid black",
-                    borderRadius: "5px",
-                  }}
-                />
-              </label>
-
-              <div style={{ marginLeft: "auto" }}>
-                <button
-                  onClick={promptForFileNameAndDownload}
-                  style={{
-                    padding: "5px 10px",
-                    backgroundColor: isDarkMode ? "black" : "white",
-                    border: isDarkMode ? "1px solid grey" : "1px solid black",
-                    color: isDarkMode ? "white" : "black",
-                    marginRight: "10px",
-                  }}
-                >
-                  Save as CSV
-                </button>
-                <button
-                  onClick={onDock}
-                  style={{
-                    backgroundColor: isDarkMode ? "black" : "white",
-                    border: isDarkMode ? "1px solid grey" : "1px solid black",
-                    color: isDarkMode ? "white" : "black",
-                    marginRight: "10px",
-                  }}
-                >
-                  Dock
-                </button>
-                <button
-                  onClick={onClose}
-                  style={{
-                    backgroundColor: isDarkMode ? "black" : "white",
-                    border: isDarkMode ? "1px solid grey" : "1px solid black",
-                    color: isDarkMode ? "white" : "black",
-                  }}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-
             {/* Resize handles */}
             <div
               className="resize-handle resize-handle-top-left"
@@ -509,7 +422,7 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock, onUndock 
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

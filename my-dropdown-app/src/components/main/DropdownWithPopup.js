@@ -28,54 +28,56 @@ import { MIN_PANEL_WIDTH, BREAKPOINT_WIDTH, LEFT_PANEL_FIXED_WIDTH } from "../..
 import RightPanel from "./right-panel/RightPanel";
 import SliderPopup from './SliderPopup'; // Import the new component
 
-const DropdownWithPopup = ({
-    initialOptions,
-    convertedAnt,
-    onParametersChange,
-    onCheckboxChange,
-    tempSimulationParameters,
-    simulationParam,
-    SBMLContent,
-    handleExportSBML,
-    promptForFileNameAndDownload,
-    handleTextChange,
-    handleResetInApp,
-    handleResetParameters,
-    handleSBMLfile,
-    handleKValuesChanges,
-    handleKValuesChangesInSteadyState,
-    handleLocalReset,
-    data,
-    kOptions,
-    kValues,
-    computeSteadyState,
-    steadyState,
-    eigenValues,
-    jacobian,
-    concentration,
-    fluxControl,
-    elasticities,
-    textareaContent,
-    isChecked,
-	floatingSpecies,
-	boundarySpecies,
-	reactionRates,
-	handleMoreOptionsApply,
-	isNewOptionsAdded,
-	setIsNewOptionsAdded,
-	selectedOptions,
-	setSelectedOptions,
-	selectedValues,
-	handleParameterScansUpdate,
-	parametersScanType,
-	firstParameter,
-	handleScanButton,
-	selectionList,
-	setSelectionList,
-	isDataTableDocked,
-	setIsDataTableDocked,
-	isSteadyState
-}) => {
+const DropdownWithPopup = (props) => {
+    const {
+        initialOptions,
+        convertedAnt,
+        onParametersChange,
+        onCheckboxChange,
+        tempSimulationParameters,
+        simulationParam,
+        SBMLContent,
+        handleExportSBML,
+        promptForFileNameAndDownload,
+        handleTextChange,
+        handleResetInApp,
+        handleResetParameters,
+        handleSBMLfile,
+        handleKValuesChanges,
+        handleKValuesChangesInSteadyState,
+        handleLocalReset,
+        data,
+        kOptions,
+        kValues,
+        computeSteadyState,
+        steadyState,
+        eigenValues,
+        jacobian,
+        concentration,
+        fluxControl,
+        elasticities,
+        textareaContent,
+        isChecked,
+        floatingSpecies,
+        boundarySpecies,
+        reactionRates,
+        handleMoreOptionsApply,
+        isNewOptionsAdded,
+        setIsNewOptionsAdded,
+        selectedOptions,
+        setSelectedOptions,
+        selectedValues,
+        handleParameterScansUpdate,
+        parametersScanType,
+        firstParameter,
+        handleScanButton,
+        selectionList,
+        setSelectionList,
+        isDataTableDocked,
+        setIsDataTableDocked,
+        isSteadyState
+    } = props;
+
     const initialTabData = {
         textContent: `// Load a model from disk, type in a model,
 // or pick one of the example models from
@@ -119,27 +121,27 @@ A = 10
 
     // Search area + monaco text editor
     const bioModelService = new BioModelsService();
-     const [loading, setLoading] = useState(false);
-     const [chosenModel, setChosenModel] = useState(null);
-     const [searchTerm, setSearchTerm] = useState("");
-     const [suggestions, setSuggestions] = useState([]);
-     const editorRef = useRef(null);
-     const modalRef = useRef(null);
-     const [varToAnnotate, setVarToAnnotate] = useState(null);
-     const [isModalVisible, setModalVisible] = useState(false);
-     const [editorInstance, setEditorInstance] = useState(null);
-     const [annotUnderlinedOn, setAnnotUnderlinedOn] = useState(false);
-     const [annotationAddPosition, setAnnotationAddPosition] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [chosenModel, setChosenModel] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+    const editorRef = useRef(null);
+    const modalRef = useRef(null);
+    const [varToAnnotate, setVarToAnnotate] = useState(null);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [editorInstance, setEditorInstance] = useState(null);
+    const [annotUnderlinedOn, setAnnotUnderlinedOn] = useState(false);
+    const [annotationAddPosition, setAnnotationAddPosition] = useState(null);
 
-     // These are used to tell if the plot is out of sync
-     const [lastSimulatedEditorContent, setLastSimulatedEditorContent] = useState(null);
-     const [currentEditorContent, setCurrentEditorContent] = useState("");
+    // These are used to tell if the plot is out of sync
+    const [lastSimulatedEditorContent, setLastSimulatedEditorContent] = useState(null);
+    const [currentEditorContent, setCurrentEditorContent] = useState("");
 
-     // Set highlight color for unannotated variables
-     const [highlightColor, setHighlightColor] = useState("red");
-     const [decorations, setDecorations] = useState([]);
-     const [content, setContent] = useState(initialTabData.textContent);
-     const contentRef = useRef(initialTabData.textContent);
+    // Set highlight color for unannotated variables
+    const [highlightColor, setHighlightColor] = useState("red");
+    const [decorations, setDecorations] = useState([]);
+    const [content, setContent] = useState(initialTabData.textContent);
+    const contentRef = useRef(initialTabData.textContent);
 
     // Active Analysis Panel
     const [activeAnalysisPanel, setActiveAnalysisPanel] = useState("Time Course Simulation");
@@ -166,7 +168,6 @@ A = 10
     const [isResetInitialState, setIsResetInitialState] = useState(true);
     const [showSteadyStatePopup, setShowSteadyStatePopup] = useState(false);
     const [isSteadyStateDocked, setIsSteadyStateDocked] = useState(false);
-    //const [isDataTableDocked, setIsDataTableDocked] = useState(false);
     const [showMoreDataPopup, setShowMoreDataPopup] = useState(false);
 
     // Show more options for x and y
@@ -176,32 +177,32 @@ A = 10
     const [linesStyle, setLinesStyle] = useState("Cross Titles")
 
     // Initial setup
-	const toggleDarkMode = () => {
-		setIsDarkMode(!isDarkMode);
-	};
+    const toggleDarkMode = () => {
+        setIsDarkMode(!isDarkMode);
+    };
 
-	const { leftSubpanelStyle, centerSubPanelStyle, rightSubpanelStyle } = getPanelStyles({
-		layoutVertical,
-		panelWidth,
-		isDarkMode,
-		centerPanelWidth,
-		rightPanelWidth,
-	});
+    const { leftSubpanelStyle, centerSubPanelStyle, rightSubpanelStyle } = getPanelStyles({
+        layoutVertical,
+        panelWidth,
+        isDarkMode,
+        centerPanelWidth,
+        rightPanelWidth,
+    });
 
-	const handleIconClick = (icon) => {
-		if (icon === "x-axis") {
-			// Apply the new width to the left panel
-			setPanelWidth(LEFT_PANEL_FIXED_WIDTH);
+    const handleIconClick = (icon) => {
+        if (icon === "x-axis") {
+            // Apply the new width to the left panel
+            setPanelWidth(LEFT_PANEL_FIXED_WIDTH);
 
-			// Adjust the center panel width accordingly
-			setCenterPanelWidth(window.innerWidth - rightPanelWidth - LEFT_PANEL_FIXED_WIDTH);
-		} else if (icon === "narrow") {
-			setPanelWidth(MIN_PANEL_WIDTH);
-			setCenterPanelWidth(window.innerWidth - rightPanelWidth - MIN_PANEL_WIDTH);
-		}
-	};
+            // Adjust the center panel width accordingly
+            setCenterPanelWidth(window.innerWidth - rightPanelWidth - LEFT_PANEL_FIXED_WIDTH);
+        } else if (icon === "narrow") {
+            setPanelWidth(MIN_PANEL_WIDTH);
+            setCenterPanelWidth(window.innerWidth - rightPanelWidth - MIN_PANEL_WIDTH);
+        }
+    };
 
-	const createInitialState = (keys, defaultValue) => {
+    const createInitialState = (keys, defaultValue) => {
         const top10Keys = keys.slice(0, 10); // Extract the first 10 keys
         return top10Keys.reduce((acc, key) => {
             acc[key] = defaultValue;
@@ -241,10 +242,10 @@ A = 10
     };
 
     const handleSliderChangeInSteadyState = (option, value, isEigenvaluesRecalculated) => {
-      const roundedValue = Number(value).toFixed(2);
- 	  setSliderValues((prev) => ({ ...prev, [option]: roundedValue }));
-      handleKValuesChangesInSteadyState(option, roundedValue, isEigenvaluesRecalculated);
-	};
+        const roundedValue = Number(value).toFixed(2);
+        setSliderValues((prev) => ({ ...prev, [option]: roundedValue }));
+        handleKValuesChangesInSteadyState(option, roundedValue, isEigenvaluesRecalculated);
+    };
 
     const handleLabelClick = (parameter) => {
         setSelectedParameter(parameter);
@@ -318,66 +319,66 @@ A = 10
         }
     };
 
-	const handleInputChange = (e) => {
-		const newFontSize = e.target.value;
-		editorInstance.updateOptions({
-		  fontSize: newFontSize
-		});
-		setSizeOfInput(newFontSize);
-	};
+    const handleInputChange = (e) => {
+        const newFontSize = e.target.value;
+        editorInstance.updateOptions({
+            fontSize: newFontSize
+        });
+        setSizeOfInput(newFontSize);
+    };
 
     const handleSearchChange = async (e) => {
-		const queryText = e.target.value.trim();
-		setSearchTerm(queryText);
+        const queryText = e.target.value.trim();
+        setSearchTerm(queryText);
 
-		if (queryText.length > 2) {
-		  setLoading(true);
-		  try {
-			const models = await bioModelService.searchModels(queryText);
-			setSuggestions(Array.from(models.models.values()));
-		  } catch (error) {
-			console.error("Error fetching models:", error);
-		  } finally {
-			setLoading(false);
-		  }
-		} else {
-		  setSuggestions([]);
-		}
-	};
+        if (queryText.length > 2) {
+            setLoading(true);
+            try {
+                const models = await bioModelService.searchModels(queryText);
+                setSuggestions(Array.from(models.models.values()));
+            } catch (error) {
+                console.error("Error fetching models:", error);
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            setSuggestions([]);
+        }
+    };
 
     // Text editor search models
-	const handleContentSelect = (content) => {
-		// Set the new content directly in the Monaco Editor
-		if (editorInstance) {
-			editorInstance.setValue(content); // Set the new content in the editor
-		}
+    const handleContentSelect = (content) => {
+        // Set the new content directly in the Monaco Editor
+        if (editorInstance) {
+            editorInstance.setValue(content); // Set the new content in the editor
+        }
 
-		// Perform additional actions
-		handleResetInApp();
-		handleResetParameters();
-		setSelectedParameter(null);
-	};
+        // Perform additional actions
+        handleResetInApp();
+        handleResetParameters();
+        setSelectedParameter(null);
+    };
 
-	const handleModelSelect = async (modelId) => {
-		setLoading(true);
-	    try {
-         	const model = await bioModelService.getModel(modelId);
-			setChosenModel(model);
-			// Handle the selected model as needed, e.g., updating the state, calling a conversion function, etc.
-		} catch (error) {
-			console.error("Error fetching model:", error);
-		} finally {
-			setLoading(false);
-		}
-	};
+    const handleModelSelect = async (modelId) => {
+        setLoading(true);
+        try {
+            const model = await bioModelService.getModel(modelId);
+            setChosenModel(model);
+            // Handle the selected model as needed, e.g., updating the state, calling a conversion function, etc.
+        } catch (error) {
+            console.error("Error fetching model:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const handleEditorContentChange = (editor: any) => {
+    const handleEditorContentChange = (editor) => {
         // Delay the model parser to avoid parsing while the user is typing
-        let typingTimer: any;
-        const delayedModelParser = (editor: monaco.editor.IStandaloneCodeEditor) => {
-       	    clearTimeout(typingTimer);
+        let typingTimer;
+        const delayedModelParser = (editor) => {
+            clearTimeout(typingTimer);
             typingTimer = setTimeout(() => {
-       		     ModelSemanticsChecker(editor, annotUnderlinedOn, true, highlightColor, decorations);
+                ModelSemanticsChecker(editor, annotUnderlinedOn, true, highlightColor, decorations);
             }, 600);
         };
         // Parse the model whenever the user types
@@ -387,92 +388,92 @@ A = 10
         ModelSemanticsChecker(editor, annotUnderlinedOn, true, highlightColor, decorations);
     };
 
-	// Handle buttons in text editor
+    // Handle buttons in text editor
     const addAnnotationOption = editor => {
-      if (editorRef.current) {
-        // Adds the create annotations option to the context menu of the editor
-        editor.addAction({
-          id: "create-annotation", // Unique identifier of the contributed action
-          label: "Create Annotations", // Label of the action that will be presented to the user
-          keybindings: [
-            monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10, // Keybinding using Ctrl or Cmd with F10
-            // Chorded keybinding, requiring a sequence of keys
-            monaco.KeyMod.chord(
-              monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK,
-              monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM
-            )
-          ],
-          precondition: null, // No precondition for this action
-          keybindingContext: null, // No additional rules to evaluate for keybinding dispatch
-          contextMenuGroupId: "navigation", // Group where this action will appear in the context menu
-          contextMenuOrder: 1, // Order within the group where this action will appear
-          run: function(ed) {
-              const position = ed.getPosition();
-              if (position) {
-                  const word = ed.getModel()?.getWordAtPosition(position);
-                  if (word) {
-                      let start = new SrcPosition(position.lineNumber, word.startColumn);
-                      let end = new SrcPosition(position.lineNumber, word.endColumn);
-                      let srcRange = new SrcRange(start, end);
+        if (editorRef.current) {
+            // Adds the create annotations option to the context menu of the editor
+            editor.addAction({
+                id: "create-annotation", // Unique identifier of the contributed action
+                label: "Create Annotations", // Label of the action that will be presented to the user
+                keybindings: [
+                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10, // Keybinding using Ctrl or Cmd with F10
+                    // Chorded keybinding, requiring a sequence of keys
+                    monaco.KeyMod.chord(
+                        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK,
+                        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM
+                    )
+                ],
+                precondition: null, // No precondition for this action
+                keybindingContext: null, // No additional rules to evaluate for keybinding dispatch
+                contextMenuGroupId: "navigation", // Group where this action will appear in the context menu
+                contextMenuOrder: 1, // Order within the group where this action will appear
+                run: function(ed) {
+                    const position = ed.getPosition();
+                    if (position) {
+                        const word = ed.getModel()?.getWordAtPosition(position);
+                        if (word) {
+                            let start = new SrcPosition(position.lineNumber, word.startColumn);
+                            let end = new SrcPosition(position.lineNumber, word.endColumn);
+                            let srcRange = new SrcRange(start, end);
 
-                      let { symbolTable: ST } = ModelSemanticsChecker(
-                          ed,
-                          annotUnderlinedOn,
-                          false,
-                          highlightColor,
-                          decorations
-                      );
-                      let varAndAnnotationPositionInfo = ST.hasVarAtLocation(
-                          word.word,
-                          srcRange
-                      );
-                      if (varAndAnnotationPositionInfo) {
-                          setModalVisible(true);
-                          setAnnotationAddPosition(varAndAnnotationPositionInfo.annotationPositon);
-                          let displayName = varAndAnnotationPositionInfo.varInfo.displayName?.replaceAll('"', "");
-                          setVarToAnnotate({ id: word.word, name: displayName });
-                      } else {
-                          alert("Please select a variable to annotate.");
-                      }
-                  } else {
-                      alert("Please select a variable to annotate.");
-                  }
-              }
-          }
-        })
-      }
+                            let { symbolTable: ST } = ModelSemanticsChecker(
+                                ed,
+                                annotUnderlinedOn,
+                                false,
+                                highlightColor,
+                                decorations
+                            );
+                            let varAndAnnotationPositionInfo = ST.hasVarAtLocation(
+                                word.word,
+                                srcRange
+                            );
+                            if (varAndAnnotationPositionInfo) {
+                                setModalVisible(true);
+                                setAnnotationAddPosition(varAndAnnotationPositionInfo.annotationPositon);
+                                let displayName = varAndAnnotationPositionInfo.varInfo.displayName?.replaceAll('"', "");
+                                setVarToAnnotate({ id: word.word, name: displayName });
+                            } else {
+                                alert("Please select a variable to annotate.");
+                            }
+                        } else {
+                            alert("Please select a variable to annotate.");
+                        }
+                    }
+                }
+            })
+        }
     }
 
     const addAnnotationVarUnderlineOption = editor => {
-      if (editorRef.current) {
-        // Adds the "Highlight Unannotated Variables" option to the context menu.
-        // Checks if the cursor is on an actual variable or not.
-        editor.addAction({
-          // An unique identifier of the contributed action.
-          id: "underline-annotation",
+        if (editorRef.current) {
+            // Adds the "Highlight Unannotated Variables" option to the context menu.
+            // Checks if the cursor is on an actual variable or not.
+            editor.addAction({
+                // An unique identifier of the contributed action.
+                id: "underline-annotation",
 
-          // A label of the action that will be presented to the user.
-          label: `Highlight Unannotated Variables ${
-            annotUnderlinedOn ? "Off" : "On"
-          }`,
+                // A label of the action that will be presented to the user.
+                label: `Highlight Unannotated Variables ${
+                    annotUnderlinedOn ? "Off" : "On"
+                }`,
 
-          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10],
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10],
 
-          // A precondition for this action.
-          precondition: null,
+                // A precondition for this action.
+                precondition: null,
 
-          // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
-          keybindingContext: null,
+                // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+                keybindingContext: null,
 
-          contextMenuGroupId: "navigation",
+                contextMenuGroupId: "navigation",
 
-          contextMenuOrder: 1.5,
+                contextMenuOrder: 1.5,
 
-          run: function (editor: monaco.editor.IStandaloneCodeEditor) {
-            setAnnotUnderlinedOn((prevAnnotUnderlinedOn) => !prevAnnotUnderlinedOn);
-          },
-        })
-      }
+                run: function (editor) {
+                    setAnnotUnderlinedOn((prevAnnotUnderlinedOn) => !prevAnnotUnderlinedOn);
+                },
+            })
+        }
     }
 
     /**
@@ -480,75 +481,75 @@ A = 10
      * @param editor The Monaco editor instance.
      */
     const addNavigateEditAnnotationOption = editor => {
-      if (editorRef.current) {
-        editor.addAction({
-          // An unique identifier of the contributed action.
-          id: "Navigate to Edit Annotation",
+        if (editorRef.current) {
+            editor.addAction({
+                // An unique identifier of the contributed action.
+                id: "Navigate to Edit Annotation",
 
-          // A label of the action that will be presented to the user.
-          label: `Navigate to Edit Annotation`,
+                // A label of the action that will be presented to the user.
+                label: `Navigate to Edit Annotation`,
 
-          // A precondition for this action.
-          precondition: null,
+                // A precondition for this action.
+                precondition: null,
 
-          // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
-          keybindingContext: null,
+                // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+                keybindingContext: null,
 
-          // The group in which this action is included in the context menu.
-          contextMenuGroupId: "navigation",
+                // The group in which this action is included in the context menu.
+                contextMenuGroupId: "navigation",
 
-          // The order of this action in the context menu group.
-          contextMenuOrder: 1.5,
+                // The order of this action in the context menu group.
+                contextMenuOrder: 1.5,
 
-          // Method that will be executed when the action is triggered.
-          // @param ed The editor instance is passed in as a convenience.
-          run: function(ed) {
-            const position = ed.getPosition()
-            if (position) {
-              const word = ed.getModel()?.getWordAtPosition(position)
-              if (word) {
-                // Determine the start and end positions of the selected word.
-                let start = new SrcPosition(position.lineNumber, word.startColumn)
-                let end = new SrcPosition(position.lineNumber, word.endColumn)
-                let srcRange = new SrcRange(start, end)
+                // Method that will be executed when the action is triggered.
+                // @param ed The editor instance is passed in as a convenience.
+                run: function(ed) {
+                    const position = ed.getPosition()
+                    if (position) {
+                        const word = ed.getModel()?.getWordAtPosition(position)
+                        if (word) {
+                            // Determine the start and end positions of the selected word.
+                            let start = new SrcPosition(position.lineNumber, word.startColumn)
+                            let end = new SrcPosition(position.lineNumber, word.endColumn)
+                            let srcRange = new SrcRange(start, end)
 
-                // Check if the variable exists at the specified location.
-                // This might be optimized in the future by caching the symbol table.
-                let { symbolTable: ST } = ModelSemanticsChecker(
-                  ed,
-                  annotUnderlinedOn,
-                  false,
-                  highlightColor,
-                  decorations
-                )
-                let info = ST.hasVarAtLocation(word.word, srcRange)
+                            // Check if the variable exists at the specified location.
+                            // This might be optimized in the future by caching the symbol table.
+                            let { symbolTable: ST } = ModelSemanticsChecker(
+                                ed,
+                                annotUnderlinedOn,
+                                false,
+                                highlightColor,
+                                decorations
+                            )
+                            let info = ST.hasVarAtLocation(word.word, srcRange)
 
-                if (info && info.varInfo.annotations.length > 0) {
-                  // Find the line number of the first annotation.
-                  let line = Number.MAX_VALUE
-                  for (const value of info.varInfo.annotationLineRange.values()) {
-                    line = Math.min(value.start.line, line)
-                  }
+                            if (info && info.varInfo.annotations.length > 0) {
+                                // Find the line number of the first annotation.
+                                let line = Number.MAX_VALUE
+                                for (const value of info.varInfo.annotationLineRange.values()) {
+                                    line = Math.min(value.start.line, line)
+                                }
 
-                  // Set the editor selection to the annotation's line and reveal it.
-                  const range = {
-                    startLineNumber: line,
-                    startColumn: 1,
-                    endLineNumber: line,
-                    endColumn: editor.getModel().getLineMaxColumn(line)
-                  }
-                  ed.setSelection(range)
-                  ed.revealLineInCenter(line)
-                } else {
-                  alert("Please select an annotated variable")
+                                // Set the editor selection to the annotation's line and reveal it.
+                                const range = {
+                                    startLineNumber: line,
+                                    startColumn: 1,
+                                    endLineNumber: line,
+                                    endColumn: editor.getModel().getLineMaxColumn(line)
+                                }
+                                ed.setSelection(range)
+                                ed.revealLineInCenter(line)
+                            } else {
+                                alert("Please select an annotated variable")
+                            }
+                        } else {
+                            alert("Please select an annotated variable")
+                        }
+                    }
                 }
-              } else {
-                alert("Please select an annotated variable")
-              }
-            }
-          }
-        })
-      }
+            })
+        }
     }
 
     // Editor options
@@ -559,23 +560,14 @@ A = 10
     };
 
     const handleSteadyStateDock = () => {
-      setIsSteadyStateDocked(true);
-      setShowSteadyStatePopup(false)
-      if (isDataTableDocked) {
-      	 setShowMoreDataPopup(true);
-         setIsDataTableDocked(false);
-      }
+        setIsSteadyStateDocked(true);
+        setShowSteadyStatePopup(false);
     };
 
-    const handleSteadyStateUndock = () => {
-      setIsSteadyStateDocked(false);
-      setShowSteadyStatePopup(true);
+    const handleCloseSteadyStatePopup = () => {
+        setIsSteadyStateDocked(false);
+        setShowSteadyStatePopup(false);
     };
-
-	const handleCloseSteadyStatePopup = () => {
-	  setIsSteadyStateDocked(false);
-	  setShowSteadyStatePopup(false);
-	};
 
     useEffect(() => {
         if (editorRef.current) {
@@ -602,9 +594,9 @@ A = 10
             addNavigateEditAnnotationOption(editor);
 
             handleEditorContentChange(editor);
-			editor.onDidChangeModelContent(() => {
-				contentRef.current = editor.getValue(); // Update contentRef without triggering re-render
-			});
+            editor.onDidChangeModelContent(() => {
+                contentRef.current = editor.getValue(); // Update contentRef without triggering re-render
+            });
 
             return () => editor.dispose();
         }
@@ -644,9 +636,9 @@ A = 10
         }
     }, [chosenModel]);
 
-	useEffect(() => {
-		bioModelService.getBiomodels(setLoading, setChosenModel);
-	}, []);
+    useEffect(() => {
+        bioModelService.getBiomodels(setLoading, setChosenModel);
+    }, []);
 
     useEffect(() => {
         if (convertedAnt) {
@@ -654,42 +646,42 @@ A = 10
         }
     }, [convertedAnt]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
-   useEffect(() => {
-	   const handleResize = () => {
-		   // Update the state based on the resized window dimensions
-		   if (window.innerWidth < BREAKPOINT_WIDTH) {
-			   setCenterSubPanelHeight((window.innerHeight - 100) / 2);
-		   } else {
-			   setCenterSubPanelHeight(window.innerHeight - 100);
-		   }
-	   };
+    useEffect(() => {
+        const handleResize = () => {
+            // Update the state based on the resized window dimensions
+            if (window.innerWidth < BREAKPOINT_WIDTH) {
+                setCenterSubPanelHeight((window.innerHeight - 100) / 2);
+            } else {
+                setCenterSubPanelHeight(window.innerHeight - 100);
+            }
+        };
 
-	   // Add event listener for window resize
-	   window.addEventListener("resize", handleResize);
+        // Add event listener for window resize
+        window.addEventListener("resize", handleResize);
 
-	   // Remove event listener on cleanup
-	   return () => window.removeEventListener("resize", handleResize);
-   }, []);
+        // Remove event listener on cleanup
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
-   useEffect(() => {
-	 if (editorInstance) {
-	   ModelSemanticsChecker(editorInstance, annotUnderlinedOn, false, highlightColor, decorations);
-	 }
-   }, [annotUnderlinedOn, editorInstance]);
+    useEffect(() => {
+        if (editorInstance) {
+            ModelSemanticsChecker(editorInstance, annotUnderlinedOn, false, highlightColor, decorations);
+        }
+    }, [annotUnderlinedOn, editorInstance]);
 
-   useEffect(() => {
-	 if (kOptions.length > 0 && kValues.length > 0) {
-		   const newStateForSliders = createInitialState(kOptions, true);
-		   const newSliderValues = createInitialSliderValues(kOptions, kValues); // Example default slider value of 50
+    useEffect(() => {
+        if (kOptions.length > 0 && kValues.length > 0) {
+            const newStateForSliders = createInitialState(kOptions, true);
+            const newSliderValues = createInitialSliderValues(kOptions, kValues); // Example default slider value of 50
 
-		   const newMinMaxValues = createInitialMinMaxValues(kOptions, kValues);
+            const newMinMaxValues = createInitialMinMaxValues(kOptions, kValues);
 
-		   set_kOptions_for_sliders(newStateForSliders);
-		   setSliderValues(newSliderValues);
-		   setMinMaxValues(newMinMaxValues);
-		   setSelectedParameter(kOptions[0]);
-	   }
-   }, [kOptions, kValues]);
+            set_kOptions_for_sliders(newStateForSliders);
+            setSliderValues(newSliderValues);
+            setMinMaxValues(newMinMaxValues);
+            setSelectedParameter(kOptions[0]);
+        }
+    }, [kOptions, kValues]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -842,17 +834,17 @@ A = 10
                 setIsResetInitialState={setIsResetInitialState}
                 isResetInitialState={isResetInitialState}
                 editorInstance={editorInstance}
-				floatingSpecies={floatingSpecies}
-				boundarySpecies={boundarySpecies}
-				reactionRates={reactionRates}
-				handleMoreOptionsApply={handleMoreOptionsApply}
-				isNewOptionsAdded={isNewOptionsAdded}
-				setIsNewOptionsAdded={setIsNewOptionsAdded}
-				showMoreOptions={showMoreOptions}
-				setShowMoreOptions={setShowMoreOptions}
-				selectionList={selectionList}
-				setSelectionList={setSelectionList}
-				setPaletteColor={setPaletteColor}
+                floatingSpecies={floatingSpecies}
+                boundarySpecies={boundarySpecies}
+                reactionRates={reactionRates}
+                handleMoreOptionsApply={handleMoreOptionsApply}
+                isNewOptionsAdded={isNewOptionsAdded}
+                setIsNewOptionsAdded={setIsNewOptionsAdded}
+                showMoreOptions={showMoreOptions}
+                setShowMoreOptions={setShowMoreOptions}
+                selectionList={selectionList}
+                setSelectionList={setSelectionList}
+                setPaletteColor={setPaletteColor}
                 onSimulate={onSimulate}
                 // For Steady State
                 data={data}
@@ -860,18 +852,18 @@ A = 10
                 steadyState={steadyState}
                 eigenValues={eigenValues}
                 jacobian={jacobian}
-				kOptionsForSliders={kOptions_for_sliders}
-				minMaxValues={minMaxValues}
-				sliderValues={sliderValues}
-				selectedParameter={selectedParameter}
-				handleCheckboxChange={handleCheckboxChange}
-				handleSliderChange={handleSliderChange}
-				handleMinValueChange={handleMinValueChange}
-				handleMaxValueChange={handleMaxValueChange}
-				handleLabelClick={handleLabelClick}
-				selectedValues={selectedValues}
-				setShowSteadyStatePopup={setShowSteadyStatePopup}
-				handleSliderChangeInSteadyState={handleSliderChangeInSteadyState}
+                kOptionsForSliders={kOptions_for_sliders}
+                minMaxValues={minMaxValues}
+                sliderValues={sliderValues}
+                selectedParameter={selectedParameter}
+                handleCheckboxChange={handleCheckboxChange}
+                handleSliderChange={handleSliderChange}
+                handleMinValueChange={handleMinValueChange}
+                handleMaxValueChange={handleMaxValueChange}
+                handleLabelClick={handleLabelClick}
+                selectedValues={selectedValues}
+                setShowSteadyStatePopup={setShowSteadyStatePopup}
+                handleSliderChangeInSteadyState={handleSliderChangeInSteadyState}
                 // For Parameter Scan
                 kOptions={kOptions}
                 isShowLegendChecked={isShowLegendChecked}
@@ -880,9 +872,9 @@ A = 10
                 parametersScanType={parametersScanType}
                 firstParameter={firstParameter}
                 handleScanButton={handleScanButton}
-			    showSplitView={showSplitView}
-			    linesStyle={linesStyle}
-			    setLinesStyle={setLinesStyle}
+                showSplitView={showSplitView}
+                linesStyle={linesStyle}
+                setLinesStyle={setLinesStyle}
             />
 
             <div
@@ -963,16 +955,12 @@ A = 10
                     isOutOfSync={lastSimulatedEditorContent !== currentEditorContent}
                     elasticities={elasticities}
                     handleSteadyStateDock={handleSteadyStateDock}
-                    handleSteadyStateUndock={handleSteadyStateUndock}
                     handleCloseSteadyStatePopup={handleCloseSteadyStatePopup}
                     setShowSteadyStatePopup={setShowSteadyStatePopup}
                     isSteadyStateDocked={isSteadyStateDocked}
-                    setIsSteadyStateDocked={setIsSteadyStateDocked}
-                    isSteadyState={isSteadyState}
-                    setIsDataTableDocked={setIsDataTableDocked}
-                    isDataTableDocked={isDataTableDocked}
                     showMoreDataPopup={showMoreDataPopup}
                     setShowMoreDataPopup={setShowMoreDataPopup}
+                    isSteadyState={isSteadyState}
                     linesStyle={linesStyle}
                 />
             </div>
@@ -998,44 +986,45 @@ A = 10
                 setActiveAnalysisPanel={setActiveAnalysisPanel}
             />
             <div className="search-container">
-				<input
-					id="biomodel-browse"
-					style={{
-						backgroundColor: isDarkMode ? "black" : "white",
-						color: isDarkMode ? "white" : "black",
-						border: isDarkMode ? "1px solid gray" : "1px solid black",
-						borderRadius: "5px"
-					}}
-					type="text"
-					placeholder="Search Biomodels"
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
-				/>
-				<div id="biomddropdown" className="suggestions-dropdown"
-					style={{
-						backgroundColor: isDarkMode ? "black" : "white",
-						color: isDarkMode ? "white" : "black",
-						border: isDarkMode ? "1px solid gray" : "1px solid black"
-					}}>
-					<ul>
-						{suggestions.map((model) => (
-							<li
-								key={model.id}
-								onClick={() => setChosenModel(model.id)}
-								style={{ cursor: "pointer" }}
-							>
-								{model.title}
-								<div style={{ color: "#FD7F20" }}>
-									{model.journal}, {model.date} - {model.authors.join(", ")}
-								</div>
-							</li>
-						))}
-					</ul>
-				</div>
-				{loading && <Loader loading={loading} />}
-			</div>
+                <input
+                    id="biomodel-browse"
+                    style={{
+                        backgroundColor: isDarkMode ? "black" : "white",
+                        color: isDarkMode ? "white" : "black",
+                        border: isDarkMode ? "1px solid gray" : "1px solid black",
+                        borderRadius: "5px"
+                    }}
+                    type="text"
+                    placeholder="Search Biomodels"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div id="biomddropdown" className="suggestions-dropdown"
+                    style={{
+                        backgroundColor: isDarkMode ? "black" : "white",
+                        color: isDarkMode ? "white" : "black",
+                        border: isDarkMode ? "1px solid gray" : "1px solid black"
+                    }}>
+                    <ul>
+                        {suggestions.map((model) => (
+                            <li
+                                key={model.id}
+                                onClick={() => setChosenModel(model.id)}
+                                style={{ cursor: "pointer" }}
+                            >
+                                {model.title}
+                                <div style={{ color: "#FD7F20" }}>
+                                    {model.journal}, {model.date} - {model.authors.join(", ")}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                {loading && <Loader loading={loading} />}
+            </div>
         </div>
     );
 };
+
 export default DropdownWithPopup;
 
