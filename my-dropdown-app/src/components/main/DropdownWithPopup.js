@@ -153,6 +153,8 @@ A = 10
     const [lineWidthMap, setLineWidthMap] = useState({});
     const [lineStyleMap, setLineStyleMap] = useState({});
 
+    const [lastLoadedModelText, setLastLoadedModelText] = useState("");
+
     const resetContent = () => {
         setSelectedOptions([]);
         set_xAxis_selected_option(null);
@@ -352,7 +354,7 @@ A = 10
         if (editorInstance) {
             editorInstance.setValue(content); // Set the new content in the editor
         }
-
+        setLastLoadedModelText(content);
         // Perform additional actions
         handleResetInApp();
         handleResetParameters();
@@ -806,6 +808,19 @@ A = 10
 
         return () => disposable.dispose();
     }, [editorInstance]);
+
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            event.preventDefault();
+            event.returnValue = '';
+        };
+        if (currentEditorContent !== lastLoadedModelText) {
+            window.addEventListener('beforeunload', handleBeforeUnload);
+        }
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [currentEditorContent, lastLoadedModelText]);
 
     return (
         <div className={`main-container ${isDarkMode ? "dark-mode" : "bright-mode"}`}>
