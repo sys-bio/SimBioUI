@@ -214,24 +214,6 @@ const RightPanel = (props, ref) => {
     };
   }, [isDragging]);
 
-
-  //displays warning message if user tries to reload after simulating
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-
-    if (data?.columns && data.columns.length > 0) {
-      window.addEventListener("beforeunload", handleBeforeUnload);
-    }
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [data]);
-
-
   // Implement functions for Edit Graph popup draggable
   const handleMouseDown = (e) => {
     setIsDragging(true);
