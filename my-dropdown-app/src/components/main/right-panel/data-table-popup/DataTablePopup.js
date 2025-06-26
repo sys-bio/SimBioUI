@@ -3,7 +3,7 @@ import Draggable from "react-draggable";
 import chroma from "chroma-js";
 import "./DataTablePopup.css";
 
-const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock }) => {
+const DataTablePopup = ({ data, isDarkMode, isDocked, onDock, decimalPlaces, setDecimalPlaces }) => {
   const [hoveredData, setHoveredData] = useState({
     title: "",
     index: -1,
@@ -12,8 +12,6 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock }) => {
   });
   const [size, setSize] = useState({ width: 700, height: 500 });
   const nodeRef = useRef(null);
-
-  const [decimalPlaces, setDecimalPlaces] = useState(2);
 
   const allNumericValues = data.columns
     .flat()
@@ -198,16 +196,6 @@ const DataTablePopup = ({ data, onClose, isDarkMode, isDocked, onDock }) => {
               }}
             >
               Save as CSV
-            </button>
-            <button
-              onClick={onClose}
-              style={{
-                backgroundColor: isDarkMode ? "black" : "white",
-                border: isDarkMode ? "1px solid grey" : "1px solid black",
-                color: isDarkMode ? "white" : "black",
-              }}
-            >
-              Close
             </button>
           </div>
         </div>

@@ -171,6 +171,9 @@ const RightPanel = (props, ref) => {
   const plotHeight = (isSteadyStateDocked) ? graphHeight - 150 : window.innerHeight * 0.55;
   const isResizing = useRef(false);
 
+  //decimal place for data table
+  const [decimalPlaces, setDecimalPlaces] = useState(2);
+
 //	const plotHeight = isDataTableDocked
 //	  ? window.innerHeight * 0.35 // Adjust this value as needed
 //	  : window.innerHeight * 0.55; // Adjust this value as needed
@@ -298,14 +301,10 @@ const RightPanel = (props, ref) => {
 
   const handleShowMoreData = () => {
     if (!data || !data.columns || data.columns.length === 0) {
-      window.alert("Run Simulate to show more data");
+      window.alert("Run simulate to show more data");
     } else {
       setShowMoreDataPopup(true);
     }
-  };
-
-  const handleCloseDataTable = () => {
-    setShowMoreDataPopup(false);
   };
 
   // There are 5 buttons in Edit Graph: Graph, Axes, Grid, Series, Legend
@@ -632,7 +631,8 @@ const RightPanel = (props, ref) => {
                   data={data}
                   isDarkMode={isDarkMode}
                   isDocked={true}
-                  onClose={handleCloseDataTable}
+                  decimalPlaces={decimalPlaces}
+                  setDecimalPlaces={setDecimalPlaces}
                 />
               ) : (
                 <div style={{ 
@@ -641,7 +641,7 @@ const RightPanel = (props, ref) => {
                   textAlign: "center",
                   fontSize: "1.1em"
                 }}>
-                  Run Simulate to show data
+                  Run simulate to show data
                 </div>
               )}
             </div>
