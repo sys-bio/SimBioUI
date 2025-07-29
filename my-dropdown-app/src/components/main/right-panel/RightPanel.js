@@ -837,6 +837,19 @@ const RightPanel = (props, ref) => {
           </div>
         </div>
       )}
+      
+      {showSteadyStatePopup && (
+        <SteadyStateMorePopup
+          isDarkMode={isDarkMode}
+          jacobian={jacobian}
+          fluxControl={fluxControl}
+          concentration={concentration}
+          elasticities={elasticities}
+          isDocked={isSteadyStateDocked}
+          onClose={handleCloseSteadyStatePopup}
+          onDock={handleSteadyStateDock}
+        />
+      )}
     </div>
   );
 };
