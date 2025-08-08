@@ -181,14 +181,14 @@ const RightPanel = (props, ref) => {
   // Add new state for active tab
   const [activeTab, setActiveTab] = useState('graph');
   
-  // Auto-switch to steady state tab when docked
+  //auto-switch to steady state tab when first docked, and switch back to graph when undocked
   useEffect(() => {
     if (isSteadyStateDocked && activeTab !== 'steadystate') {
       setActiveTab('steadystate');
     } else if (!isSteadyStateDocked && activeTab === 'steadystate') {
       setActiveTab('graph');
     }
-  }, [isSteadyStateDocked, activeTab]);
+  }, [isSteadyStateDocked]);
 
   useEffect(() => {
     if (isNewTabCreated) {
@@ -223,7 +223,6 @@ const RightPanel = (props, ref) => {
     };
   }, [isDragging]);
 
-  // Implement functions for Edit Graph popup draggable
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setDragOffset({
