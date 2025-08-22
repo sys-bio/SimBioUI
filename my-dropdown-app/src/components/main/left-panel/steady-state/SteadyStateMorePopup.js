@@ -285,19 +285,18 @@ class SteadyStateMorePopup extends Component {
 							Elasticities
 						</button>
 					</div>
-                    {/* Scrollable container for table */}
-                    <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
+                    {/* docked table (same as undocked) */}
+                    <div className="steady-state-popup-jacobian-table-container"
+                        style={{
+                            flex: 1,
+                            overflowY: "auto",
+                            ...this.generalStyle("#242323", "white", "", "", "#242323", "white", "0px")
+                        }}>
                         {this.state.showJacobian && this.renderTable(this.props.jacobian)}
+                        {this.state.showFluxControl && this.renderTable(this.props.fluxControl)}
+                        {this.state.showConcentrationControl && this.renderTable(this.props.concentration)}
+                        {this.state.showElasticities && this.renderTable(this.props.elasticities)}
                     </div>
-                    <div style={{ flex: 1, overflowY: "auto", padding: "20px", marginTop: "-50%" }}>
-						{this.state.showFluxControl && this.renderTable(this.props.fluxControl)}
-					</div>
-					<div style={{ flex: 1, overflowY: "auto", padding: "20px", marginTop: "-50%" }}>
-						{this.state.showConcentrationControl && this.renderTable(this.props.concentration)}
-					</div>
-					<div style={{ flex: 1, overflowY: "auto", padding: "20px", marginTop: "-50%" }}>
-						{this.state.showElasticities && this.renderTable(this.props.elasticities)}
-					</div>
 
 
                     {/* Fixed container for buttons */}
