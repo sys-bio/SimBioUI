@@ -180,6 +180,15 @@ const RightPanel = (props, ref) => {
 
   // Add new state for active tab
   const [activeTab, setActiveTab] = useState('graph');
+  
+  //auto-switch to steady state tab when first docked, and switch back to graph when undocked
+  useEffect(() => {
+    if (isSteadyStateDocked && activeTab !== 'steadystate') {
+      setActiveTab('steadystate');
+    } else if (!isSteadyStateDocked && activeTab === 'steadystate') {
+      setActiveTab('graph');
+    }
+  }, [isSteadyStateDocked]);
 
   useEffect(() => {
     if (isNewTabCreated) {
@@ -214,7 +223,6 @@ const RightPanel = (props, ref) => {
     };
   }, [isDragging]);
 
-  // Implement functions for Edit Graph popup draggable
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setDragOffset({
@@ -403,6 +411,21 @@ const RightPanel = (props, ref) => {
           >
             Data
           </button>
+          {isSteadyStateDocked && (
+            <button
+              style={{
+                padding: "8px 16px",
+                backgroundColor: activeTab === 'steadystate' ? (isDarkMode ? "#4a4a4a" : "#d6d6d6") : "transparent",
+                border: "none",
+                color: isDarkMode ? "white" : "black",
+                cursor: "pointer",
+                borderBottom: activeTab === 'steadystate' ? `2px solid ${isDarkMode ? "white" : "black"}` : "none"
+              }}
+              onClick={() => setActiveTab('steadystate')}
+            >
+              Steady State
+            </button>
+          )}
         </div>
 
         {/* Content area */}
@@ -646,6 +669,32 @@ const RightPanel = (props, ref) => {
               )}
             </div>
           )}
+          {activeTab === 'steadystate' && (
+            <div style={{ height: "100%" }}>
+              {jacobian && jacobian.rows && jacobian.rows.length > 0 ? (
+                <SteadyStateMorePopup
+                  isDarkMode={isDarkMode}
+                  jacobian={jacobian}
+                  fluxControl={fluxControl}
+                  concentration={concentration}
+                  elasticities={elasticities}
+                  isDocked={true}
+                  onClose={handleCloseSteadyStatePopup}
+                  onDock={handleSteadyStateDock}
+                  onUndock={handleCloseSteadyStatePopup}
+                />
+              ) : (
+                <div style={{ 
+                  padding: "20px", 
+                  color: isDarkMode ? "white" : "black",
+                  textAlign: "center",
+                  fontSize: "1.1em"
+                }}>
+                  Compute steady state to show analysis data
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       {showEditGraphPopup && (
@@ -836,6 +885,20 @@ const RightPanel = (props, ref) => {
             </div>
           </div>
         </div>
+      )}
+      
+      {showSteadyStatePopup && (
+        <SteadyStateMorePopup
+          isDarkMode={isDarkMode}
+          jacobian={jacobian}
+          fluxControl={fluxControl}
+          concentration={concentration}
+          elasticities={elasticities}
+          isDocked={isSteadyStateDocked}
+          onClose={handleCloseSteadyStatePopup}
+          onDock={handleSteadyStateDock}
+          onUndock={handleCloseSteadyStatePopup}
+        />
       )}
     </div>
   );

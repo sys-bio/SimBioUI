@@ -201,7 +201,7 @@ class SteadyState extends Component {
                                             style={this.generalStyle(isDarkMode, "black", "white")}
                                             onClick={this.handleShowMoreClick}
                                         >
-                                            More >>
+                                            More {'>>'}
                                         </button>
                                     </div>
                                 </>
