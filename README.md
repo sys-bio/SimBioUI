@@ -1,6 +1,10 @@
 # Web Iridium
 Web systems biology simulator
 
+This application has been superceded by:
+
+https://github.com/sys-bio/WebIridium
+
 To see the simulator try the link: https://sys-bio.github.io/SimBioUI/
 
 # Setting up Web Iridium (SimBioUI) Locally
